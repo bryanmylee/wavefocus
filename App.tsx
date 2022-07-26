@@ -8,7 +8,7 @@ export default function App() {
 	return (
 		<UserProvider>
 			<Container>
-				<StatusBar backgroundColor="#00000000" barStyle="dark-content" />
+				<StatusBar backgroundColor="#e2fffa" barStyle="dark-content" />
 				<TimerScreen />
 			</Container>
 		</UserProvider>
