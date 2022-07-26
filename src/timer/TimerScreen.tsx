@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import TimerDisplay from './Timer';
+import Timer from './Timer';
 import {useInterval} from '../utils/useInterval';
 
 const MAX_ACTIVE_TIME_SEC = 25 * 60;
@@ -28,7 +28,7 @@ export default function TimerScreen() {
 	return (
 		<>
 			<TimerContainer>
-				<TimerDisplay seconds={seconds} />
+				<Timer seconds={seconds} />
 			</TimerContainer>
 			<BottomBar>
 				<Button onPress={togglePlayPause}>
