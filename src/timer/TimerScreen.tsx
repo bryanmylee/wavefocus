@@ -1,34 +1,24 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import styled from 'styled-components/native';
-import {useInterval} from '../utils/useInterval';
+import {useUser} from '../auth/UserProvider';
 import Timer from './Timer';
-
-const MAX_ACTIVE_TIME_SEC = 25 * 60;
+import {useTimerMemory} from './useTimerMemory';
 
 export default function TimerScreen() {
-	const [seconds, setSeconds] = useState(MAX_ACTIVE_TIME_SEC);
-	const [isActive, setIsActive] = useState(false);
-
-	useInterval(
-		() => {
-			setSeconds((ts) => ts - 1);
-		},
-		1000,
-		isActive,
+	const {user} = useUser();
+	const {isActive, toggleActive, secondsRemaining} = useTimerMemory(
+		user?.uid ?? '',
 	);
 
 	const togglePlayPause = useCallback(() => {
-		if (seconds <= 0) {
-			return;
-		}
-		setIsActive((a) => !a);
-	}, [seconds]);
+		toggleActive();
+	}, [toggleActive]);
 
 	return (
 		<>
 			<TimerContainer>
-				<Timer seconds={seconds} />
+				<Timer seconds={secondsRemaining} />
 			</TimerContainer>
 			<BottomBar>
 				<Button onPress={togglePlayPause}>
