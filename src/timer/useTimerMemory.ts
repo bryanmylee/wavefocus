@@ -33,7 +33,10 @@ const getRemaining = (toggles: number[]): TRemaining => {
 		elapsedMs += Date.now() - startMs;
 	}
 	return {
-		secondsRemaining: MAX_ACTIVE_TIME_SEC - Math.floor(elapsedMs / 1000),
+		secondsRemaining: Math.max(
+			0,
+			MAX_ACTIVE_TIME_SEC - Math.floor(elapsedMs / 1000),
+		),
 		nextDelayMs: 1000 - (elapsedMs % 1000),
 	};
 };
@@ -41,12 +44,12 @@ const getRemaining = (toggles: number[]): TRemaining => {
 export const useTimerMemory = (userId: string) => {
 	const memoryDoc = useMemo(() => timerMemoryCollection.doc(userId), [userId]);
 	const [memory, setMemory] = useState<TTimerMemory>(DEFAULT_MEMORY);
-	const isActive = memory.toggles.length % 2 === 1;
 	const initialRemaining = useRef(getRemaining(memory.toggles));
 	const [secondsRemaining, setSecondsRemaining] = useState(
 		initialRemaining.current.secondsRemaining,
 	);
 	const [delayMs, setDelayMs] = useState(initialRemaining.current.nextDelayMs);
+	const isActive = secondsRemaining > 0 && memory.toggles.length % 2 === 1;
 
 	const setMemoryAndSeconds = useCallback((newMemory: TTimerMemory) => {
 		setMemory(newMemory);
@@ -56,13 +59,16 @@ export const useTimerMemory = (userId: string) => {
 	}, []);
 
 	const toggleActive = useCallback(() => {
+		if (secondsRemaining <= 0) {
+			return;
+		}
 		const newMemory: TTimerMemory = {
 			...memory,
 			toggles: [...memory.toggles, Date.now()],
 		};
 		setMemoryAndSeconds(newMemory);
 		memoryDoc.set(newMemory);
-	}, [memory, setMemoryAndSeconds, memoryDoc]);
+	}, [memory, memoryDoc, secondsRemaining, setMemoryAndSeconds]);
 
 	const setActive = useCallback(
 		(newActive: boolean) => {
