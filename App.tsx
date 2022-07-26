@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import {StatusBar} from 'react-native';
+import styled from 'styled-components/native';
 import TimerScreen from './src/timer/TimerScreen';
 
 export default function App() {

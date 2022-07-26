@@ -1,8 +1,8 @@
 import React, {useCallback, useState} from 'react';
-import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import Timer from './Timer';
+import styled from 'styled-components/native';
 import {useInterval} from '../utils/useInterval';
+import Timer from './Timer';
 
 const MAX_ACTIVE_TIME_SEC = 25 * 60;
 

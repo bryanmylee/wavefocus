@@ -1,7 +1,7 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json",
-  "compilerOptions": {
-    "skipLibCheck": true,
-    "types": ["react-native", "jest", "node", "styled-components-react-native"],
-  }
+	"extends": "@tsconfig/react-native/tsconfig.json",
+	"compilerOptions": {
+		"skipLibCheck": true,
+		"types": ["react-native", "jest", "node", "styled-components-react-native"]
+	}
 }
