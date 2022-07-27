@@ -1,6 +1,6 @@
 import React from 'react';
+import {TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import styled from 'styled-components/native';
 
 export interface TimerButtonProps {
 	isActive: boolean;
@@ -15,10 +15,8 @@ export default function PlayPauseButton({
 }: TimerButtonProps) {
 	const iconName = isActive ? 'pause' : isDone ? 'arrow-right' : 'play';
 	return (
-		<Button onPress={onPress}>
+		<TouchableOpacity onPress={onPress}>
 			<Icon name={iconName} size={42} color="#004f40" />
-		</Button>
+		</TouchableOpacity>
 	);
 }
-
-const Button = styled.TouchableOpacity``;
