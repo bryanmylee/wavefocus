@@ -1,11 +1,11 @@
-import React, {useCallback} from 'react';
-import {Text} from 'react-native';
+import React, {useCallback, useEffect} from 'react';
 import styled from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
 import NextButton from './NextButton';
 import PlayPauseButton from './PlayPauseButton';
 import ResetButton from './ResetButton';
 import Timer from './Timer';
+import {useTimerStage} from './TimerStageProvider';
 import {useTimerMemory} from './useTimerMemory';
 
 export default function TimerScreen() {
@@ -21,6 +21,14 @@ export default function TimerScreen() {
 		resetStage,
 	} = useTimerMemory(user?.uid ?? '');
 
+	const [, setAppTimerStage] = useTimerStage();
+	useEffect(
+		function synchronizeAppTimerStage() {
+			setAppTimerStage(timerStage);
+		},
+		[timerStage, setAppTimerStage],
+	);
+
 	const handleResetPress = useCallback(() => {
 		resetStage(false);
 	}, [resetStage]);
@@ -35,7 +43,6 @@ export default function TimerScreen() {
 
 	return (
 		<>
-			<Text>{timerStage}</Text>
 			<TimerContainer>
 				<Timer seconds={secondsRemaining} />
 			</TimerContainer>
