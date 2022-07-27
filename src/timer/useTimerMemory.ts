@@ -8,7 +8,7 @@ import {
 } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useInterval} from '../utils/useInterval';
-import {TTimerMemory, TTimerStage} from './TTimerMemory';
+import {TTimerMemory, TTimerStage} from './types';
 
 const timerMemoryCollection = firestore().collection<TTimerMemory>('timers');
 
