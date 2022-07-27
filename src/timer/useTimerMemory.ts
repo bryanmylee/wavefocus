@@ -1,12 +1,19 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {
+	SetStateAction,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useInterval} from '../utils/useInterval';
 import {TTimerMemory, TTimerStage} from './TTimerMemory';
 
 const timerMemoryCollection = firestore().collection<TTimerMemory>('timers');
 
-const MAX_FOCUS_TIME_SEC = /*25 * 60*/ 6;
-const MAX_RELAX_TIME_SEC = /*5 * 60*/ 3;
+const MAX_FOCUS_TIME_SEC = 25 * 60;
+const MAX_RELAX_TIME_SEC = 5 * 60;
 const DEFAULT_MEMORY: TTimerMemory = {
 	isFocus: true,
 	toggles: [],
@@ -60,16 +67,34 @@ export const useTimerMemory = (userId: string) => {
 	const isActive = secondsRemaining > 0 && memory.toggles.length % 2 === 1;
 	const isDone = secondsRemaining <= 0;
 	const timerStage: TTimerStage = memory.isFocus ? 'focus' : 'relax';
+	const isReset =
+		timerStage === 'focus'
+			? secondsRemaining === MAX_FOCUS_TIME_SEC
+			: secondsRemaining === MAX_RELAX_TIME_SEC;
+
+	const setMemoryUpdateRemaining = useCallback(
+		(memoryAction: SetStateAction<TTimerMemory>) => {
+			if (memoryAction instanceof Function) {
+				setMemory((oldMemory) => {
+					const newMemory = memoryAction(oldMemory);
+					const remaining = getRemaining(newMemory);
+					setSecondsRemaining(remaining.secondsRemaining);
+					setDelayMs(remaining.nextDelayMs);
+					return newMemory;
+				});
+			} else {
+				setMemory(memoryAction);
+				const remaining = getRemaining(memoryAction);
+				setSecondsRemaining(remaining.secondsRemaining);
+				setDelayMs(remaining.nextDelayMs);
+			}
+		},
+		[],
+	);
 
 	const setTogglesAndFirestore = useCallback(
 		async (toggles: number[], updateFirestore = true) => {
-			setMemory((oldMemory) => {
-				const newMemory = {...oldMemory, toggles};
-				const remaining = getRemaining(newMemory);
-				setSecondsRemaining(remaining.secondsRemaining);
-				setDelayMs(remaining.nextDelayMs);
-				return newMemory;
-			});
+			setMemoryUpdateRemaining((oldMemory) => ({...oldMemory, toggles}));
 			if (updateFirestore) {
 				const snapshot = await memoryDoc.get();
 				if (snapshot.exists) {
@@ -79,7 +104,7 @@ export const useTimerMemory = (userId: string) => {
 				}
 			}
 		},
-		[memoryDoc],
+		[memoryDoc, setMemoryUpdateRemaining],
 	);
 
 	const toggleActive = useCallback(() => {
@@ -101,9 +126,7 @@ export const useTimerMemory = (userId: string) => {
 
 	const setIsFocusAndFirestore = useCallback(
 		async (isFocus: boolean, updateFirestore = true) => {
-			setMemory((oldMemory) => {
-				return {...oldMemory, isFocus};
-			});
+			setMemoryUpdateRemaining((oldMemory) => ({...oldMemory, isFocus}));
 			if (updateFirestore) {
 				const snapshot = await memoryDoc.get();
 				if (snapshot.exists) {
@@ -113,7 +136,7 @@ export const useTimerMemory = (userId: string) => {
 				}
 			}
 		},
-		[memoryDoc],
+		[memoryDoc, setMemoryUpdateRemaining],
 	);
 
 	const setTimerStage = useCallback(
@@ -169,6 +192,7 @@ export const useTimerMemory = (userId: string) => {
 		secondsRemaining,
 		isDone,
 		isActive,
+		isReset,
 		toggleActive,
 		setActive,
 		timerStage,
