@@ -14,7 +14,7 @@ export const useInterval = (
 		[callback],
 	);
 
-	let interval = useRef<number | undefined>(undefined);
+	let interval = useRef<NodeJS.Timer | undefined>(undefined);
 	const stopInterval = useCallback(() => {
 		if (interval.current !== undefined) {
 			clearInterval(interval.current);
