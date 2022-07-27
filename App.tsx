@@ -1,24 +1,17 @@
 import React from 'react';
-import {StatusBar} from 'react-native';
-import styled from 'styled-components/native';
+import AppContainer from './src/AppContainer';
 import UserProvider from './src/auth/UserProvider';
-import TimerScreen from './src/timer/TimerScreen';
+import ThemeProvider from './src/theme/ThemeProvider';
 import TimerStageProvider from './src/timer/TimerStageProvider';
 
 export default function App() {
 	return (
 		<UserProvider>
 			<TimerStageProvider>
-				<Container>
-					<StatusBar backgroundColor="#e2fffa" barStyle="dark-content" />
-					<TimerScreen />
-				</Container>
+				<ThemeProvider>
+					<AppContainer />
+				</ThemeProvider>
 			</TimerStageProvider>
 		</UserProvider>
 	);
 }
-
-const Container = styled.View`
-	background-color: #e2fffa;
-	flex: 1;
-`;
