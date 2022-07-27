@@ -58,6 +58,7 @@ export const useTimerMemory = (userId: string) => {
 	);
 	const [delayMs, setDelayMs] = useState(initialRemaining.current.nextDelayMs);
 	const isActive = secondsRemaining > 0 && memory.toggles.length % 2 === 1;
+	const isDone = secondsRemaining <= 0;
 	const timerStage: TTimerStage = memory.isFocus ? 'focus' : 'relax';
 
 	const setTogglesAndFirestore = useCallback(
@@ -122,6 +123,21 @@ export const useTimerMemory = (userId: string) => {
 		[setIsFocusAndFirestore],
 	);
 
+	const resetStage = useCallback(
+		(activeImmediately = true) => {
+			setTogglesAndFirestore(activeImmediately ? [Date.now()] : []);
+		},
+		[setTogglesAndFirestore],
+	);
+
+	const nextStage = useCallback(
+		(activeImmediately = true) => {
+			setIsFocusAndFirestore(!memory.isFocus);
+			resetStage(activeImmediately);
+		},
+		[memory.isFocus, resetStage, setIsFocusAndFirestore],
+	);
+
 	useEffect(
 		function synchronizeMemory() {
 			return memoryDoc.onSnapshot((snapshot) => {
@@ -151,10 +167,13 @@ export const useTimerMemory = (userId: string) => {
 
 	return {
 		secondsRemaining,
+		isDone,
 		isActive,
 		toggleActive,
 		setActive,
 		timerStage,
 		setTimerStage,
+		resetStage,
+		nextStage,
 	};
 };
