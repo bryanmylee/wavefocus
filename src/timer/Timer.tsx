@@ -16,7 +16,7 @@ export default function Timer({seconds}: TimerProps) {
 }
 
 const TimerText = styled.Text`
-	color: #004f40;
+	color: ${(p) => p.theme.timer.text};
 	font-family: Inter;
 	font-size: 56px;
 	font-weight: 700;

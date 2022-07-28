@@ -5,7 +5,7 @@ export interface TTheme {
 		progressFill: string;
 		progressTrack: string;
 	};
-	action: {
+	fill: {
 		primary: string;
 	};
 }
@@ -17,7 +17,7 @@ export const LIGHT_FOCUS_THEME: TTheme = {
 		progressFill: 'rgb(7, 115, 95)',
 		progressTrack: 'rgba(226,  255, 250, 50%)',
 	},
-	action: {
+	fill: {
 		primary: 'rgb(0, 79, 64)',
 	},
 };
@@ -29,7 +29,7 @@ export const LIGHT_RELAX_THEME: TTheme = {
 		progressFill: 'rgb(106, 142, 150)',
 		progressTrack: 'rgba(43, 85, 95, 12%)',
 	},
-	action: {
+	fill: {
 		primary: 'rgb(33, 69, 78)',
 	},
 };
