@@ -1,19 +1,25 @@
 import React from 'react';
 import {StatusBar} from 'react-native';
+import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import TimerScreen from './timer/TimerScreen';
 
 export default function AppContainer() {
-	const {background} = useTheme();
+	const theme = useTheme();
+	const containerAnim = useAnimatedStyle(
+		() => ({
+			backgroundColor: withTiming(theme.background),
+		}),
+		[theme.background],
+	);
 	return (
-		<Container>
-			<StatusBar backgroundColor={background} barStyle="dark-content" />
+		<Container style={containerAnim}>
+			<StatusBar backgroundColor={theme.background} barStyle="dark-content" />
 			<TimerScreen />
 		</Container>
 	);
 }
 
-const Container = styled.View`
-	background-color: ${(p) => p.theme.background};
+const Container = styled(Animated.View)`
 	flex: 1;
 `;
