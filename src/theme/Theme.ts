@@ -25,11 +25,11 @@ export const LIGHT_FOCUS_THEME: TTheme = {
 export const LIGHT_RELAX_THEME: TTheme = {
 	background: 'rgb(226, 250, 255)',
 	timer: {
-		text: 'rgb(106, 142, 150)',
-		progressFill: 'rgb(106, 142, 150)',
+		text: 'rgb(42, 107, 123)',
+		progressFill: 'rgb(42, 107, 123)',
 		progressTrack: 'rgba(43, 85, 95, 12%)',
 	},
 	fill: {
-		primary: 'rgb(33, 69, 78)',
+		primary: 'rgb(42, 107, 123)',
 	},
 };
