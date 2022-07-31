@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect} from 'react';
 import styled from 'styled-components/native';
+import LoginButton from '../auth/LoginButton';
 import {useUser} from '../auth/UserProvider';
 import NextButton from './NextButton';
 import PlayPauseButton from './PlayPauseButton';
@@ -42,7 +43,10 @@ export default function TimerScreen() {
 	}, [toggleActive]);
 
 	return (
-		<>
+		<SafeArea>
+			<TopBar>
+				<LoginButton isLoggedIn={!user?.isAnonymous ?? false} />
+			</TopBar>
 			<TimerContainer>
 				<Timer seconds={secondsRemaining} />
 			</TimerContainer>
@@ -50,7 +54,7 @@ export default function TimerScreen() {
 				{!isActive && !isReset ? (
 					<ResetButton onPress={handleResetPress} />
 				) : (
-					<BottomBarPlaceholder />
+					<IconPlaceholder />
 				)}
 				{isDone ? (
 					<NextButton onPress={handleNextPress} />
@@ -64,12 +68,16 @@ export default function TimerScreen() {
 				{!isActive && !isDone ? (
 					<NextButton onPress={handleNextPress} />
 				) : (
-					<BottomBarPlaceholder />
+					<IconPlaceholder />
 				)}
 			</BottomBar>
-		</>
+		</SafeArea>
 	);
 }
+
+const SafeArea = styled.SafeAreaView`
+	flex: 1;
+`;
 
 const TimerContainer = styled.View`
 	flex: 1;
@@ -77,13 +85,23 @@ const TimerContainer = styled.View`
 	align-items: center;
 `;
 
+const TopBar = styled.View`
+	flex-direction: row;
+	justify-content: flex-end;
+	padding-left: 28px;
+	padding-right: 28px;
+	padding-top: 32px;
+`;
+
 const BottomBar = styled.View`
 	flex-direction: row;
 	justify-content: space-between;
-	padding: 64px;
+	padding-left: 48px;
+	padding-right: 48px;
+	padding-bottom: 32px;
 `;
 
-const BottomBarPlaceholder = styled.View`
+const IconPlaceholder = styled.View`
 	width: 42px;
 	height: 42px;
 `;
