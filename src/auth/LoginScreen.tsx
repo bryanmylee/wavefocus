@@ -1,22 +1,23 @@
-import React from 'react';
+import React, {useState} from 'react';
 import 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 import DismissButton from '../core/DismissButton';
 import FixedSafeAreaView from '../core/FixedSafeAreaView';
-import TextInput from '../core/TextInput';
+import StyledTextInput from '../core/StyledTextInput';
 
 interface LoginScreenProps {
 	onDismiss?: () => void;
 }
 
 export default function LoginScreen({onDismiss}: LoginScreenProps) {
+	const [email, setEmail] = useState('');
 	return (
 		<FixedSafeAreaView>
 			<TopBar>
 				<DismissButton onPress={onDismiss} />
 			</TopBar>
 			<LoginFormContainer>
-				<TextInput value="Hello" />
+				<StyledTextInput value={email} onChangeText={setEmail} width="80%" />
 			</LoginFormContainer>
 		</FixedSafeAreaView>
 	);
