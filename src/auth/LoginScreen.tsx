@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import DismissButton from '../core/DismissButton';
 import FixedSafeAreaView from '../core/FixedSafeAreaView';
 import StyledTextInput from '../core/StyledTextInput';
+import {useBackHandler} from '../utils/useBackHandler';
 
 interface LoginScreenProps {
 	onDismiss?: () => void;
@@ -11,6 +12,10 @@ interface LoginScreenProps {
 
 export default function LoginScreen({onDismiss}: LoginScreenProps) {
 	const [email, setEmail] = useState('');
+	useBackHandler(() => {
+		onDismiss?.();
+		return true;
+	}, [onDismiss]);
 	return (
 		<FixedSafeAreaView>
 			<TopBar>
