@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text} from 'react-native';
+import {Text, TouchableOpacity} from 'react-native';
 import 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 
@@ -7,9 +7,12 @@ interface LoginScreenProps {
 	onDismiss?: () => void;
 }
 
-export default function LoginScreen({}: LoginScreenProps) {
+export default function LoginScreen({onDismiss}: LoginScreenProps) {
 	return (
 		<SafeArea>
+			<TouchableOpacity onPress={onDismiss}>
+				<Text>Dismiss</Text>
+			</TouchableOpacity>
 			<Text>Hello</Text>
 		</SafeArea>
 	);

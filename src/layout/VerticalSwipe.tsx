@@ -1,15 +1,18 @@
-import React, {PropsWithChildren} from 'react';
+import React, {PropsWithChildren, useEffect} from 'react';
 import {useWindowDimensions} from 'react-native';
 import {
 	PanGestureHandler,
 	PanGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 import Animated, {
+	runOnJS,
 	useAnimatedGestureHandler,
 	useAnimatedStyle,
+	useSharedValue,
 	withSpring,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
+import {clampWorklet} from '../utils/clamp';
 
 type TPanGestureContext = {
 	initialY: number;
@@ -17,13 +20,29 @@ type TPanGestureContext = {
 
 export interface VerticalSwipeNavigatorProps extends PropsWithChildren {
 	showAlt: boolean;
+	onUpdateShowAlt: (showAlt: boolean) => void;
 }
 
-function Navigator({showAlt, children}: VerticalSwipeNavigatorProps) {
+function Navigator({
+	showAlt,
+	onUpdateShowAlt,
+	children,
+}: VerticalSwipeNavigatorProps) {
 	const {height} = useWindowDimensions();
-	const screenContainerAnim = useAnimatedStyle(
+	const translateY = useSharedValue(0);
+	useEffect(
+		function updateTranslateYOnShowAlt() {
+			translateY.value = withSpring(showAlt ? height : 0, {
+				damping: 20,
+				overshootClamping: true,
+			});
+		},
+		[height, showAlt, translateY],
+	);
+
+	const screensContainerAnim = useAnimatedStyle(
 		() => ({
-			transform: [{translateY: withSpring(showAlt ? height : 0)}],
+			transform: [{translateY: translateY.value}],
 		}),
 		[showAlt, height],
 	);
@@ -31,16 +50,39 @@ function Navigator({showAlt, children}: VerticalSwipeNavigatorProps) {
 	const handlePanGesture = useAnimatedGestureHandler<
 		PanGestureHandlerGestureEvent,
 		TPanGestureContext
-	>({});
+	>({
+		onStart(_, context) {
+			context.initialY = translateY.value;
+		},
+		onActive(event, context) {
+			translateY.value = clampWorklet(
+				context.initialY + event.translationY,
+				0,
+				height,
+			);
+		},
+		onEnd(event) {
+			const toShowAlt = translateY.value + event.velocityY > height / 2;
+			runOnJS(onUpdateShowAlt)(toShowAlt);
+			const targetY = toShowAlt ? height : 0;
+			translateY.value = withSpring(targetY, {
+				damping: 20,
+				velocity: event.velocityY,
+				overshootClamping: true,
+			});
+		},
+	});
 
 	return (
 		<PanGestureHandler onGestureEvent={handlePanGesture}>
-			<ScreenContainer style={screenContainerAnim}>{children}</ScreenContainer>
+			<NavigatorScreensContainer style={screensContainerAnim}>
+				{children}
+			</NavigatorScreensContainer>
 		</PanGestureHandler>
 	);
 }
 
-const ScreenContainer = styled(Animated.View)`
+const NavigatorScreensContainer = styled(Animated.View)`
 	flex: 1;
 `;
 
@@ -51,18 +93,18 @@ interface VerticalSwipeScreenProps extends PropsWithChildren {
 function Screen({children, isAlt = false}: VerticalSwipeScreenProps) {
 	const {height} = useWindowDimensions();
 	return (
-		<Container windowHeight={height} isAlt={isAlt}>
+		<ScreenContainer windowHeight={height} isAlt={isAlt}>
 			{children}
-		</Container>
+		</ScreenContainer>
 	);
 }
 
-interface ContainerProps {
+interface ScreenContainerProps {
 	windowHeight: number;
 	isAlt: boolean;
 }
 
-const Container = styled.View<ContainerProps>`
+const ScreenContainer = styled.View<ScreenContainerProps>`
 	position: absolute;
 	width: 100%;
 	height: ${({windowHeight}) => windowHeight}px;

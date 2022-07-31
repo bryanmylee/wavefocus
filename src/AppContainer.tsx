@@ -21,7 +21,9 @@ export default function AppContainer() {
 	return (
 		<Container style={containerAnim}>
 			<StatusBar backgroundColor={theme.background} barStyle="dark-content" />
-			<VerticalSwipe.Navigator showAlt={showLogin.value}>
+			<VerticalSwipe.Navigator
+				showAlt={showLogin.value}
+				onUpdateShowAlt={showLogin.setValue}>
 				<VerticalSwipe.Screen>
 					<TimerScreen onPressLoginButton={showLogin.toggle} />
 				</VerticalSwipe.Screen>
