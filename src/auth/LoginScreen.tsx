@@ -1,7 +1,9 @@
 import React from 'react';
-import {Text, TouchableOpacity} from 'react-native';
 import 'react-native-gesture-handler';
 import styled from 'styled-components/native';
+import DismissButton from '../core/DismissButton';
+import FixedSafeAreaView from '../core/FixedSafeAreaView';
+import TextInput from '../core/TextInput';
 
 interface LoginScreenProps {
 	onDismiss?: () => void;
@@ -9,16 +11,27 @@ interface LoginScreenProps {
 
 export default function LoginScreen({onDismiss}: LoginScreenProps) {
 	return (
-		<SafeArea>
-			<TouchableOpacity onPress={onDismiss}>
-				<Text>Dismiss</Text>
-			</TouchableOpacity>
-			<Text>Hello</Text>
-		</SafeArea>
+		<FixedSafeAreaView>
+			<TopBar>
+				<DismissButton onPress={onDismiss} />
+			</TopBar>
+			<LoginFormContainer>
+				<TextInput value="Hello" />
+			</LoginFormContainer>
+		</FixedSafeAreaView>
 	);
 }
 
-const SafeArea = styled.SafeAreaView`
+const TopBar = styled.View`
+	flex-direction: row;
+	justify-content: flex-end;
+	padding-left: 42px;
+	padding-right: 42px;
+	padding-top: 32px;
+`;
+
+const LoginFormContainer = styled.View`
 	flex: 1;
 	justify-content: center;
+	align-items: center;
 `;

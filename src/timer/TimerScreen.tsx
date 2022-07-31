@@ -2,6 +2,7 @@ import React, {useCallback, useEffect} from 'react';
 import styled from 'styled-components/native';
 import LoginButton from '../auth/LoginButton';
 import {useUser} from '../auth/UserProvider';
+import FixedSafeAreaView from '../core/FixedSafeAreaView';
 import NextButton from './NextButton';
 import PlayPauseButton from './PlayPauseButton';
 import ResetButton from './ResetButton';
@@ -47,7 +48,7 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 	}, [toggleActive]);
 
 	return (
-		<SafeArea>
+		<FixedSafeAreaView>
 			<TopBar>
 				<LoginButton
 					isLoggedIn={!user?.isAnonymous ?? false}
@@ -78,19 +79,9 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 					<IconPlaceholder />
 				)}
 			</BottomBar>
-		</SafeArea>
+		</FixedSafeAreaView>
 	);
 }
-
-const SafeArea = styled.SafeAreaView`
-	flex: 1;
-`;
-
-const TimerContainer = styled.View`
-	flex: 1;
-	justify-content: center;
-	align-items: center;
-`;
 
 const TopBar = styled.View`
 	flex-direction: row;
@@ -98,6 +89,12 @@ const TopBar = styled.View`
 	padding-left: 28px;
 	padding-right: 28px;
 	padding-top: 32px;
+`;
+
+const TimerContainer = styled.View`
+	flex: 1;
+	justify-content: center;
+	align-items: center;
 `;
 
 const BottomBar = styled.View`
