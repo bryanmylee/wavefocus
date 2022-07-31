@@ -5,7 +5,7 @@ import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
 import VerticalSwipe from './layout/VerticalSwipe';
 import TimerScreen from './timer/TimerScreen';
-import useBoolean from './utils/useBoolean';
+import {useBoolean} from './utils/useBoolean';
 
 export default function AppContainer() {
 	const theme = useTheme();

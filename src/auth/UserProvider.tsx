@@ -6,7 +6,7 @@ import React, {
 	useState,
 } from 'react';
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
-import useBoolean from '../utils/useBoolean';
+import {useBoolean} from '../utils/useBoolean';
 
 export interface TUserContext {
 	user: FirebaseAuthTypes.User | null;
