@@ -9,7 +9,11 @@ import Timer from './Timer';
 import {useTimerStage} from './TimerStageProvider';
 import {useTimerMemory} from './useTimerMemory';
 
-export default function TimerScreen() {
+export interface TimerScreenProps {
+	onPressLoginButton?: () => void;
+}
+
+export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 	const {user} = useUser();
 	const {
 		isActive,
@@ -45,7 +49,10 @@ export default function TimerScreen() {
 	return (
 		<SafeArea>
 			<TopBar>
-				<LoginButton isLoggedIn={!user?.isAnonymous ?? false} />
+				<LoginButton
+					isLoggedIn={!user?.isAnonymous ?? false}
+					onPress={onPressLoginButton}
+				/>
 			</TopBar>
 			<TimerContainer>
 				<Timer seconds={secondsRemaining} />
