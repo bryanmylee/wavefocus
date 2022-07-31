@@ -6,6 +6,7 @@ import React, {
 	useState,
 } from 'react';
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
+import useBoolean from '../utils/useBoolean';
 
 export interface TUserContext {
 	user: FirebaseAuthTypes.User | null;
@@ -19,19 +20,22 @@ const UserContext = createContext<TUserContext>({
 export const useUser = () => useContext(UserContext);
 
 export default function UserProvider({children}: PropsWithChildren) {
-	const [isReady, setIsReady] = useState(false);
+	const isReady = useBoolean(false);
 	const [user, setUser] = useState<FirebaseAuthTypes.User | null>(
 		auth().currentUser,
 	);
 
-	useEffect(function synchronizeAuthState() {
-		return auth().onAuthStateChanged(
-			(newUser: FirebaseAuthTypes.User | null) => {
-				setUser(newUser);
-				setIsReady(true);
-			},
-		);
-	}, []);
+	useEffect(
+		function synchronizeAuthState() {
+			return auth().onAuthStateChanged(
+				(newUser: FirebaseAuthTypes.User | null) => {
+					setUser(newUser);
+					isReady.setTrue();
+				},
+			);
+		},
+		[isReady],
+	);
 
 	useEffect(function anonymousIfNoUserOnLoad() {
 		if (user === null) {
@@ -44,7 +48,7 @@ export default function UserProvider({children}: PropsWithChildren) {
 		<UserContext.Provider
 			value={{
 				user,
-				isReady,
+				isReady: isReady.value,
 			}}>
 			{children}
 		</UserContext.Provider>

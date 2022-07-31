@@ -1,20 +1,15 @@
-import React, {useCallback, useState} from 'react';
+import React from 'react';
 import {StatusBar} from 'react-native';
 import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
 import VerticalSwipe from './layout/VerticalSwipe';
 import TimerScreen from './timer/TimerScreen';
+import useBoolean from './utils/useBoolean';
 
 export default function AppContainer() {
 	const theme = useTheme();
-	const [showLoginScreen, setShowLoginScreen] = useState(false);
-	const handlePressLoginButton = useCallback(() => {
-		setShowLoginScreen((s) => !s);
-	}, []);
-	const handleDismissLoginScreen = useCallback(() => {
-		setShowLoginScreen(false);
-	}, []);
+	const showLogin = useBoolean(false);
 
 	const containerAnim = useAnimatedStyle(
 		() => ({
@@ -26,12 +21,12 @@ export default function AppContainer() {
 	return (
 		<Container style={containerAnim}>
 			<StatusBar backgroundColor={theme.background} barStyle="dark-content" />
-			<VerticalSwipe.Navigator showAlt={showLoginScreen}>
+			<VerticalSwipe.Navigator showAlt={showLogin.value}>
 				<VerticalSwipe.Screen>
-					<TimerScreen onPressLoginButton={handlePressLoginButton} />
+					<TimerScreen onPressLoginButton={showLogin.toggle} />
 				</VerticalSwipe.Screen>
 				<VerticalSwipe.Screen isAlt>
-					<LoginScreen onDismiss={handleDismissLoginScreen} />
+					<LoginScreen onDismiss={showLogin.setFalse} />
 				</VerticalSwipe.Screen>
 			</VerticalSwipe.Navigator>
 		</Container>
