@@ -1,10 +1,10 @@
 import React, {useCallback, useEffect} from 'react';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 import LoginButton from '../auth/LoginButton';
 import {useUser} from '../auth/UserProvider';
 import FixedSafeAreaView from '../core/FixedSafeAreaView';
 import NextButton from './NextButton';
-import PlayPauseButton from './PlayPauseButton';
 import ResetButton from './ResetButton';
 import Timer from './Timer';
 import {useTimerStage} from './TimerStageProvider';
@@ -56,22 +56,15 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 				/>
 			</TopBar>
 			<TimerContainer>
-				<Timer seconds={secondsRemaining} />
+				<TouchableOpacity onPress={handlePlayPausePress}>
+					<Timer seconds={secondsRemaining} />
+				</TouchableOpacity>
 			</TimerContainer>
 			<BottomBar>
 				{!isActive && !isReset ? (
 					<ResetButton onPress={handleResetPress} />
 				) : (
 					<IconPlaceholder />
-				)}
-				{isDone ? (
-					<NextButton onPress={handleNextPress} />
-				) : (
-					<PlayPauseButton
-						onPress={handlePlayPausePress}
-						isActive={isActive}
-						isDone={isDone}
-					/>
 				)}
 				{!isActive && !isDone ? (
 					<NextButton onPress={handleNextPress} />
