@@ -66,7 +66,7 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 				) : (
 					<IconPlaceholder />
 				)}
-				{!isActive && !isDone ? (
+				{!isActive ? (
 					<NextButton onPress={handleNextPress} />
 				) : (
 					<IconPlaceholder />
