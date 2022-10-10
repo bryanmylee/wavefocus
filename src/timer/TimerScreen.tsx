@@ -8,6 +8,7 @@ import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import * as ZStack from '../components/ZStack';
 import ThemedIcon from '../theme/ThemedIcon';
 import Timer from './Timer';
+import {TimerFluidAnimation} from './TimerFluidAnimation';
 import {useTimerStage} from './TimerStageProvider';
 import {useTimerMemory} from './useTimerMemory';
 
@@ -52,6 +53,9 @@ export default function TimerScreen({}: TimerScreenProps) {
 
 	return (
 		<Container>
+			<ZStack.Item>
+				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
+			</ZStack.Item>
 			<ZStack.Item>
 				<FixedSafeAreaView>
 					<TopBar>
