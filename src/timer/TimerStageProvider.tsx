@@ -6,11 +6,11 @@ import React, {
 	useContext,
 	useState,
 } from 'react';
-import {TTimerStage} from './types';
+import {TimerStage} from './types';
 
 export type TTimerStageContext = [
-	timerStage: TTimerStage,
-	setTimerStage: Dispatch<SetStateAction<TTimerStage>>,
+	timerStage: TimerStage,
+	setTimerStage: Dispatch<SetStateAction<TimerStage>>,
 ];
 
 const TimerStageContext = createContext<TTimerStageContext>([
@@ -21,7 +21,7 @@ const TimerStageContext = createContext<TTimerStageContext>([
 export const useTimerStage = () => useContext(TimerStageContext);
 
 export default function TimerStageProvider({children}: PropsWithChildren) {
-	const [timerStage, setTimerStage] = useState<TTimerStage>('focus');
+	const [timerStage, setTimerStage] = useState<TimerStage>('focus');
 	return (
 		<TimerStageContext.Provider value={[timerStage, setTimerStage]}>
 			{children}

@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect} from 'react';
+import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import styled from 'styled-components/native';
+import styled, {useTheme} from 'styled-components/native';
 import LoginButton from '../auth/LoginButton';
 import {useUser} from '../auth/UserProvider';
 import FixedSafeAreaView from '../core/FixedSafeAreaView';
@@ -25,8 +26,7 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 		timerStage,
 		nextStage,
 		resetStage,
-	} = useTimerMemory(user?.uid ?? '');
-
+	} = useTimerMemory(user);
 	const [, setAppTimerStage] = useTimerStage();
 	useEffect(
 		function synchronizeAppTimerStage() {
@@ -47,6 +47,8 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 		toggleActive();
 	}, [toggleActive]);
 
+	const theme = useTheme();
+
 	return (
 		<FixedSafeAreaView>
 			<TopBar>
@@ -55,23 +57,31 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 					onPress={onPressLoginButton}
 				/>
 			</TopBar>
-			<TimerContainer>
-				<TouchableOpacity onPress={handlePlayPausePress}>
-					<Timer seconds={secondsRemaining} />
-				</TouchableOpacity>
-			</TimerContainer>
-			<BottomBar>
-				{!isActive && !isReset ? (
-					<ResetButton onPress={handleResetPress} />
-				) : (
-					<IconPlaceholder />
-				)}
-				{!isActive ? (
-					<NextButton onPress={handleNextPress} />
-				) : (
-					<IconPlaceholder />
-				)}
-			</BottomBar>
+			{user == null ? (
+				<CenteredContainer>
+					<ActivityIndicator color={theme.timer.text} />
+				</CenteredContainer>
+			) : (
+				<>
+					<CenteredContainer>
+						<TouchableOpacity onPress={handlePlayPausePress}>
+							<Timer seconds={secondsRemaining} />
+						</TouchableOpacity>
+					</CenteredContainer>
+					<BottomBar>
+						{!isActive && !isReset ? (
+							<ResetButton onPress={handleResetPress} />
+						) : (
+							<IconPlaceholder />
+						)}
+						{!isActive ? (
+							<NextButton onPress={handleNextPress} />
+						) : (
+							<IconPlaceholder />
+						)}
+					</BottomBar>
+				</>
+			)}
 		</FixedSafeAreaView>
 	);
 }
@@ -84,7 +94,7 @@ const TopBar = styled.View`
 	padding-top: 32px;
 `;
 
-const TimerContainer = styled.View`
+const CenteredContainer = styled.View`
 	flex: 1;
 	justify-content: center;
 	align-items: center;

@@ -8,24 +8,24 @@ import {
 } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useInterval} from '../utils/useInterval';
-import {TTimerMemory, TTimerStage} from './types';
+import {TimerMemory, TimerStage} from './types';
 
-const timerMemoryCollection = firestore().collection<TTimerMemory>('timers');
+const timerMemoryCollection = firestore().collection<TimerMemory>('timers');
 
 const FOCUS_DURATION_SEC = 25 * 60;
 const RELAX_DURATION_SEC = 5 * 60;
-const DEFAULT_MEMORY: TTimerMemory = {
+const DEFAULT_MEMORY: TimerMemory = {
 	isFocus: true,
-	start: Date.now(),
+	start: null,
 	pause: null,
 };
 
-interface TRemaining {
+interface Remaining {
 	secondsRemaining: number;
 	nextDelayMs: number;
 }
 
-const getRemaining = (memory: TTimerMemory): TRemaining => {
+const getRemaining = (memory: TimerMemory): Remaining => {
 	const maxDurationSec = memory.isFocus
 		? FOCUS_DURATION_SEC
 		: RELAX_DURATION_SEC;
@@ -39,9 +39,17 @@ const getRemaining = (memory: TTimerMemory): TRemaining => {
 	};
 };
 
-export const useTimerMemory = (userId: string) => {
-	const memoryDoc = useMemo(() => timerMemoryCollection.doc(userId), [userId]);
-	const [local, setMemory] = useState<TTimerMemory>(DEFAULT_MEMORY);
+interface TimerUser {
+	uid: string;
+	isAnonymous: boolean;
+}
+
+export const useTimerMemory = (user: TimerUser | null) => {
+	const memoryDoc = useMemo(
+		() => timerMemoryCollection.doc(user?.uid ?? ''),
+		[user?.uid],
+	);
+	const [local, setMemory] = useState<TimerMemory>(DEFAULT_MEMORY);
 	const initialRemaining = useRef(getRemaining(local));
 	const [secondsRemaining, setSecondsRemaining] = useState(
 		initialRemaining.current.secondsRemaining,
@@ -50,7 +58,7 @@ export const useTimerMemory = (userId: string) => {
 	const isDone = secondsRemaining <= 0;
 
 	const setLocalMemory = useCallback(
-		(memoryAction: SetStateAction<TTimerMemory>) => {
+		(memoryAction: SetStateAction<TimerMemory>) => {
 			if (memoryAction instanceof Function) {
 				setMemory((oldMemory) => {
 					const newMemory = memoryAction(oldMemory);
@@ -72,6 +80,9 @@ export const useTimerMemory = (userId: string) => {
 	useEffect(
 		function synchronizeMemory() {
 			return memoryDoc.onSnapshot((snapshot) => {
+				if (snapshot == null) {
+					return;
+				}
 				const data = snapshot.data();
 				if (data == null) {
 					setLocalMemory(DEFAULT_MEMORY);
@@ -97,6 +108,7 @@ export const useTimerMemory = (userId: string) => {
 			if (newActive) {
 				const snapshot = await memoryDoc.get();
 				if (!snapshot.exists) {
+					await memoryDoc.set({...DEFAULT_MEMORY, start: Date.now()});
 					return;
 				}
 				const data = snapshot.data();
@@ -138,7 +150,7 @@ export const useTimerMemory = (userId: string) => {
 	/**
 	 * timerStage
 	 */
-	const timerStage: TTimerStage = local.isFocus ? 'focus' : 'relax';
+	const timerStage: TimerStage = local.isFocus ? 'focus' : 'relax';
 
 	const setIsFocus = useCallback(
 		async (isFocus: boolean) => {
@@ -148,7 +160,7 @@ export const useTimerMemory = (userId: string) => {
 	);
 
 	const setTimerStage = useCallback(
-		(stage: TTimerStage) => {
+		(stage: TimerStage) => {
 			setIsFocus(stage === 'focus');
 		},
 		[setIsFocus],
@@ -193,6 +205,23 @@ export const useTimerMemory = (userId: string) => {
 		},
 		delayMs,
 		isActive,
+	);
+
+	const prevUser = useRef(user);
+	useEffect(
+		function resetIfChangeToAnonymous() {
+			async function reset() {
+				await Promise.all([setIsFocus(true), resetStage(false)]);
+			}
+			if (user?.uid === prevUser.current?.uid) {
+				return;
+			}
+			if (user?.isAnonymous) {
+				reset();
+			}
+			prevUser.current = user;
+		},
+		[user, setIsFocus, resetStage],
 	);
 
 	return {

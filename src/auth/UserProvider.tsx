@@ -37,12 +37,14 @@ export default function UserProvider({children}: PropsWithChildren) {
 		[isReady],
 	);
 
-	useEffect(function anonymousIfNoUserOnLoad() {
-		if (user == null) {
-			auth().signInAnonymously();
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	useEffect(
+		function anonymousIfNoUserOnLoad() {
+			if (user == null) {
+				auth().signInAnonymously();
+			}
+		},
+		[user],
+	);
 
 	return (
 		<UserContext.Provider

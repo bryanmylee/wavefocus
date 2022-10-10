@@ -1,7 +1,7 @@
-export interface TTimerMemory {
+export interface TimerMemory {
 	isFocus: boolean;
 	start: number | null;
 	pause: number | null;
 }
 
-export type TTimerStage = 'focus' | 'relax';
+export type TimerStage = 'focus' | 'relax';

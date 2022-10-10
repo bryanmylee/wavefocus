@@ -34,11 +34,13 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 
 	const onLoginButtonPress = useCallback(async () => {
 		await onGoogleButtonPress();
-	}, []);
+		onDismiss?.();
+	}, [onDismiss]);
 
-	const onLogoutButtonPress = useCallback(() => {
-		auth().signOut();
-	}, []);
+	const onLogoutButtonPress = useCallback(async () => {
+		await auth().signOut();
+		onDismiss?.();
+	}, [onDismiss]);
 
 	return (
 		<FixedSafeAreaView>
@@ -46,7 +48,7 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 				<DismissButton onPress={onDismiss} />
 			</TopBar>
 			<LoginFormContainer>
-				{user == null ? (
+				{user == null || user.isAnonymous ? (
 					<Button title="Sign in with Google" onPress={onLoginButtonPress} />
 				) : (
 					<>
