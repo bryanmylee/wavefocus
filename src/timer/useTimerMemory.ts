@@ -7,6 +7,7 @@ import {
 	useState,
 } from 'react';
 import firestore from '@react-native-firebase/firestore';
+import {useUser} from '../auth/UserProvider';
 import {useInterval} from '../utils/useInterval';
 import {TimerMemory, TimerStage} from './types';
 
@@ -39,12 +40,12 @@ const getRemaining = (memory: TimerMemory): Remaining => {
 	};
 };
 
-interface TimerUser {
-	uid: string;
-	isAnonymous: boolean;
-}
-
-export const useTimerMemory = (user: TimerUser | null) => {
+export function useTimerMemory() {
+	const {
+		user,
+		subscribeBeforeSignOutAnonymously,
+		subscribeAfterSignInAnonymously,
+	} = useUser();
 	const memoryDoc = useMemo(
 		() => timerMemoryCollection.doc(user?.uid ?? ''),
 		[user?.uid],
@@ -207,21 +208,30 @@ export const useTimerMemory = (user: TimerUser | null) => {
 		isActive,
 	);
 
-	const prevUser = useRef(user);
+	const [prevAnonMemory, setPrevAnonMemory] = useState<TimerMemory>();
 	useEffect(
-		function resetIfChangeToAnonymous() {
-			async function reset() {
-				await Promise.all([setIsFocus(true), resetStage(false)]);
-			}
-			if (user?.uid === prevUser.current?.uid) {
-				return;
-			}
-			if (user?.isAnonymous) {
-				reset();
-			}
-			prevUser.current = user;
+		function savePrevAnonMemory() {
+			return subscribeBeforeSignOutAnonymously(async ({uid}) => {
+				const snapshot = await timerMemoryCollection.doc(uid).get();
+				setPrevAnonMemory(snapshot.data());
+				await timerMemoryCollection.doc(uid).delete();
+			});
 		},
-		[user, setIsFocus, resetStage],
+		[user?.uid, subscribeBeforeSignOutAnonymously],
+	);
+	useEffect(
+		function transferPrevAnonMemory() {
+			return subscribeAfterSignInAnonymously(async (ev) => {
+				if (prevAnonMemory == null) {
+					return;
+				}
+				if (!ev.prevIsAnon) {
+					return;
+				}
+				await timerMemoryCollection.doc(ev.user.uid).set(prevAnonMemory);
+			});
+		},
+		[subscribeAfterSignInAnonymously, prevAnonMemory],
 	);
 
 	return {
@@ -236,4 +246,4 @@ export const useTimerMemory = (user: TimerUser | null) => {
 		resetStage,
 		nextStage,
 	};
-};
+}

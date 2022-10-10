@@ -16,7 +16,7 @@ export interface TimerScreenProps {
 }
 
 export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
-	const {user} = useUser();
+	const {user, isLoading} = useUser();
 	const {
 		isActive,
 		toggleActive,
@@ -26,7 +26,7 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 		timerStage,
 		nextStage,
 		resetStage,
-	} = useTimerMemory(user);
+	} = useTimerMemory();
 	const [, setAppTimerStage] = useTimerStage();
 	useEffect(
 		function synchronizeAppTimerStage() {
@@ -53,11 +53,11 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 		<FixedSafeAreaView>
 			<TopBar>
 				<LoginButton
-					isLoggedIn={!user?.isAnonymous ?? false}
+					isLoggedIn={!isLoading && user != null && !user.isAnonymous}
 					onPress={onPressLoginButton}
 				/>
 			</TopBar>
-			{user == null ? (
+			{user == null || isLoading ? (
 				<CenteredContainer>
 					<ActivityIndicator color={theme.timer.text} />
 				</CenteredContainer>

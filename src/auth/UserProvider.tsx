@@ -8,6 +8,11 @@ import React, {
 } from 'react';
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {
+	Subscriber,
+	Unsubscriber,
+	useCreateSubscriber,
+} from '../utils/useCreateSubscriber';
 
 GoogleSignin.configure({
 	webClientId:
@@ -20,11 +25,22 @@ async function signInGoogleAsync() {
 	return auth().signInWithCredential(googleCredential);
 }
 
+interface SignInAnonEvent {
+	user: FirebaseAuthTypes.User;
+	prevIsAnon: boolean;
+}
+
 export interface UserContext {
 	user: FirebaseAuthTypes.User | null;
 	isLoading: boolean;
 	signInGoogle: () => void;
 	signOut: () => void;
+	subscribeBeforeSignOutAnonymously: (
+		subscriber: Subscriber<FirebaseAuthTypes.User>,
+	) => Unsubscriber;
+	subscribeAfterSignInAnonymously: (
+		subscriber: Subscriber<SignInAnonEvent>,
+	) => Unsubscriber;
 }
 
 const UserContext = createContext<UserContext>({
@@ -32,6 +48,8 @@ const UserContext = createContext<UserContext>({
 	isLoading: false,
 	signInGoogle: () => {},
 	signOut: () => {},
+	subscribeBeforeSignOutAnonymously: () => () => {},
+	subscribeAfterSignInAnonymously: () => () => {},
 });
 export const useUser = () => useContext(UserContext);
 
@@ -53,11 +71,35 @@ export default function UserProvider({children}: PropsWithChildren) {
 		[user],
 	);
 
+	const [notifyBeforeSignOutAnon, subscribeBeforeSignOutAnonymously] =
+		useCreateSubscriber<FirebaseAuthTypes.User>();
+	const signOutAnonymous = useCallback(async () => {
+		if (user == null || !user.isAnonymous) {
+			return;
+		}
+		notifyBeforeSignOutAnon(user);
+		await user.delete().catch(() => {
+			console.warn('signOutAnonymous: Failed to delete anonymous user');
+		});
+	}, [user, notifyBeforeSignOutAnon]);
+
+	const [notifyAfterSignInAnon, subscribeAfterSignInAnonymously] =
+		useCreateSubscriber<SignInAnonEvent>();
+	const signInAnonymous = useCallback(
+		async ({prevIsAnon}: Pick<SignInAnonEvent, 'prevIsAnon'>) => {
+			const newAnonUser = await auth().signInAnonymously();
+			notifyAfterSignInAnon({user: newAnonUser.user, prevIsAnon});
+			return newAnonUser;
+		},
+		[notifyAfterSignInAnon],
+	);
+
 	useEffect(function anonymousIfNoUserOnLoad() {
 		if (user == null) {
 			setIsLoading(true);
-			auth()
-				.signInAnonymously()
+			signInAnonymous({
+				prevIsAnon: true,
+			})
 				.catch(() => {
 					console.warn(
 						'anonymousIfNoUserOnLoad: Failed to sign in anonymously',
@@ -77,32 +119,21 @@ export default function UserProvider({children}: PropsWithChildren) {
 			.catch(() => {
 				console.warn('signOut: Failed to sign out');
 			});
-		await auth()
-			.signInAnonymously()
-			.catch(() => {
-				console.warn('signOut: Failed to sign in anonymously');
-			});
-		setIsLoading(false);
-	}, []);
-
-	const signOutAnonymous = useCallback(async () => {
-		if (user == null || !user.isAnonymous) {
-			return;
-		}
-		await user.delete().catch(() => {
-			console.warn('signOutAnonymous: Failed to delete anonymous user');
+		await signInAnonymous({prevIsAnon: false}).catch(() => {
+			console.warn('signOut: Failed to sign in anonymously');
 		});
-	}, [user]);
+		setIsLoading(false);
+	}, [signInAnonymous]);
 
 	const signInGoogle = useCallback(async () => {
 		setIsLoading(true);
 		await signOutAnonymous();
 		await signInGoogleAsync().catch(() => {
 			console.warn('signInGoogle: Failed to sign in with Google');
-			return auth().signInAnonymously();
+			return signInAnonymous({prevIsAnon: true});
 		});
 		setIsLoading(false);
-	}, [signOutAnonymous]);
+	}, [signOutAnonymous, signInAnonymous]);
 
 	return (
 		<UserContext.Provider
@@ -111,6 +142,8 @@ export default function UserProvider({children}: PropsWithChildren) {
 				isLoading,
 				signInGoogle,
 				signOut,
+				subscribeBeforeSignOutAnonymously,
+				subscribeAfterSignInAnonymously,
 			}}>
 			{children}
 		</UserContext.Provider>
