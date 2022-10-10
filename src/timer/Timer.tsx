@@ -33,8 +33,9 @@ export default function Timer({seconds, timerStage}: TimerProps) {
 		[theme.timer.text],
 	);
 
-	const {width} = useWindowDimensions();
-	const diameter = width * 0.75;
+	const {width, height} = useWindowDimensions();
+	const size = Math.min(width, height);
+	const diameter = size * 0.75;
 	const strokeWidth = 15;
 	const radius = diameter / 2 - strokeWidth;
 	const circumference = Math.PI * 2 * radius;
