@@ -1,9 +1,11 @@
 import React, {useEffect} from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
+	cancelAnimation,
 	useAnimatedProps,
 	useSharedValue,
 	withRepeat,
+	withSequence,
 	withTiming,
 } from 'react-native-reanimated';
 import Svg, {Path} from 'react-native-svg';
@@ -31,7 +33,9 @@ export function TimerFluidAnimation({
 						windowHeight: height,
 						windowWidth: width,
 						waveHeight: height / 5,
-						cycleMs: 5000,
+						isActive,
+						timerStage,
+						baseCycleMs: 5000,
 					})}
 				/>
 				<AnimatedPath
@@ -41,7 +45,9 @@ export function TimerFluidAnimation({
 						windowHeight: height,
 						windowWidth: width,
 						waveHeight: height / 5.5,
-						cycleMs: 3000,
+						isActive,
+						timerStage,
+						baseCycleMs: 3000,
 					})}
 				/>
 				<AnimatedPath
@@ -51,7 +57,9 @@ export function TimerFluidAnimation({
 						windowHeight: height,
 						windowWidth: width,
 						waveHeight: height / 5.75,
-						cycleMs: 4000,
+						isActive,
+						timerStage,
+						baseCycleMs: 4000,
 					})}
 				/>
 			</Svg>
@@ -65,13 +73,6 @@ const Container = styled.View`
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-interface WavePathProps {
-	windowHeight: number;
-	windowWidth: number;
-	waveHeight: number;
-	cycleMs: number;
-}
-
 const IDEAL_WAVE_WIDTH = 200;
 
 interface UseValueProps {
@@ -84,17 +85,40 @@ interface UseValueProps {
 function useOscillatingValue({from, to, cycleMs}: UseValueProps) {
 	const progress = useSharedValue(from);
 	useEffect(() => {
-		progress.value = withRepeat(withTiming(to, {duration: cycleMs}), -1, true);
+		cancelAnimation(progress);
+		progress.value = withRepeat(
+			withSequence(
+				withTiming(to, {duration: cycleMs}),
+				withTiming(from, {duration: cycleMs}),
+			),
+			-1,
+			true,
+		);
 	}, [from, to, cycleMs, progress]);
 	return progress;
+}
+
+interface FluidPathProps {
+	windowHeight: number;
+	windowWidth: number;
+	waveHeight: number;
+	baseCycleMs: number;
+	isActive: boolean;
+	timerStage: TimerStage;
 }
 
 const useFluidPath = ({
 	windowHeight,
 	windowWidth,
 	waveHeight,
-	cycleMs,
-}: WavePathProps) => {
+	baseCycleMs,
+	isActive,
+	timerStage,
+}: FluidPathProps) => {
+	let cycleMs = baseCycleMs;
+	if (timerStage === 'focus' && isActive) {
+		cycleMs /= 3;
+	}
 	const progress = useOscillatingValue({
 		from: 0,
 		to: -1,
