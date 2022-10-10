@@ -73,7 +73,7 @@ export const useTimerMemory = (userId: string) => {
 		function synchronizeMemory() {
 			return memoryDoc.onSnapshot((snapshot) => {
 				const data = snapshot.data();
-				if (data === undefined) {
+				if (data == null) {
 					setLocalMemory(DEFAULT_MEMORY);
 				} else {
 					setLocalMemory(data);
@@ -100,7 +100,7 @@ export const useTimerMemory = (userId: string) => {
 					return;
 				}
 				const data = snapshot.data();
-				if (data === undefined) {
+				if (data == null) {
 					return;
 				}
 				const now = Date.now();

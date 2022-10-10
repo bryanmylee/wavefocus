@@ -38,7 +38,7 @@ export default function UserProvider({children}: PropsWithChildren) {
 	);
 
 	useEffect(function anonymousIfNoUserOnLoad() {
-		if (user === null) {
+		if (user == null) {
 			auth().signInAnonymously();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

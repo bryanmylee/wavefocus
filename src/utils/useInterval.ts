@@ -16,7 +16,7 @@ export const useInterval = (
 
 	let interval = useRef<NodeJS.Timer | undefined>(undefined);
 	const stopInterval = useCallback(() => {
-		if (interval.current !== undefined) {
+		if (interval.current != null) {
 			clearInterval(interval.current);
 		}
 		interval.current = undefined;
@@ -24,7 +24,7 @@ export const useInterval = (
 
 	useEffect(
 		function updateInterval() {
-			if (ms === undefined || !isActive) {
+			if (ms == null || !isActive) {
 				stopInterval();
 				return;
 			}

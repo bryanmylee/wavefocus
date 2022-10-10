@@ -1,12 +1,13 @@
 import React, {useCallback} from 'react';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {Button} from 'react-native';
+import {Button, Text} from 'react-native';
 import 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 import DismissButton from '../core/DismissButton';
 import FixedSafeAreaView from '../core/FixedSafeAreaView';
 import {useBackHandler} from '../utils/useBackHandler';
+import {useUser} from './UserProvider';
 
 GoogleSignin.configure({
 	webClientId:
@@ -24,20 +25,35 @@ interface LoginScreenProps {
 }
 
 export default function LoginScreen({onDismiss}: LoginScreenProps) {
+	const {user} = useUser();
+
 	useBackHandler(() => {
 		onDismiss?.();
 		return true;
 	}, [onDismiss]);
+
 	const onLoginButtonPress = useCallback(async () => {
 		await onGoogleButtonPress();
 	}, []);
+
+	const onLogoutButtonPress = useCallback(() => {
+		auth().signOut();
+	}, []);
+
 	return (
 		<FixedSafeAreaView>
 			<TopBar>
 				<DismissButton onPress={onDismiss} />
 			</TopBar>
 			<LoginFormContainer>
-				<Button title="Sign in with Google" onPress={onLoginButtonPress} />
+				{user == null ? (
+					<Button title="Sign in with Google" onPress={onLoginButtonPress} />
+				) : (
+					<>
+						<Text>Signed in as {user.displayName}</Text>
+						<Button title="Sign out" onPress={onLogoutButtonPress} />
+					</>
+				)}
 			</LoginFormContainer>
 		</FixedSafeAreaView>
 	);
