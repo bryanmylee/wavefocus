@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import Svg, {Circle} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
 import {Centered} from '../components/Centered';
@@ -52,12 +51,7 @@ export default function TimerScreen({}: TimerScreenProps) {
 	const theme = useTheme();
 
 	return (
-		<ZStack.Container>
-			<ZStack.Item>
-				<Svg>
-					<Circle />
-				</Svg>
-			</ZStack.Item>
+		<Container>
 			<ZStack.Item>
 				<FixedSafeAreaView>
 					<TopBar>
@@ -71,7 +65,7 @@ export default function TimerScreen({}: TimerScreenProps) {
 						<>
 							<Centered>
 								<TouchableOpacity onPress={handlePlayPausePress}>
-									<Timer seconds={secondsRemaining} />
+									<Timer seconds={secondsRemaining} timerStage={timerStage} />
 								</TouchableOpacity>
 							</Centered>
 							<BottomBar>
@@ -94,9 +88,13 @@ export default function TimerScreen({}: TimerScreenProps) {
 					)}
 				</FixedSafeAreaView>
 			</ZStack.Item>
-		</ZStack.Container>
+		</Container>
 	);
 }
+
+const Container = styled(ZStack.Container)`
+	flex: 1;
+`;
 
 const TopBar = styled.View`
 	flex-direction: row;
