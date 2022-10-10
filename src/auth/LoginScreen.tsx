@@ -1,9 +1,10 @@
 import React from 'react';
-import {ActivityIndicator, Button, Text} from 'react-native';
+import {ActivityIndicator, Button, Text, TouchableOpacity} from 'react-native';
 import 'react-native-gesture-handler';
 import styled, {useTheme} from 'styled-components/native';
-import DismissButton from '../core/DismissButton';
-import FixedSafeAreaView from '../core/FixedSafeAreaView';
+import {Centered} from '../components/Centered';
+import FixedSafeAreaView from '../components/FixedSafeAreaView';
+import ThemedIcon from '../theme/ThemedIcon';
 import {useBackHandler} from '../utils/useBackHandler';
 import {useUser} from './UserProvider';
 
@@ -24,9 +25,11 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 	return (
 		<FixedSafeAreaView>
 			<TopBar>
-				<DismissButton onPress={onDismiss} />
+				<TouchableOpacity onPress={onDismiss}>
+					<ThemedIcon name="times" size={42} />
+				</TouchableOpacity>
 			</TopBar>
-			<CenteredContainer>
+			<Centered>
 				{isLoading ? (
 					<ActivityIndicator color={theme.timer.text} />
 				) : user == null || user?.isAnonymous ? (
@@ -37,7 +40,7 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 						<Button title="Sign out" onPress={signOut} />
 					</>
 				)}
-			</CenteredContainer>
+			</Centered>
 		</FixedSafeAreaView>
 	);
 }
@@ -48,10 +51,4 @@ const TopBar = styled.View`
 	padding-left: 42px;
 	padding-right: 42px;
 	padding-top: 32px;
-`;
-
-const CenteredContainer = styled.View`
-	flex: 1;
-	justify-content: center;
-	align-items: center;
 `;

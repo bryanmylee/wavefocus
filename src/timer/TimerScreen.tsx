@@ -1,12 +1,13 @@
 import React, {useCallback, useEffect} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import Svg, {Circle} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
-import LoginButton from '../auth/LoginButton';
 import {useUser} from '../auth/UserProvider';
-import FixedSafeAreaView from '../core/FixedSafeAreaView';
-import NextButton from './NextButton';
-import ResetButton from './ResetButton';
+import {Centered} from '../components/Centered';
+import FixedSafeAreaView from '../components/FixedSafeAreaView';
+import * as ZStack from '../components/ZStack';
+import ThemedIcon from '../theme/ThemedIcon';
 import Timer from './Timer';
 import {useTimerStage} from './TimerStageProvider';
 import {useTimerMemory} from './useTimerMemory';
@@ -15,7 +16,7 @@ export interface TimerScreenProps {
 	onPressLoginButton?: () => void;
 }
 
-export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
+export default function TimerScreen({}: TimerScreenProps) {
 	const {user, isLoading} = useUser();
 	const {
 		isActive,
@@ -27,6 +28,7 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 		nextStage,
 		resetStage,
 	} = useTimerMemory();
+
 	const [, setAppTimerStage] = useTimerStage();
 	useEffect(
 		function synchronizeAppTimerStage() {
@@ -50,39 +52,49 @@ export default function TimerScreen({onPressLoginButton}: TimerScreenProps) {
 	const theme = useTheme();
 
 	return (
-		<FixedSafeAreaView>
-			<TopBar>
-				<LoginButton
-					isLoggedIn={!isLoading && user != null && !user.isAnonymous}
-					onPress={onPressLoginButton}
-				/>
-			</TopBar>
-			{user == null || isLoading ? (
-				<CenteredContainer>
-					<ActivityIndicator color={theme.timer.text} />
-				</CenteredContainer>
-			) : (
-				<>
-					<CenteredContainer>
-						<TouchableOpacity onPress={handlePlayPausePress}>
-							<Timer seconds={secondsRemaining} />
-						</TouchableOpacity>
-					</CenteredContainer>
-					<BottomBar>
-						{!isActive && !isReset ? (
-							<ResetButton onPress={handleResetPress} />
-						) : (
-							<IconPlaceholder />
-						)}
-						{!isActive ? (
-							<NextButton onPress={handleNextPress} />
-						) : (
-							<IconPlaceholder />
-						)}
-					</BottomBar>
-				</>
-			)}
-		</FixedSafeAreaView>
+		<ZStack.Container>
+			<ZStack.Item>
+				<Svg>
+					<Circle />
+				</Svg>
+			</ZStack.Item>
+			<ZStack.Item>
+				<FixedSafeAreaView>
+					<TopBar>
+						<IconPlaceholder />
+					</TopBar>
+					{user == null || isLoading ? (
+						<Centered>
+							<ActivityIndicator color={theme.timer.text} />
+						</Centered>
+					) : (
+						<>
+							<Centered>
+								<TouchableOpacity onPress={handlePlayPausePress}>
+									<Timer seconds={secondsRemaining} />
+								</TouchableOpacity>
+							</Centered>
+							<BottomBar>
+								{!isActive && !isReset ? (
+									<TouchableOpacity onPress={handleResetPress}>
+										<ThemedIcon name="undo" size={42} />
+									</TouchableOpacity>
+								) : (
+									<IconPlaceholder />
+								)}
+								{!isActive ? (
+									<TouchableOpacity onPress={handleNextPress}>
+										<ThemedIcon name="arrow-right" size={42} />
+									</TouchableOpacity>
+								) : (
+									<IconPlaceholder />
+								)}
+							</BottomBar>
+						</>
+					)}
+				</FixedSafeAreaView>
+			</ZStack.Item>
+		</ZStack.Container>
 	);
 }
 
@@ -92,12 +104,6 @@ const TopBar = styled.View`
 	padding-left: 28px;
 	padding-right: 28px;
 	padding-top: 32px;
-`;
-
-const CenteredContainer = styled.View`
-	flex: 1;
-	justify-content: center;
-	align-items: center;
 `;
 
 const BottomBar = styled.View`

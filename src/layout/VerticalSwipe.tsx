@@ -23,7 +23,7 @@ export interface VerticalSwipeNavigatorProps extends PropsWithChildren {
 	onUpdateShowAlt: (showAlt: boolean) => void;
 }
 
-function Navigator({
+export function Navigator({
 	showAlt,
 	onUpdateShowAlt,
 	children,
@@ -90,7 +90,7 @@ interface VerticalSwipeScreenProps extends PropsWithChildren {
 	isAlt?: boolean;
 }
 
-function Screen({children, isAlt = false}: VerticalSwipeScreenProps) {
+export function Screen({children, isAlt = false}: VerticalSwipeScreenProps) {
 	const {height} = useWindowDimensions();
 	return (
 		<ScreenContainer windowHeight={height} isAlt={isAlt}>
@@ -110,8 +110,3 @@ const ScreenContainer = styled.View<ScreenContainerProps>`
 	height: ${({windowHeight}) => windowHeight}px;
 	bottom: ${({isAlt, windowHeight}) => (isAlt ? windowHeight : 0)}px;
 `;
-
-export default {
-	Navigator,
-	Screen,
-};

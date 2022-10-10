@@ -3,7 +3,7 @@ import {StatusBar} from 'react-native';
 import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
-import VerticalSwipe from './layout/VerticalSwipe';
+import * as VerticalSwipe from './layout/VerticalSwipe';
 import TimerScreen from './timer/TimerScreen';
 import {useBoolean} from './utils/useBoolean';
 
