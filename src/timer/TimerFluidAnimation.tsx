@@ -2,6 +2,8 @@ import React, {useEffect} from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
 	cancelAnimation,
+	Easing,
+	SharedValue,
 	useAnimatedProps,
 	useDerivedValue,
 	useSharedValue,
@@ -9,7 +11,7 @@ import Animated, {
 	withSequence,
 	withTiming,
 } from 'react-native-reanimated';
-import Svg, {Path} from 'react-native-svg';
+import Svg, {Path, Circle} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
 import {TimerStage} from './types';
 
@@ -22,47 +24,10 @@ export function TimerFluidAnimation({
 	isActive,
 	timerStage,
 }: TimerFluidAnimationProps) {
-	const {width, height} = useWindowDimensions();
-	const theme = useTheme();
 	return (
 		<Container>
 			<Svg>
-				<AnimatedPath
-					fill={theme.timer.fluidFill}
-					opacity={theme.timer.fluidOpacity}
-					animatedProps={useFluidPath({
-						windowHeight: height,
-						windowWidth: width,
-						waveHeight: height / 5,
-						isActive,
-						timerStage,
-						baseCycleMs: 5000,
-					})}
-				/>
-				<AnimatedPath
-					fill={theme.timer.fluidFill}
-					opacity={theme.timer.fluidOpacity}
-					animatedProps={useFluidPath({
-						windowHeight: height,
-						windowWidth: width,
-						waveHeight: height / 5.5,
-						isActive,
-						timerStage,
-						baseCycleMs: 3000,
-					})}
-				/>
-				<AnimatedPath
-					fill={theme.timer.fluidFill}
-					opacity={theme.timer.fluidOpacity}
-					animatedProps={useFluidPath({
-						windowHeight: height,
-						windowWidth: width,
-						waveHeight: height / 5.75,
-						isActive,
-						timerStage,
-						baseCycleMs: 4000,
-					})}
-				/>
+				<WavesAnimation move={timerStage === 'relax'} />
 			</Svg>
 		</Container>
 	);
@@ -97,69 +62,100 @@ function useOscillatingValue({from, to, cycleMs}: UseOscillatingValueProps) {
 	return progress;
 }
 
-interface FluidPathProps {
+interface WavesAnimationProps {
+	move: boolean;
+}
+
+function WavesAnimation({move}: WavesAnimationProps) {
+	const outProgress = useSharedValue(0);
+	useEffect(
+		function animateWaveScale() {
+			outProgress.value = withTiming(move ? 0 : 1, {
+				duration: 1000,
+				easing: Easing.elastic(1.5),
+			});
+		},
+		[outProgress, move],
+	);
+	const {height} = useWindowDimensions();
+	const waveHeight = Math.min(128, height / 5);
+	const scale = useDerivedValue(() => 1 - outProgress.value);
+	return (
+		<>
+			<Wave height={waveHeight + 10} cycleMs={5000} scale={scale} />
+			<Wave height={waveHeight} cycleMs={3000} scale={scale} />
+			<Wave height={waveHeight - 10} cycleMs={4000} scale={scale} />
+		</>
+	);
+}
+
+interface WaveProps {
+	height: number;
+	cycleMs: number;
+	scale: SharedValue<number>;
+}
+
+function Wave({height: waveHeight, cycleMs, scale}: WaveProps) {
+	const theme = useTheme();
+	const {width, height} = useWindowDimensions();
+	return (
+		<AnimatedPath
+			fill={theme.timer.fluidFill}
+			opacity={theme.timer.fluidOpacity}
+			animatedProps={useWavePath({
+				windowHeight: height,
+				windowWidth: width,
+				waveHeight,
+				cycleMs,
+				scale,
+			})}
+		/>
+	);
+}
+
+interface WavePathProps {
 	windowHeight: number;
 	windowWidth: number;
 	waveHeight: number;
-	baseCycleMs: number;
-	isActive: boolean;
-	timerStage: TimerStage;
+	cycleMs: number;
+	scale: SharedValue<number>;
 }
 
-function useFluidPath({
+function useWavePath({
 	windowHeight,
 	windowWidth,
 	waveHeight,
-	baseCycleMs,
-	isActive,
-	timerStage,
-}: FluidPathProps) {
-	let cycleMs = baseCycleMs;
-	if (timerStage === 'focus' && isActive) {
-		cycleMs /= 3;
-	}
-
-	/**
-	 * We need to ensure there are an equal number of points between the two SVG
-	 * paths to interpolate between.
-	 *
-	 * The number of points is determined by how many wave crests are required to
-	 * span the window and wrap back around.
-	 */
+	cycleMs,
+	scale,
+}: WavePathProps) {
 	const dx = windowWidth / 3;
 	const waveLength = windowWidth + dx;
-	const numPoints = Math.ceil(waveLength / IDEAL_WAVE_WIDTH) + 2;
+	const numPeaks = Math.ceil(waveLength / IDEAL_WAVE_WIDTH) + 2;
 
 	const progress = useOscillatingValue({
 		from: 0,
 		to: 1,
 		cycleMs,
 	});
+
 	const wavePoints = useDerivedValue(() =>
 		getWavePoints({
 			progress: progress.value,
-			numPoints,
+			numPoints: numPeaks,
 			windowWidth,
 			windowHeight,
 			waveHeight,
-		}),
-	);
-	const circlePoints = useDerivedValue(() =>
-		getCirclePoints({
-			progress: progress.value,
-			numPoints,
-			windowWidth,
-			windowHeight,
-			radius: Math.min(windowWidth, windowHeight) * 0.4,
+			scale,
 		}),
 	);
 	return useAnimatedProps(() => ({
-		d: getPath(timerStage === 'focus' ? circlePoints.value : wavePoints.value),
+		d: getPath(wavePoints.value),
 	}));
 }
 
 type Point = [number, number];
 type Curve = [number, number, number, number, number, number];
+
 interface FluidPoints {
 	start: Point;
 	curves: Curve[];
@@ -180,23 +176,24 @@ interface WavePointsProps {
 	windowWidth: number;
 	windowHeight: number;
 	waveHeight: number;
+	scale: SharedValue<number>;
 }
 
 const IDEAL_WAVE_WIDTH = 200;
 
-function getWavePoints({
+export function getWavePoints({
 	progress,
 	numPoints,
 	windowWidth,
 	windowHeight,
 	waveHeight,
+	scale,
 }: WavePointsProps): FluidPoints {
 	'worklet';
 	const dx = windowWidth / 3;
 	const numPeaks = numPoints - 2;
-	const peakHeight = waveHeight / 4;
-	const waveLength = windowWidth + dx;
-	const between = waveLength / numPeaks / 1.9;
+	const peakHeight = (waveHeight / 4) * scale.value;
+	const between = IDEAL_WAVE_WIDTH / 2;
 	const curves: Curve[] = [];
 	for (let i = 0; i < numPeaks; i++) {
 		let y = peakHeight;
@@ -206,7 +203,7 @@ function getWavePoints({
 		curves.push([between, 0, between, y, IDEAL_WAVE_WIDTH, y]);
 	}
 	curves.push(
-		[0, 0, 0, 0, 0, waveHeight + peakHeight],
+		[0, 0, 0, 0, 0, waveHeight * 2],
 		[0, 0, 0, 0, -numPeaks * IDEAL_WAVE_WIDTH, 0],
 	);
 	return {
@@ -239,7 +236,7 @@ function getPointFromTheta(theta: number, d: number): Point {
  * - the second point is d on the clockwise tangent to q.
  * - the last point is on q.
  */
-function getCirclePoints({
+export function getCirclePoints({
 	progress,
 	numPoints,
 	windowWidth,
@@ -247,7 +244,7 @@ function getCirclePoints({
 	radius,
 }: CirclePointsProps): FluidPoints {
 	'worklet';
-	const wiggleRadius = radius * 0.05;
+	const wiggleRadius = radius * 0.0;
 	const progressTheta = progress * Math.PI * 2;
 	const [wiggleDx, wiggleDy] = getPointFromTheta(progressTheta, wiggleRadius);
 
@@ -264,10 +261,7 @@ function getCirclePoints({
 	}
 
 	return {
-		start: [
-			windowWidth / 2 + wiggleDx,
-			windowHeight / 2 - radius + wiggleDy + 5,
-		],
+		start: [windowWidth / 2 + wiggleDx, windowHeight / 2 - radius + wiggleDy],
 		curves,
 	};
 }
