@@ -1,8 +1,9 @@
 import React from 'react';
-import {ActivityIndicator, Button, Text, TouchableOpacity} from 'react-native';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import 'react-native-gesture-handler';
 import styled, {useTheme} from 'styled-components/native';
-import {Centered} from '../components/Centered';
+import Button from '../components/Button';
+import Centered from '../components/Centered';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import ThemedIcon from '../theme/ThemedIcon';
 import {useBackHandler} from '../utils/useBackHandler';
@@ -36,7 +37,7 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 					<Button title="Sign in with Google" onPress={signInGoogle} />
 				) : (
 					<>
-						<Text>Signed in as {user.displayName}</Text>
+						<SignedInAs>Signed in as {user.displayName}</SignedInAs>
 						<Button title="Sign out" onPress={signOut} />
 					</>
 				)}
@@ -51,4 +52,10 @@ const TopBar = styled.View`
 	padding-left: 42px;
 	padding-right: 42px;
 	padding-top: 32px;
+`;
+
+const SignedInAs = styled.Text`
+	font-family: Inter;
+	font-weight: bold;
+	font-size: 24px;
 `;

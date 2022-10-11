@@ -3,7 +3,7 @@ import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import styled, {useTheme} from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
-import {Centered} from '../components/Centered';
+import Centered from '../components/Centered';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import * as ZStack from '../components/ZStack';
 import ThemedIcon from '../theme/ThemedIcon';
