@@ -27,9 +27,10 @@ interface ContainerProps {
 }
 
 const Container = styled.View<ContainerProps>`
+	position: relative;
 	flex: 1;
-	padding-top: ${({insets}) => insets.top}px;
-	padding-bottom: ${({insets}) => insets.bottom}px;
-	padding-right: ${({insets}) => insets.right}px;
-	padding-left: ${({insets}) => insets.left}px;
+	margin-top: ${({insets}) => insets.top}px;
+	margin-bottom: ${({insets}) => insets.bottom}px;
+	margin-right: ${({insets}) => insets.right}px;
+	margin-left: ${({insets}) => insets.left}px;
 `;

@@ -57,10 +57,7 @@ export default function TimerScreen({}: TimerScreenProps) {
 				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
 			</ZStack.Item>
 			<ZStack.Item>
-				<FixedSafeAreaView>
-					<TopBar>
-						<IconPlaceholder />
-					</TopBar>
+				<FixedSafeAreaView centered>
 					{user == null || isLoading ? (
 						<Centered>
 							<ActivityIndicator color={theme.timer.text} />
@@ -100,20 +97,11 @@ const Container = styled(ZStack.Container)`
 	flex: 1;
 `;
 
-const TopBar = styled.View`
-	flex-direction: row;
-	justify-content: flex-end;
-	padding-left: 28px;
-	padding-right: 28px;
-	padding-top: 32px;
-`;
-
 const BottomBar = styled.View`
 	flex-direction: row;
 	justify-content: space-between;
 	padding-left: 48px;
 	padding-right: 48px;
-	padding-bottom: 32px;
 `;
 
 const IconPlaceholder = styled.View`
