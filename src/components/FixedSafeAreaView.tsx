@@ -13,11 +13,18 @@ export default function FixedSafeAreaView({
 	const insets = useSafeAreaInsets();
 	if (centered) {
 		const vert = Math.max(insets.top, insets.bottom);
-		insets.top = vert;
-		insets.bottom = vert;
 		const hori = Math.max(insets.left, insets.right);
-		insets.left = hori;
-		insets.right = hori;
+		return (
+			<Container
+				insets={{
+					top: vert,
+					bottom: vert,
+					left: hori,
+					right: hori,
+				}}>
+				{children}
+			</Container>
+		);
 	}
 	return <Container insets={insets}>{children}</Container>;
 }
