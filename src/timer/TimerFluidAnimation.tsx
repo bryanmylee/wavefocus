@@ -73,8 +73,6 @@ const Container = styled.View`
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-const IDEAL_WAVE_WIDTH = 200;
-
 interface UseValueProps {
 	from: number;
 	to: number;
@@ -124,28 +122,52 @@ const useFluidPath = ({
 		to: -1,
 		cycleMs,
 	});
-	const waveDx = windowWidth / 3;
-	const waveLength = windowWidth + waveDx;
-	const numWaves = Math.ceil(waveLength / IDEAL_WAVE_WIDTH);
-	const between = waveLength / numWaves / 1.9;
-	const wavePeak = waveHeight / 4;
 	return useAnimatedProps(() => ({
-		d: [
-			`M${waveDx * progress.value},${windowHeight - waveHeight}`,
-			Array.from({length: numWaves}).map((_, i) => {
-				const isDown = i % 2 !== 0;
-				let y = wavePeak;
-				if (isDown) {
-					y *= -1;
-				}
-				return `c${between},0,${between},${y},${IDEAL_WAVE_WIDTH},${y}`;
-			}),
-			`v${waveHeight + wavePeak}`,
-			`h-${numWaves * IDEAL_WAVE_WIDTH}`,
-			`v-${waveHeight}`,
-			'z',
-		]
-			.flat()
-			.join(''),
+		d: wavePath({
+			progress: progress.value,
+			windowWidth,
+			windowHeight,
+			waveHeight,
+		}),
 	}));
+};
+
+interface WavePathProps {
+	progress: number;
+	windowWidth: number;
+	windowHeight: number;
+	waveHeight: number;
+}
+
+const IDEAL_WAVE_WIDTH = 200;
+
+const wavePath = ({
+	progress,
+	windowWidth,
+	windowHeight,
+	waveHeight,
+}: WavePathProps) => {
+	'worklet';
+	const dx = windowWidth / 3;
+	const waveLength = windowWidth + dx;
+	const numPeaks = Math.ceil(waveLength / IDEAL_WAVE_WIDTH);
+	const between = waveLength / numPeaks / 1.9;
+	const peakHeight = waveHeight / 4;
+	return [
+		`M${dx * progress},${windowHeight - waveHeight}`,
+		Array.from({length: numPeaks}).map((_, i) => {
+			const isDown = i % 2 !== 0;
+			let y = peakHeight;
+			if (isDown) {
+				y *= -1;
+			}
+			return `c${between},0,${between},${y},${IDEAL_WAVE_WIDTH},${y}`;
+		}),
+		`v${waveHeight + peakHeight}`,
+		`h-${numPeaks * IDEAL_WAVE_WIDTH}`,
+		`v-${waveHeight}`,
+		'z',
+	]
+		.flat()
+		.join('');
 };
