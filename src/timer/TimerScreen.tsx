@@ -57,19 +57,22 @@ export default function TimerScreen({}: TimerScreenProps) {
 				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
 			</ZStack.Item>
 			<ZStack.Item>
-				<FixedSafeAreaView centered>
+				<FixedSafeAreaView>
 					{user == null || isLoading ? (
 						<Centered>
 							<ActivityIndicator color={theme.timer.text} />
 						</Centered>
 					) : (
 						<>
+							<Bar>
+								<IconPlaceholder />
+							</Bar>
 							<Centered>
 								<TouchableOpacity onPress={handlePlayPausePress}>
 									<Timer seconds={secondsRemaining} timerStage={timerStage} />
 								</TouchableOpacity>
 							</Centered>
-							<BottomBar>
+							<Bar>
 								{!isActive && !isReset ? (
 									<TouchableOpacity onPress={handleResetPress}>
 										<ThemedIcon name="undo" size={42} />
@@ -84,7 +87,7 @@ export default function TimerScreen({}: TimerScreenProps) {
 								) : (
 									<IconPlaceholder />
 								)}
-							</BottomBar>
+							</Bar>
 						</>
 					)}
 				</FixedSafeAreaView>
@@ -97,7 +100,7 @@ const Container = styled(ZStack.Container)`
 	flex: 1;
 `;
 
-const BottomBar = styled.View`
+const Bar = styled.View`
 	flex-direction: row;
 	justify-content: space-between;
 	padding-left: 48px;

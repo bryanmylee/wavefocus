@@ -1,6 +1,7 @@
 import React from 'react';
 import Svg from 'react-native-svg';
 import styled from 'styled-components/native';
+import ActiveFocusAnimation from './ActiveFocusAnimation';
 import WavesAnimation from './WavesAnimation';
 import {TimerStage} from './types';
 
@@ -17,6 +18,7 @@ export function TimerFluidAnimation({
 		<Container>
 			<Svg>
 				<WavesAnimation move={timerStage === 'relax'} />
+				<ActiveFocusAnimation show={timerStage === 'focus' && isActive} />
 			</Svg>
 		</Container>
 	);

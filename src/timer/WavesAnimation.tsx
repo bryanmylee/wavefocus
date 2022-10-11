@@ -1,62 +1,36 @@
 import React, {useEffect} from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
-	cancelAnimation,
 	Easing,
 	SharedValue,
 	useAnimatedProps,
 	useDerivedValue,
 	useSharedValue,
-	withRepeat,
-	withSequence,
 	withTiming,
 } from 'react-native-reanimated';
 import {Path} from 'react-native-svg';
 import {useTheme} from 'styled-components/native';
+import {useOscillatingValue} from '../utils/useOscillatingValue';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
-
-interface UseOscillatingValueProps {
-	from: number;
-	to: number;
-	cycleMs: number;
-	delayMs?: number;
-}
-
-function useOscillatingValue({from, to, cycleMs}: UseOscillatingValueProps) {
-	const progress = useSharedValue(from);
-	useEffect(() => {
-		cancelAnimation(progress);
-		progress.value = withRepeat(
-			withSequence(
-				withTiming(to, {duration: cycleMs}),
-				withTiming(from, {duration: cycleMs}),
-			),
-			-1,
-			true,
-		);
-	}, [from, to, cycleMs, progress]);
-	return progress;
-}
 
 interface WavesAnimationProps {
 	move: boolean;
 }
 
 export default function WavesAnimation({move}: WavesAnimationProps) {
-	const outProgress = useSharedValue(0);
+	const scale = useSharedValue(1);
 	useEffect(
 		function animateWaveScale() {
-			outProgress.value = withTiming(move ? 0 : 1, {
+			scale.value = withTiming(move ? 1 : 0, {
 				duration: 1000,
 				easing: Easing.elastic(1.5),
 			});
 		},
-		[outProgress, move],
+		[scale, move],
 	);
 	const {height} = useWindowDimensions();
 	const waveHeight = Math.min(128, height / 5);
-	const scale = useDerivedValue(() => 1 - outProgress.value);
 	return (
 		<>
 			<Wave height={waveHeight + 10} cycleMs={5000} scale={scale} />
