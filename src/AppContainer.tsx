@@ -24,7 +24,7 @@ export default function AppContainer() {
 			<VerticalSwipe.Navigator
 				showAlt={showLogin.value}
 				onUpdateShowAlt={showLogin.setValue}>
-				<VerticalSwipe.Screen>
+				<VerticalSwipe.Screen forceMount>
 					<TimerScreen onPressLoginButton={showLogin.toggle} />
 				</VerticalSwipe.Screen>
 				<VerticalSwipe.Screen isAlt>
