@@ -144,7 +144,7 @@ function useFluidPath({
 			waveHeight,
 		}),
 	);
-	const spherePoints = useDerivedValue(() =>
+	const circlePoints = useDerivedValue(() =>
 		getCirclePoints({
 			progress: progress.value,
 			numPoints,
@@ -154,7 +154,7 @@ function useFluidPath({
 		}),
 	);
 	return useAnimatedProps(() => ({
-		d: getPath(spherePoints.value),
+		d: getPath(timerStage === 'focus' ? circlePoints.value : wavePoints.value),
 	}));
 }
 
@@ -264,7 +264,10 @@ function getCirclePoints({
 	}
 
 	return {
-		start: [windowWidth / 2 + wiggleDx, windowHeight / 2 - radius + wiggleDy],
+		start: [
+			windowWidth / 2 + wiggleDx,
+			windowHeight / 2 - radius + wiggleDy + 5,
+		],
 		curves,
 	};
 }
