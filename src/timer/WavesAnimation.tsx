@@ -15,10 +15,11 @@ import {useOscillatingValue} from '../utils/useOscillatingValue';
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 interface WavesAnimationProps {
+	show: boolean;
 	move: boolean;
 }
 
-export default function WavesAnimation({move}: WavesAnimationProps) {
+export default function WavesAnimation({show, move}: WavesAnimationProps) {
 	const scale = useSharedValue(1);
 	useEffect(
 		function animateWaveScale() {
@@ -30,23 +31,44 @@ export default function WavesAnimation({move}: WavesAnimationProps) {
 		[scale, move],
 	);
 	const {height} = useWindowDimensions();
-	const waveHeight = Math.min(128, height / 5);
+	const baseHeight = Math.min(128, height / 5);
+	const waveHeight = useSharedValue(baseHeight);
+	useEffect(
+		function animateWaveHeight() {
+			waveHeight.value = withTiming(show ? baseHeight : 20, {
+				duration: 1000,
+				easing: Easing.elastic(1.2),
+			});
+		},
+		[show, waveHeight, baseHeight],
+	);
 	return (
 		<>
-			<Wave height={waveHeight + 10} cycleMs={5000} scale={scale} />
-			<Wave height={waveHeight} cycleMs={3000} scale={scale} />
-			<Wave height={waveHeight - 10} cycleMs={4000} scale={scale} />
+			<Wave
+				waveHeight={waveHeight}
+				heightOffset={10}
+				cycleMs={5000}
+				scale={scale}
+			/>
+			<Wave waveHeight={waveHeight} cycleMs={3000} scale={scale} />
+			<Wave
+				waveHeight={waveHeight}
+				heightOffset={-10}
+				cycleMs={4000}
+				scale={scale}
+			/>
 		</>
 	);
 }
 
 interface WaveProps {
-	height: number;
+	waveHeight: SharedValue<number>;
+	heightOffset?: number;
 	cycleMs: number;
 	scale: SharedValue<number>;
 }
 
-function Wave({height: waveHeight, cycleMs, scale}: WaveProps) {
+function Wave({waveHeight, heightOffset, cycleMs, scale}: WaveProps) {
 	const theme = useTheme();
 	const {width, height} = useWindowDimensions();
 	return (
@@ -57,6 +79,7 @@ function Wave({height: waveHeight, cycleMs, scale}: WaveProps) {
 				windowHeight: height,
 				windowWidth: width,
 				waveHeight,
+				heightOffset,
 				cycleMs,
 				scale,
 			})}
@@ -67,7 +90,8 @@ function Wave({height: waveHeight, cycleMs, scale}: WaveProps) {
 interface WavePathProps {
 	windowHeight: number;
 	windowWidth: number;
-	waveHeight: number;
+	waveHeight: SharedValue<number>;
+	heightOffset?: number;
 	cycleMs: number;
 	scale: SharedValue<number>;
 }
@@ -76,6 +100,7 @@ function useWavePath({
 	windowHeight,
 	windowWidth,
 	waveHeight,
+	heightOffset,
 	cycleMs,
 	scale,
 }: WavePathProps) {
@@ -96,6 +121,7 @@ function useWavePath({
 			windowWidth,
 			windowHeight,
 			waveHeight,
+			heightOffset,
 			scale,
 		}),
 	);
@@ -126,7 +152,8 @@ interface WavePointsProps {
 	numPoints: number;
 	windowWidth: number;
 	windowHeight: number;
-	waveHeight: number;
+	waveHeight: SharedValue<number>;
+	heightOffset?: number;
 	scale: SharedValue<number>;
 }
 
@@ -138,12 +165,14 @@ export function getWavePoints({
 	windowWidth,
 	windowHeight,
 	waveHeight,
+	heightOffset,
 	scale,
 }: WavePointsProps): FluidPoints {
 	'worklet';
 	const dx = windowWidth / 3;
 	const numPeaks = numPoints - 2;
-	const peakHeight = (waveHeight / 4) * scale.value;
+	const height = waveHeight.value + (heightOffset ?? 0);
+	const peakHeight = (height / 4) * scale.value;
 	const between = IDEAL_WAVE_WIDTH / 2;
 	const curves: Curve[] = [];
 	for (let i = 0; i < numPeaks; i++) {
@@ -154,11 +183,11 @@ export function getWavePoints({
 		curves.push([between, 0, between, y, IDEAL_WAVE_WIDTH, y]);
 	}
 	curves.push(
-		[0, 0, 0, 0, 0, waveHeight * 2],
+		[0, 0, 0, 0, 0, height * 2],
 		[0, 0, 0, 0, -numPeaks * IDEAL_WAVE_WIDTH, 0],
 	);
 	return {
-		start: [-dx * progress, windowHeight - waveHeight],
+		start: [-dx * progress, windowHeight - height],
 		curves,
 	};
 }

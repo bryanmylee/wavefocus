@@ -17,7 +17,10 @@ export function TimerFluidAnimation({
 	return (
 		<Container>
 			<Svg>
-				<WavesAnimation move={timerStage === 'relax'} />
+				<WavesAnimation
+					show={timerStage === 'relax' || !isActive}
+					move={timerStage === 'relax'}
+				/>
 				<ActiveFocusAnimation show={timerStage === 'focus' && isActive} />
 			</Svg>
 		</Container>
