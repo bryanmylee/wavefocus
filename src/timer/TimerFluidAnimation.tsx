@@ -74,14 +74,14 @@ const Container = styled.View`
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-interface UseValueProps {
+interface UseOscillatingValueProps {
 	from: number;
 	to: number;
 	cycleMs: number;
 	delayMs?: number;
 }
 
-function useOscillatingValue({from, to, cycleMs}: UseValueProps) {
+function useOscillatingValue({from, to, cycleMs}: UseOscillatingValueProps) {
 	const progress = useSharedValue(from);
 	useEffect(() => {
 		cancelAnimation(progress);
@@ -106,14 +106,14 @@ interface FluidPathProps {
 	timerStage: TimerStage;
 }
 
-const useFluidPath = ({
+function useFluidPath({
 	windowHeight,
 	windowWidth,
 	waveHeight,
 	baseCycleMs,
 	isActive,
 	timerStage,
-}: FluidPathProps) => {
+}: FluidPathProps) {
 	let cycleMs = baseCycleMs;
 	if (timerStage === 'focus' && isActive) {
 		cycleMs /= 3;
@@ -132,7 +132,7 @@ const useFluidPath = ({
 
 	const progress = useOscillatingValue({
 		from: 0,
-		to: -1,
+		to: 1,
 		cycleMs,
 	});
 	const wavePoints = useDerivedValue(() =>
@@ -144,10 +144,19 @@ const useFluidPath = ({
 			waveHeight,
 		}),
 	);
+	const spherePoints = useDerivedValue(() =>
+		getCirclePoints({
+			progress: progress.value,
+			numPoints,
+			windowWidth,
+			windowHeight,
+			radius: Math.min(windowWidth, windowHeight) * 0.4,
+		}),
+	);
 	return useAnimatedProps(() => ({
-		d: getPath(wavePoints.value),
+		d: getPath(spherePoints.value),
 	}));
-};
+}
 
 type Point = [number, number];
 type Curve = [number, number, number, number, number, number];
@@ -156,14 +165,14 @@ interface FluidPoints {
 	curves: Curve[];
 }
 
-const getPath = ({start, curves}: FluidPoints): string => {
+function getPath({start, curves}: FluidPoints): string {
 	'worklet';
 	return (
 		'M' +
 		start.join(',') +
 		curves.map((curve) => 'c' + curve.join(',')).join('')
 	);
-};
+}
 
 interface WavePointsProps {
 	progress: number;
@@ -175,13 +184,13 @@ interface WavePointsProps {
 
 const IDEAL_WAVE_WIDTH = 200;
 
-const getWavePoints = ({
+function getWavePoints({
 	progress,
 	numPoints,
 	windowWidth,
 	windowHeight,
 	waveHeight,
-}: WavePointsProps): FluidPoints => {
+}: WavePointsProps): FluidPoints {
 	'worklet';
 	const dx = windowWidth / 3;
 	const numPeaks = numPoints - 2;
@@ -201,7 +210,61 @@ const getWavePoints = ({
 		[0, 0, 0, 0, -numPeaks * IDEAL_WAVE_WIDTH, 0],
 	);
 	return {
-		start: [dx * progress, windowHeight - waveHeight],
+		start: [-dx * progress, windowHeight - waveHeight],
 		curves,
 	};
-};
+}
+
+interface CirclePointsProps {
+	progress: number;
+	numPoints: number;
+	windowWidth: number;
+	windowHeight: number;
+	radius: number;
+}
+
+function getPointFromTheta(theta: number, d: number): Point {
+	'worklet';
+	return [d * Math.cos(theta), d * Math.sin(theta)];
+}
+
+/**
+ * To approximate a circle of radius 1 with a Bezier curve with n segments, the
+ * optimal distance to control points is d = (4/3)*tan(π/(2n)).
+ *
+ * For relative path syntax, all points are relative to the starting point.
+ *
+ * Given any point p and the next point in the anti-clockwise direction q:
+ * - the first point is d on the anti-clockwise tangent to p.
+ * - the second point is d on the clockwise tangent to q.
+ * - the last point is on q.
+ */
+function getCirclePoints({
+	progress,
+	numPoints,
+	windowWidth,
+	windowHeight,
+	radius,
+}: CirclePointsProps): FluidPoints {
+	'worklet';
+	const wiggleRadius = radius * 0.05;
+	const progressTheta = progress * Math.PI * 2;
+	const [wiggleDx, wiggleDy] = getPointFromTheta(progressTheta, wiggleRadius);
+
+	const curves: Curve[] = [];
+	const d = (4 / 3) * Math.tan(Math.PI / 2 / numPoints) * radius;
+	for (let i = 0; i < numPoints; i++) {
+		const pTheta = (Math.PI * 2 * i) / numPoints + Math.PI / 2;
+		const qTheta = (Math.PI * 2 * (i + 1)) / numPoints + Math.PI / 2;
+		const [px, py] = getPointFromTheta(pTheta, radius);
+		const [dpx, dpy] = getPointFromTheta(pTheta + Math.PI / 2, d);
+		const [qx, qy] = getPointFromTheta(qTheta, radius);
+		const [dqx, dqy] = getPointFromTheta(qTheta - Math.PI / 2, d);
+		curves.push([dpx, -dpy, qx + dqx - px, -qy - dqy + py, qx - px, -qy + py]);
+	}
+
+	return {
+		start: [windowWidth / 2 + wiggleDx, windowHeight / 2 - radius + wiggleDy],
+		curves,
+	};
+}
