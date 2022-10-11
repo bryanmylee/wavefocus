@@ -25,11 +25,11 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 
 	return (
 		<FixedSafeAreaView>
-			<TopBar>
+			<Bar>
 				<TouchableOpacity onPress={onDismiss}>
 					<ThemedIcon name="times" size={42} />
 				</TouchableOpacity>
-			</TopBar>
+			</Bar>
 			<Centered>
 				{isLoading ? (
 					<ActivityIndicator color={theme.timer.text} />
@@ -47,7 +47,7 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 	);
 }
 
-const TopBar = styled.View`
+const Bar = styled.View`
 	flex-direction: row;
 	justify-content: flex-end;
 	padding-left: 42px;

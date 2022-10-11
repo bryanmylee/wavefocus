@@ -103,8 +103,9 @@ const Container = styled(ZStack.Container)`
 const Bar = styled.View`
 	flex-direction: row;
 	justify-content: space-between;
-	padding-left: 48px;
-	padding-right: 48px;
+	margin-left: 48px;
+	margin-right: 48px;
+	margin-bottom: 32px;
 `;
 
 const IconPlaceholder = styled.View`
