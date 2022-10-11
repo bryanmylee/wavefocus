@@ -8,6 +8,7 @@ import Animated, {
 	useSharedValue,
 	withTiming,
 } from 'react-native-reanimated';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Path} from 'react-native-svg';
 import {useTheme} from 'styled-components/native';
 import {useOscillatingValue} from '../utils/useOscillatingValue';
@@ -30,8 +31,8 @@ export default function WavesAnimation({show, move}: WavesAnimationProps) {
 		},
 		[scale, move],
 	);
-	const {height} = useWindowDimensions();
-	const baseHeight = Math.min(128, height / 5);
+	const insets = useSafeAreaInsets();
+	const baseHeight = insets.bottom + 110;
 	const waveHeight = useSharedValue(baseHeight);
 	useEffect(
 		function animateWaveHeight() {
