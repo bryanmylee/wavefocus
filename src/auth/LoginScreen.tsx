@@ -37,7 +37,8 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 					<Button title="Sign in with Google" onPress={signInGoogle} />
 				) : (
 					<>
-						<SignedInAs>Signed in as {user.displayName}</SignedInAs>
+						<UsernameText>Signed in as {user.displayName}</UsernameText>
+						<EmailText>{user.email}</EmailText>
 						<Button title="Sign out" onPress={signOut} />
 					</>
 				)}
@@ -54,8 +55,17 @@ const TopBar = styled.View`
 	padding-top: 32px;
 `;
 
-const SignedInAs = styled.Text`
+const UsernameText = styled.Text`
 	font-family: Inter;
-	font-weight: bold;
+	font-weight: 600;
 	font-size: 24px;
+	margin-bottom: 16px;
+`;
+
+const EmailText = styled.Text`
+	font-family: Inter;
+	font-weight: 500;
+	font-size: 16px;
+	opacity: 0.5;
+	margin-bottom: 24px;
 `;
