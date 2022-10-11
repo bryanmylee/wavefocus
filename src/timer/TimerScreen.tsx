@@ -13,10 +13,10 @@ import {useTimerStage} from './TimerStageProvider';
 import {useTimerMemory} from './useTimerMemory';
 
 export interface TimerScreenProps {
-	onPressLoginButton?: () => void;
+	onPlay?: () => void;
 }
 
-export default function TimerScreen({}: TimerScreenProps) {
+export default function TimerScreen({onPlay}: TimerScreenProps) {
 	const {user, isLoading} = useUser();
 	const {
 		isActive,
@@ -47,7 +47,10 @@ export default function TimerScreen({}: TimerScreenProps) {
 
 	const handlePlayPausePress = useCallback(() => {
 		toggleActive();
-	}, [toggleActive]);
+		if (isActive) {
+			onPlay?.();
+		}
+	}, [toggleActive, onPlay, isActive]);
 
 	const theme = useTheme();
 
