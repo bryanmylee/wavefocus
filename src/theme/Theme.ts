@@ -18,8 +18,8 @@ export const LIGHT_FOCUS_THEME: Theme = {
 	timer: {
 		text: 'rgb(0, 79, 64)',
 		progressFill: 'rgb(7, 115, 95)',
-		progressTrack: 'rgb(226,  255, 250)',
-		progressTrackOpacity: 0.5,
+		progressTrack: 'rgb(186, 235, 225)',
+		progressTrackOpacity: 0.6,
 		fluidFill: 'rgb(24, 197, 166)',
 		fluidOpacity: 0.3,
 	},
