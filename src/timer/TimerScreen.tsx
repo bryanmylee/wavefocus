@@ -10,7 +10,6 @@ import ThemedIcon from '../theme/ThemedIcon';
 import Timer from './Timer';
 import {TimerFluidAnimation} from './TimerFluidAnimation';
 import {useTimerStage} from './TimerStageProvider';
-import {updateNotification} from './updateNotification';
 import {useTimerMemory} from './useTimerMemory';
 
 export interface TimerScreenProps {
@@ -28,9 +27,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		timerStage,
 		nextStage,
 		resetStage,
-	} = useTimerMemory({
-		onActiveChange: updateNotification,
-	});
+	} = useTimerMemory();
 
 	const [, setAppTimerStage] = useTimerStage();
 	useEffect(
