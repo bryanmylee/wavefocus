@@ -22,6 +22,10 @@ interface TimerNotificationMemory {
 	name: string;
 }
 
+interface DeviceMemory {
+	tokens: string[];
+}
+
 interface NotificationPayload {
 	userId: string;
 	isFocus: boolean;
@@ -139,8 +143,44 @@ async function scheduleTimerNotification({
 	}
 }
 
+type Notification = {
+	title: string;
+	body: string;
+};
+
+const FOCUS_END_NOTIFICATION: Notification = {
+	title: 'Focus over!',
+	body: 'Take a five minute break.',
+};
+
+const RELAX_END_NOTIFICATION: Notification = {
+	title: 'Ready to focus again?',
+	body: 'Get 25 minutes of uninterrupted work done.',
+};
+
 export const sendNotification = functions.https.onRequest(async (req, res) => {
 	const payload = req.body as NotificationPayload;
 	console.log('sendNotification:', payload);
+	const ref = admin
+		.firestore()
+		.doc(
+			`devices/${payload.userId}`,
+		) as FirebaseFirestore.DocumentReference<DeviceMemory>;
+	const snapshot = await ref.get();
+	const data = snapshot.data();
+	if (data == null) {
+		console.warn('sendNotification: No devices found for user', payload.userId);
+		return;
+	}
+	const tokens = data.tokens ?? [];
+	admin.messaging().sendMulticast({
+		tokens,
+		notification: payload.isFocus
+			? FOCUS_END_NOTIFICATION
+			: RELAX_END_NOTIFICATION,
+		fcmOptions: {
+			analyticsLabel: payload.isFocus ? 'focus_end' : 'relax_end',
+		},
+	});
 	res.sendStatus(200);
 });
