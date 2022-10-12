@@ -101,7 +101,7 @@ export function useTimerMemory() {
 	const isActive =
 		secondsRemaining > 0 && local.start != null && local.pause == null;
 
-	const setActive = useCallback(
+	const setIsActive = useCallback(
 		async (newActive: boolean) => {
 			if (secondsRemaining <= 0) {
 				return;
@@ -145,8 +145,8 @@ export function useTimerMemory() {
 		if (secondsRemaining <= 0) {
 			return;
 		}
-		setActive(!isActive);
-	}, [isActive, setActive, secondsRemaining]);
+		setIsActive(!isActive);
+	}, [isActive, setIsActive, secondsRemaining]);
 
 	/**
 	 * timerStage
@@ -191,10 +191,10 @@ export function useTimerMemory() {
 		async (activeImmediately = true) => {
 			await setIsFocus(!local.isFocus);
 			if (activeImmediately) {
-				await setActive(true);
+				await setIsActive(true);
 			}
 		},
-		[local.isFocus, setIsFocus, setActive],
+		[local.isFocus, setIsFocus, setIsActive],
 	);
 
 	useInterval(
@@ -238,9 +238,9 @@ export function useTimerMemory() {
 		secondsRemaining,
 		isDone,
 		isActive,
-		isReset: isReset,
+		isReset,
 		toggleActive,
-		setActive,
+		setIsActive,
 		timerStage,
 		setTimerStage,
 		resetStage,
