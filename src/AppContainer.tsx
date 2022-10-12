@@ -4,6 +4,7 @@ import {StatusBar} from 'react-native';
 import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
+import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
 import * as VerticalSwipe from './layout/VerticalSwipe';
 import TimerScreen from './timer/TimerScreen';
 import {useBoolean} from './utils/useBoolean';
@@ -17,6 +18,8 @@ async function requestUserPermission() {
 }
 
 export default function AppContainer() {
+	useRegisterDeviceToken();
+
 	const theme = useTheme();
 	const showLogin = useBoolean(false);
 
