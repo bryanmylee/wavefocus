@@ -18,6 +18,10 @@ interface TimerMemory {
 	pause: number | null;
 }
 
+interface TimerNotificationMemory {
+	name: string;
+}
+
 interface NotificationPayload {
 	userId: string;
 	isFocus: boolean;
@@ -48,18 +52,21 @@ export const onTimerUpdate = functions.firestore
 		});
 	});
 
-const timerNotificationTaskName = (userId: string) => `timer_end_${userId}`;
-
 async function cancelTimerNotification(userId: string) {
 	console.log('cancelTimerNotification:', userId);
 	const tasksClient = new CloudTasksClient();
-	const taskName = tasksClient.taskPath(
-		PROJECT_ID,
-		LOCATION,
-		QUEUE_NAME,
-		timerNotificationTaskName(userId),
-	);
-	await tasksClient.deleteTask({name: taskName});
+	const snapshot = (await admin
+		.firestore()
+		.doc(`timer-notifications/${userId}`)
+		.get()) as FirebaseFirestore.DocumentSnapshot<TimerNotificationMemory>;
+	const data = snapshot.data();
+	if (data == null) {
+		console.warn(
+			'cancelTimerNotification: Timer notification name not found in Firestore',
+		);
+		return;
+	}
+	await tasksClient.deleteTask({name: data.name});
 }
 
 interface ScheduleNotificationProps {
@@ -84,17 +91,14 @@ async function scheduleTimerNotification({
 
 	const tasksClient = new CloudTasksClient();
 	const queuePath = tasksClient.queuePath(PROJECT_ID, LOCATION, QUEUE_NAME);
-	const taskName = tasksClient.taskPath(
-		PROJECT_ID,
-		LOCATION,
-		QUEUE_NAME,
-		timerNotificationTaskName(userId),
-	);
-
-	await tasksClient.createTask({
+	// Setting a task name explicitly enables task deduplication, which rate
+	// limits the creation of tasks with the same name to 1 per hour.
+	//
+	// Instead, save the randomly generated task name to Firestore then read it
+	// when cancelling a user's request.
+	const [task] = await tasksClient.createTask({
 		parent: queuePath,
 		task: {
-			name: taskName,
 			scheduleTime: {
 				seconds: endSec,
 			},
@@ -108,10 +112,16 @@ async function scheduleTimerNotification({
 			},
 		},
 	});
+	if (task.name != null) {
+		await admin
+			.firestore()
+			.doc(`timer-notifications/${userId}`)
+			.set({name: task.name});
+	}
 }
 
 export const sendNotification = functions.https.onRequest(async (req, res) => {
 	const payload = req.body as NotificationPayload;
 	console.log('sendNotification:', payload);
-	res.send(200);
+	res.sendStatus(200);
 });
