@@ -1,1 +1,97 @@
+import {CloudTasksClient} from '@google-cloud/tasks';
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
+
+admin.initializeApp();
+
+const PROJECT_ID = JSON.parse(process.env.FIREBASE_CONFIG!).projectId;
+const LOCATION = 'us-central1';
+const QUEUE_NAME = 'wavefocus-notifications';
+const SEND_NOTIFICATION_URL = `https://${LOCATION}-${PROJECT_ID}.cloudfunctions.net/sendNotification`;
+
+const FOCUS_DURATION_SEC = 25 * 60;
+const RELAX_DURATION_SEC = 5 * 60;
+
+interface TimerMemory {
+	isFocus: boolean;
+	start: number | null;
+	pause: number | null;
+}
+
+interface NotificationPayload {
+	userId: string;
+	isFocus: boolean;
+}
+
+export const onTimerUpdate = functions.firestore
+	.document('/timers/{userId}')
+	.onWrite(async (change, context) => {
+		const {userId} = context.params;
+		const snapshot =
+			change.after as FirebaseFirestore.DocumentSnapshot<TimerMemory>;
+		const data = snapshot.data();
+		if (data == null) {
+			// User deleted. Clear the notification.
+			await cancelTimerNotification(userId);
+			return;
+		}
+		if (data.pause != null || data.start == null) {
+			// Timer paused. Clear the notification.
+			await cancelTimerNotification(userId);
+			return;
+		}
+		// Timer started. Schedule the notification.
+		await scheduleTimerNotification({
+			isFocus: data.isFocus,
+			start: data.start,
+			userId,
+		});
+	});
+
+const timerNotificationTaskName = (userId: string) => `timer_end_${userId}`;
+
+async function cancelTimerNotification(userId: string) {
+	const tasksClient = new CloudTasksClient();
+	await tasksClient.deleteTask({name: timerNotificationTaskName(userId)});
+}
+
+interface ScheduleNotificationProps {
+	isFocus: boolean;
+	start: number;
+	userId: string;
+}
+
+async function scheduleTimerNotification({
+	isFocus,
+	start,
+	userId,
+}: ScheduleNotificationProps) {
+	const durationSec = isFocus ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
+	const endTimestamp = start + durationSec;
+
+	const payload: NotificationPayload = {
+		isFocus: isFocus,
+		userId: userId,
+	};
+
+	const tasksClient = new CloudTasksClient();
+	const queuePath = tasksClient.queuePath(PROJECT_ID, LOCATION, QUEUE_NAME);
+
+	await tasksClient.createTask({
+		parent: queuePath,
+		task: {
+			name: timerNotificationTaskName(userId),
+			scheduleTime: {
+				seconds: endTimestamp,
+			},
+			httpRequest: {
+				httpMethod: 'POST',
+				url: SEND_NOTIFICATION_URL,
+				body: Buffer.from(JSON.stringify(payload)).toString('base64'),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			},
+		},
+	});
+}
