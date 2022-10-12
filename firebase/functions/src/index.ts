@@ -39,8 +39,8 @@ export const onTimerUpdate = functions.firestore
 			await cancelTimerNotification(userId);
 			return;
 		}
-		if (data.pause != null || data.start == null) {
-			// Timer paused. Clear the notification.
+		if (data.start == null || data.pause != null) {
+			// Timer paused or reset. Clear the notification.
 			await cancelTimerNotification(userId);
 			return;
 		}
@@ -55,10 +55,12 @@ export const onTimerUpdate = functions.firestore
 async function cancelTimerNotification(userId: string) {
 	console.log('cancelTimerNotification:', userId);
 	const tasksClient = new CloudTasksClient();
-	const snapshot = (await admin
+	const ref = admin
 		.firestore()
-		.doc(`timer-notifications/${userId}`)
-		.get()) as FirebaseFirestore.DocumentSnapshot<TimerNotificationMemory>;
+		.doc(
+			`timer-notifications/${userId}`,
+		) as FirebaseFirestore.DocumentReference<TimerNotificationMemory>;
+	const snapshot = await ref.get();
 	const data = snapshot.data();
 	if (data == null) {
 		console.warn(
@@ -66,8 +68,12 @@ async function cancelTimerNotification(userId: string) {
 		);
 		return;
 	}
-	await tasksClient.deleteTask({name: data.name});
-	console.log('cancelTimerNotification: Cancelled task', data.name);
+	try {
+		await tasksClient.deleteTask({name: data.name});
+		console.log('cancelTimerNotification: Cancelled task', data.name);
+	} catch (err) {
+		console.warn('cancelTimerNotification: Failed to delete task');
+	}
 	await admin.firestore().doc(`timer-notifications/${userId}`).delete();
 }
 
