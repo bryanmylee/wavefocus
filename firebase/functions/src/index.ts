@@ -67,6 +67,8 @@ async function cancelTimerNotification(userId: string) {
 		return;
 	}
 	await tasksClient.deleteTask({name: data.name});
+	console.log('cancelTimerNotification: Cancelled task', data.name);
+	await admin.firestore().doc(`timer-notifications/${userId}`).delete();
 }
 
 interface ScheduleNotificationProps {
@@ -113,6 +115,7 @@ async function scheduleTimerNotification({
 		},
 	});
 	if (task.name != null) {
+		console.log('scheduleTimerNotification: Scheduled task', task.name);
 		await admin
 			.firestore()
 			.doc(`timer-notifications/${userId}`)
