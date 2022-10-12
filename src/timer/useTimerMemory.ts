@@ -6,7 +6,6 @@ import {
 	useRef,
 	useState,
 } from 'react';
-import {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
 import {useInterval} from '../utils/useInterval';
@@ -45,7 +44,6 @@ interface OnActiveChangePayload {
 	isActive: boolean;
 	timerStage: TimerStage;
 	secondsRemaining: number;
-	user: FirebaseAuthTypes.User;
 }
 
 interface UseTimerMemoryProps {
@@ -144,7 +142,6 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 					isActive: newIsActive,
 					secondsRemaining,
 					timerStage,
-					user,
 				});
 			}
 			if (newIsActive) {
@@ -235,7 +232,7 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 				await timerMemoryCollection.doc(uid).delete();
 			});
 		},
-		[user?.uid, subscribeBeforeSignOutAnonymously],
+		[subscribeBeforeSignOutAnonymously],
 	);
 	useEffect(
 		function transferPrevAnonMemory() {
