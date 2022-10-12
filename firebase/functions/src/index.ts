@@ -31,25 +31,35 @@ export const onTimerUpdate = functions.firestore
 	.document('/timers/{userId}')
 	.onWrite(async (change, context) => {
 		const {userId} = context.params;
-		const snapshot =
+		const beforeSnapshot =
+			change.before as FirebaseFirestore.DocumentSnapshot<TimerMemory>;
+		const beforeData = beforeSnapshot.data();
+		const afterSnapshot =
 			change.after as FirebaseFirestore.DocumentSnapshot<TimerMemory>;
-		const data = snapshot.data();
-		if (data == null) {
+		const afterData = afterSnapshot.data();
+		if (beforeData == null) {
+			// User created. No notifications needed.
+			return;
+		}
+		if (afterData == null) {
 			// User deleted. Clear the notification.
 			await cancelTimerNotification(userId);
 			return;
 		}
-		if (data.start == null || data.pause != null) {
-			// Timer paused or reset. Clear the notification.
+		if (afterData.pause != null && beforeData.pause == null) {
+			// Timer paused. Clear the notification.
 			await cancelTimerNotification(userId);
 			return;
 		}
-		// Timer started. Schedule the notification.
-		await scheduleTimerNotification({
-			isFocus: data.isFocus,
-			startMs: data.start,
-			userId,
-		});
+		if (afterData.start != null) {
+			// Timer started. Schedule the notification.
+			await scheduleTimerNotification({
+				isFocus: afterData.isFocus,
+				startMs: afterData.start,
+				userId,
+			});
+			return;
+		}
 	});
 
 async function cancelTimerNotification(userId: string) {
