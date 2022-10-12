@@ -11,9 +11,10 @@
 		"format": "prettier --write ./src '**/*.{js,jsx,ts,tsx}'"
 	},
 	"dependencies": {
-		"@react-native-firebase/app": "^15.2.0",
-		"@react-native-firebase/auth": "^15.2.0",
-		"@react-native-firebase/firestore": "^15.2.0",
+		"@react-native-firebase/app": "^15.7.0",
+		"@react-native-firebase/auth": "^15.7.0",
+		"@react-native-firebase/firestore": "^15.7.0",
+		"@react-native-firebase/functions": "^15.7.0",
 		"@react-native-firebase/messaging": "^15.7.0",
 		"@react-native-google-signin/google-signin": "^8.0.0",
 		"react": "18.0.0",
