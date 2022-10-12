@@ -43,7 +43,7 @@ export const onTimerUpdate = functions.firestore
 		// Timer started. Schedule the notification.
 		await scheduleTimerNotification({
 			isFocus: data.isFocus,
-			start: data.start,
+			startMs: data.start,
 			userId,
 		});
 	});
@@ -51,23 +51,31 @@ export const onTimerUpdate = functions.firestore
 const timerNotificationTaskName = (userId: string) => `timer_end_${userId}`;
 
 async function cancelTimerNotification(userId: string) {
+	console.log('cancelTimerNotification:', userId);
 	const tasksClient = new CloudTasksClient();
-	await tasksClient.deleteTask({name: timerNotificationTaskName(userId)});
+	const taskName = tasksClient.taskPath(
+		PROJECT_ID,
+		LOCATION,
+		QUEUE_NAME,
+		timerNotificationTaskName(userId),
+	);
+	await tasksClient.deleteTask({name: taskName});
 }
 
 interface ScheduleNotificationProps {
 	isFocus: boolean;
-	start: number;
+	startMs: number;
 	userId: string;
 }
 
 async function scheduleTimerNotification({
 	isFocus,
-	start,
+	startMs,
 	userId,
 }: ScheduleNotificationProps) {
+	console.log('scheduleTimerNotification:', {userId, isFocus, startMs});
 	const durationSec = isFocus ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
-	const endTimestamp = start + durationSec;
+	const endSec = Math.floor(startMs / 1000) + durationSec;
 
 	const payload: NotificationPayload = {
 		isFocus: isFocus,
@@ -76,13 +84,19 @@ async function scheduleTimerNotification({
 
 	const tasksClient = new CloudTasksClient();
 	const queuePath = tasksClient.queuePath(PROJECT_ID, LOCATION, QUEUE_NAME);
+	const taskName = tasksClient.taskPath(
+		PROJECT_ID,
+		LOCATION,
+		QUEUE_NAME,
+		timerNotificationTaskName(userId),
+	);
 
 	await tasksClient.createTask({
 		parent: queuePath,
 		task: {
-			name: timerNotificationTaskName(userId),
+			name: taskName,
 			scheduleTime: {
-				seconds: endTimestamp,
+				seconds: endSec,
 			},
 			httpRequest: {
 				httpMethod: 'POST',
@@ -95,3 +109,9 @@ async function scheduleTimerNotification({
 		},
 	});
 }
+
+export const sendNotification = functions.https.onRequest(async (req, res) => {
+	const payload = req.body as NotificationPayload;
+	console.log('sendNotification:', payload);
+	res.send(200);
+});
