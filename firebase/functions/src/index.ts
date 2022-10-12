@@ -1,16 +1,28 @@
 import * as functions from 'firebase-functions';
 
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+type TimerStage = 'focus' | 'relax';
 
-export const scheduleNotification = functions.https.onRequest(
-	async (req, res) => {
-		console.log('scheduling notification');
-		res.send('scheduling notification');
+interface ScheduleNotificationPayload {
+	secondsRemaining: number;
+	timerStage: TimerStage;
+}
+
+export const scheduleNotification = functions.https.onCall(
+	async (data: ScheduleNotificationPayload, {auth}) => {
+		if (auth == null) {
+			throw new Error('scheduleNotification: User not authenticated');
+		}
+		return {
+			message: 'scheduled notification',
+		};
 	},
 );
+
+export const clearNotification = functions.https.onCall(async (_, {auth}) => {
+	if (auth == null) {
+		throw new Error('clearNotification: User not authenticated');
+	}
+	return {
+		message: 'cleared notification',
+	};
+});

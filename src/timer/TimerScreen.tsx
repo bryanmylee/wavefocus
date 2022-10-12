@@ -10,7 +10,7 @@ import ThemedIcon from '../theme/ThemedIcon';
 import Timer from './Timer';
 import {TimerFluidAnimation} from './TimerFluidAnimation';
 import {useTimerStage} from './TimerStageProvider';
-import {updateNotificationOnActiveChange} from './updateNotificationOnActiveChange';
+import {updateNotification} from './updateNotification';
 import {useTimerMemory} from './useTimerMemory';
 
 export interface TimerScreenProps {
@@ -29,7 +29,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		nextStage,
 		resetStage,
 	} = useTimerMemory({
-		onActiveChange: updateNotificationOnActiveChange,
+		onActiveChange: updateNotification,
 	});
 
 	const [, setAppTimerStage] = useTimerStage();
