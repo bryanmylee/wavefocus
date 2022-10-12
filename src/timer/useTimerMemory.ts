@@ -6,6 +6,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
+import {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
 import {useInterval} from '../utils/useInterval';
@@ -40,7 +41,18 @@ const getRemaining = (memory: TimerMemory): Remaining => {
 	};
 };
 
-export function useTimerMemory() {
+interface OnActiveChangePayload {
+	isActive: boolean;
+	timerStage: TimerStage;
+	secondsRemaining: number;
+	user: FirebaseAuthTypes.User;
+}
+
+interface UseTimerMemoryProps {
+	onActiveChange?: (payload: OnActiveChangePayload) => void;
+}
+
+export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 	const {
 		user,
 		subscribeBeforeSignOutAnonymously,
@@ -96,59 +108,6 @@ export function useTimerMemory() {
 	);
 
 	/**
-	 * isActive
-	 */
-	const isActive =
-		secondsRemaining > 0 && local.start != null && local.pause == null;
-
-	const setIsActive = useCallback(
-		async (newActive: boolean) => {
-			if (secondsRemaining <= 0) {
-				return;
-			}
-			if (newActive) {
-				const snapshot = await memoryDoc.get();
-				if (!snapshot.exists) {
-					await memoryDoc.set({...DEFAULT_MEMORY, start: Date.now()});
-					return;
-				}
-				const data = snapshot.data();
-				if (data == null) {
-					return;
-				}
-				const now = Date.now();
-				const start = data.start ?? now;
-				const msSincePause = now - (data.pause ?? now);
-				await memoryDoc.update({
-					pause: null,
-					start: start + msSincePause,
-				});
-			} else {
-				const snapshot = await memoryDoc.get();
-				const now = Date.now();
-				if (snapshot.exists) {
-					await memoryDoc.update({
-						pause: now,
-					});
-				} else {
-					await memoryDoc.set({
-						...DEFAULT_MEMORY,
-						pause: now,
-					});
-				}
-			}
-		},
-		[memoryDoc, secondsRemaining],
-	);
-
-	const toggleActive = useCallback(async () => {
-		if (secondsRemaining <= 0) {
-			return;
-		}
-		setIsActive(!isActive);
-	}, [isActive, setIsActive, secondsRemaining]);
-
-	/**
 	 * timerStage
 	 */
 	const timerStage: TimerStage = local.isFocus ? 'focus' : 'relax';
@@ -166,6 +125,65 @@ export function useTimerMemory() {
 		},
 		[setIsFocus],
 	);
+
+	/**
+	 * isActive
+	 */
+	const isActive =
+		secondsRemaining > 0 && local.start != null && local.pause == null;
+
+	const setIsActive = useCallback(
+		async (newIsActive: boolean) => {
+			if (secondsRemaining <= 0) {
+				return;
+			}
+			const snapshot = await memoryDoc.get();
+			const now = Date.now();
+			if (user != null) {
+				onActiveChange?.({
+					isActive: newIsActive,
+					secondsRemaining,
+					timerStage,
+					user,
+				});
+			}
+			if (newIsActive) {
+				if (!snapshot.exists) {
+					await memoryDoc.set({...DEFAULT_MEMORY, start: Date.now()});
+					return;
+				}
+				const data = snapshot.data();
+				if (data == null) {
+					return;
+				}
+				const start = data.start ?? now;
+				const msSincePause = now - (data.pause ?? now);
+				await memoryDoc.update({
+					pause: null,
+					start: start + msSincePause,
+				});
+			} else {
+				if (snapshot.exists) {
+					await memoryDoc.update({
+						pause: now,
+					});
+				} else {
+					await memoryDoc.set({
+						...DEFAULT_MEMORY,
+						pause: now,
+					});
+				}
+			}
+		},
+		[memoryDoc, secondsRemaining, onActiveChange, timerStage, user],
+	);
+
+	const toggleActive = useCallback(async () => {
+		if (secondsRemaining <= 0) {
+			return;
+		}
+		setIsActive(!isActive);
+	}, [isActive, setIsActive, secondsRemaining]);
 
 	/**
 	 * isReset
