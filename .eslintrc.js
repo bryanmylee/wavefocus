@@ -12,5 +12,11 @@ module.exports = {
 				'no-undef': 'off',
 			},
 		},
+		{
+			files: ['*.ts', '*.tsx'],
+			rules: {
+				'react-hooks/exhaustive-deps': ['warn'],
+			},
+		},
 	],
 };
