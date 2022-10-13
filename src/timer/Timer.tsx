@@ -4,7 +4,9 @@ import Animated, {
 	SharedValue,
 	useAnimatedProps,
 	useAnimatedStyle,
+	useDerivedValue,
 	useSharedValue,
+	withSpring,
 	withTiming,
 } from 'react-native-reanimated';
 import Svg, {Circle} from 'react-native-svg';
@@ -60,6 +62,23 @@ export default function Timer({
 		[progress, seconds, duration],
 	);
 
+	const trigger = useSharedValue(0);
+	useDerivedValue(() => {
+		const targetValue = Math.abs(skipResetProgress.value) >= 1 ? 1 : 0;
+		trigger.value = withSpring(targetValue, {
+			mass: 0.1,
+		});
+	});
+	const containerAnim = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{translateX: -40 * skipResetProgress.value},
+				{scale: 1 + trigger.value * 0.1},
+			],
+			opacity: 1 - trigger.value * 0.5,
+		};
+	});
+
 	const circleAnimProps = useAnimatedProps(() => {
 		const remainingProgress = 1 - progress.value;
 		let resolvedProgress = progress.value;
@@ -77,7 +96,7 @@ export default function Timer({
 	}, [circumference]);
 
 	return (
-		<Container size={diameter}>
+		<Container size={diameter} style={containerAnim}>
 			<Item>
 				<Svg style={{transform: [{rotate: '-90deg'}]}}>
 					<Circle
@@ -113,10 +132,12 @@ interface ContainerProps {
 	size: number;
 }
 
-const Container = styled(ZStack.Container)<ContainerProps>`
+const Container = Animated.createAnimatedComponent(styled(
+	ZStack.Container,
+)<ContainerProps>`
 	width: ${(p) => p.size}px;
 	height: ${(p) => p.size}px;
-`;
+`);
 
 const Item = styled(ZStack.Item)`
 	justify-content: center;
