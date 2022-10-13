@@ -130,7 +130,8 @@ export function Navigator({
 				ref={gestureRef}
 				onGestureEvent={handlePanGesture}
 				enableTrackpadTwoFingerGesture
-				simultaneousHandlers={otherGestures}>
+				simultaneousHandlers={otherGestures}
+				activeOffsetY={[-50, 50]}>
 				<NavigatorScreensContainer style={screensContainerAnim}>
 					{children}
 				</NavigatorScreensContainer>
