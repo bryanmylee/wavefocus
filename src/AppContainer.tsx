@@ -4,7 +4,7 @@ import {StatusBar} from 'react-native';
 import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
-import Toast from './components/Toast';
+import {Toast, ToastContainer} from './components/Toast';
 import * as VerticalSwipe from './components/VerticalSwipe';
 import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
 import TimerScreen from './timer/TimerScreen';
@@ -79,11 +79,4 @@ export default function AppContainer() {
 
 const Container = styled(Animated.View)`
 	flex: 1;
-`;
-
-const ToastContainer = styled.View`
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
 `;

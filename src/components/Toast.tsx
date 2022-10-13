@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 import Animated, {
 	Easing,
 	interpolate,
@@ -6,6 +6,7 @@ import Animated, {
 	useDerivedValue,
 	withTiming,
 } from 'react-native-reanimated';
+import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import ThemedIcon from '../theme/ThemedIcon';
 
@@ -15,7 +16,7 @@ interface ToastProps {
 	icon?: string;
 }
 
-export default function Toast({message, show, icon}: ToastProps) {
+export function Toast({message, show, icon}: ToastProps) {
 	const showProgress = useDerivedValue(
 		() =>
 			withTiming(show ? 1 : 0, {duration: 500, easing: Easing.elastic(0.8)}),
@@ -73,4 +74,20 @@ const ToastText = styled.Text`
 	font-weight: 500;
 	font-family: Inter;
 	text-align: center;
+`;
+
+export function ToastContainer({children}: PropsWithChildren) {
+	const insets = useSafeAreaInsets();
+	return <ToastContainerBase insets={insets}>{children}</ToastContainerBase>;
+}
+
+interface ToastContainerBaseProps {
+	insets: EdgeInsets;
+}
+
+const ToastContainerBase = styled.View<ToastContainerBaseProps>`
+	position: absolute;
+	top: ${({insets}) => insets.top}px;
+	left: ${({insets}) => insets.left}px;
+	right: ${({insets}) => insets.right}px;
 `;
