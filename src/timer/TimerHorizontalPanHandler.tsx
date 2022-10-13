@@ -11,7 +11,6 @@ import {
 	useAnimatedGestureHandler,
 	withTiming,
 } from 'react-native-reanimated';
-import {useSimultaneousGestures} from '../layout/useSimultaneousGestures';
 import {clampWorklet} from '../utils/clamp';
 
 interface TimerHorizontalPanHandlerProps extends PropsWithChildren {
@@ -60,14 +59,9 @@ export default function TimerHorizontalPanHandler({
 			},
 		});
 
-	const [gestureRef, otherGestures] =
-		useSimultaneousGestures('timerHorizontalPan');
-
 	return (
 		<PanGestureHandler
-			ref={gestureRef}
 			onGestureEvent={handlePanGesture}
-			simultaneousHandlers={otherGestures}
 			enableTrackpadTwoFingerGesture
 			activeOffsetX={[-50, 50]}>
 			{children}
