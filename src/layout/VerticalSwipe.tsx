@@ -34,12 +34,12 @@ const VerticalSwipeNavigatorContext = React.createContext<{
 
 export interface VerticalSwipeNavigatorProps extends PropsWithChildren {
 	showAlt: boolean;
-	onUpdateShowAlt: (showAlt: boolean) => void;
+	onChangeShowAlt: (showAlt: boolean) => void;
 }
 
 export function Navigator({
 	showAlt,
-	onUpdateShowAlt,
+	onChangeShowAlt,
 	children,
 }: VerticalSwipeNavigatorProps) {
 	const startTransition = useCallback(() => {
@@ -101,7 +101,7 @@ export function Navigator({
 		},
 		onEnd(ev) {
 			const toShowAlt = translateY.value + ev.velocityY > height / 2;
-			runOnJS(onUpdateShowAlt)(toShowAlt);
+			runOnJS(onChangeShowAlt)(toShowAlt);
 			const targetY = toShowAlt ? height : 0;
 			translateY.value = withSpring(
 				targetY,
