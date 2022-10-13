@@ -43,6 +43,7 @@ export default function Timer({
 	const diameter = size * 0.75;
 	const strokeWidth = 15;
 	const radius = diameter / 2 - strokeWidth;
+	const paddedDiameter = 120 + diameter;
 	const circumference = Math.PI * 2 * radius;
 
 	const duration =
@@ -122,7 +123,7 @@ export default function Timer({
 	}, [circumference]);
 
 	return (
-		<Container size={diameter} style={containerAnim}>
+		<Container size={paddedDiameter} style={containerAnim}>
 			<ResetIndicatorContainer style={resetAnim}>
 				<ThemedIcon name="undo" size={42} />
 			</ResetIndicatorContainer>
@@ -132,16 +133,16 @@ export default function Timer({
 			<ZStackCenteredItem>
 				<Svg style={{transform: [{rotate: '-90deg'}]}}>
 					<Circle
-						cx={diameter / 2}
-						cy={diameter / 2}
+						cx={paddedDiameter / 2}
+						cy={paddedDiameter / 2}
 						r={radius}
 						strokeWidth={15}
 						stroke={theme.timer.progressTrack}
 						opacity={theme.timer.progressTrackOpacity}
 					/>
 					<AnimatedCircle
-						cx={diameter / 2}
-						cy={diameter / 2}
+						cx={paddedDiameter / 2}
+						cy={paddedDiameter / 2}
 						r={radius}
 						strokeWidth={15}
 						strokeLinecap="round"
@@ -180,7 +181,7 @@ const ResetIndicatorContainer = Animated.createAnimatedComponent(styled.View`
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	left: -60px;
+	left: 0;
 	justify-content: center;
 `);
 
@@ -188,7 +189,7 @@ const NextIndicatorContainer = Animated.createAnimatedComponent(styled.View`
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	right: -60px;
+	right: 0;
 	justify-content: center;
 `);
 
