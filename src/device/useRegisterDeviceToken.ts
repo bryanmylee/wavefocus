@@ -13,10 +13,10 @@ export function useRegisterDeviceToken() {
 	useEffect(
 		function saveInitialToken() {
 			async function saveToken() {
-				token.current = await messaging().getToken();
 				if (user == null) {
 					return;
 				}
+				token.current = await messaging().getToken();
 				await updateDeviceTokenMemory(user.uid, token.current);
 			}
 			saveToken();
@@ -49,7 +49,9 @@ async function updateDeviceTokenMemory(
 	const tokens = data?.tokens ?? [];
 	// Remove old token.
 	const idx = tokens.findIndex((t) => t === oldToken);
-	tokens.splice(idx, 1);
+	if (idx !== -1) {
+		tokens.splice(idx, 1);
+	}
 	// Add new token.
 	if (tokens.includes(token)) {
 		return;
