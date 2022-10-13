@@ -1,8 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-
-function clamp(value: number, min: number, max: number) {
-	return Math.min(max, Math.max(min, value));
-}
+import {clamp} from './clamp';
 
 export function useElapsedSeconds(
 	startMs: number | null,
