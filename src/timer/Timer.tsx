@@ -12,6 +12,7 @@ import Animated, {
 import Svg, {Circle} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
 import * as ZStack from '../components/ZStack';
+import ThemedIcon from '../theme/ThemedIcon';
 import {clampWorklet} from '../utils/clamp';
 import {TimerStage} from './types';
 
@@ -34,13 +35,6 @@ export default function Timer({
 	const secondPart = String(seconds % 60).padStart(2, '0');
 
 	const theme = useTheme();
-
-	const textAnim = useAnimatedStyle(
-		() => ({
-			color: withTiming(theme.timer.text),
-		}),
-		[theme.timer.text],
-	);
 
 	const {width, height} = useWindowDimensions();
 	const size = Math.min(width, height);
@@ -69,6 +63,7 @@ export default function Timer({
 			mass: 0.1,
 		});
 	});
+
 	const containerAnim = useAnimatedStyle(() => {
 		return {
 			transform: [
@@ -76,6 +71,27 @@ export default function Timer({
 				{scale: 1 + trigger.value * 0.1},
 			],
 			opacity: 1 - trigger.value * 0.5,
+		};
+	});
+
+	const textAnim = useAnimatedStyle(
+		() => ({
+			color: withTiming(theme.timer.text),
+		}),
+		[theme.timer.text],
+	);
+
+	const resetAnim = useAnimatedStyle(() => {
+		const show = skipResetProgress.value <= -1;
+		return {
+			opacity: withSpring(show ? 1 : 0),
+		};
+	});
+
+	const nextAnim = useAnimatedStyle(() => {
+		const show = skipResetProgress.value >= 1;
+		return {
+			opacity: withSpring(show ? 1 : 0),
 		};
 	});
 
@@ -97,7 +113,13 @@ export default function Timer({
 
 	return (
 		<Container size={diameter} style={containerAnim}>
-			<Item>
+			<ResetIndicatorContainer style={resetAnim}>
+				<ThemedIcon name="undo" size={42} />
+			</ResetIndicatorContainer>
+			<NextIndicatorContainer style={nextAnim}>
+				<ThemedIcon name="arrow-right" size={42} />
+			</NextIndicatorContainer>
+			<ZStackCenteredItem>
 				<Svg style={{transform: [{rotate: '-90deg'}]}}>
 					<Circle
 						cx={diameter / 2}
@@ -118,12 +140,12 @@ export default function Timer({
 						animatedProps={circleAnimProps}
 					/>
 				</Svg>
-			</Item>
-			<Item>
+			</ZStackCenteredItem>
+			<ZStackCenteredItem>
 				<TimerText style={textAnim}>
 					{minutePart}:{secondPart}
 				</TimerText>
-			</Item>
+			</ZStackCenteredItem>
 		</Container>
 	);
 }
@@ -139,10 +161,26 @@ const Container = Animated.createAnimatedComponent(styled(
 	height: ${(p) => p.size}px;
 `);
 
-const Item = styled(ZStack.Item)`
+const ZStackCenteredItem = styled(ZStack.Item)`
 	justify-content: center;
 	align-items: center;
 `;
+
+const ResetIndicatorContainer = Animated.createAnimatedComponent(styled.View`
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: -60px;
+	justify-content: center;
+`);
+
+const NextIndicatorContainer = Animated.createAnimatedComponent(styled.View`
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: -60px;
+	justify-content: center;
+`);
 
 const TimerText = styled(Animated.Text)`
 	font-family: Inter;
