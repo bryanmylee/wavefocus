@@ -1,14 +1,7 @@
-import {
-	SetStateAction,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react';
+import {SetStateAction, useCallback, useEffect, useMemo, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
-import {useInterval} from '../utils/useInterval';
+import {useElapsedSeconds} from '../utils/useElapsedSeconds';
 import {TimerMemory, TimerStage} from './types';
 
 const timerMemoryCollection = firestore().collection<TimerMemory>('timers');
@@ -19,25 +12,6 @@ const DEFAULT_MEMORY: TimerMemory = {
 	isFocus: true,
 	start: null,
 	pause: null,
-};
-
-interface Remaining {
-	secondsRemaining: number;
-	nextDelayMs: number;
-}
-
-const getRemaining = (memory: TimerMemory): Remaining => {
-	const maxDurationSec = memory.isFocus
-		? FOCUS_DURATION_SEC
-		: RELAX_DURATION_SEC;
-	const end = memory.pause ?? Date.now();
-	const start = memory.start ?? Date.now();
-	const elapsedMs = end - start;
-	const msRemaining = maxDurationSec * 1000 - elapsedMs;
-	return {
-		secondsRemaining: Math.max(0, Math.floor(msRemaining / 1000)),
-		nextDelayMs: 1000 - (elapsedMs % 1000),
-	};
 };
 
 interface OnActiveChangePayload {
@@ -61,28 +35,16 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		[user?.uid],
 	);
 	const [local, setMemory] = useState<TimerMemory>(DEFAULT_MEMORY);
-	const initialRemaining = useRef(getRemaining(local));
-	const [secondsRemaining, setSecondsRemaining] = useState(
-		initialRemaining.current.secondsRemaining,
-	);
-	const [delayMs, setDelayMs] = useState(initialRemaining.current.nextDelayMs);
-	const isDone = secondsRemaining <= 0;
 
 	const setLocalMemory = useCallback(
 		(memoryAction: SetStateAction<TimerMemory>) => {
 			if (memoryAction instanceof Function) {
 				setMemory((oldMemory) => {
 					const newMemory = memoryAction(oldMemory);
-					const remaining = getRemaining(newMemory);
-					setSecondsRemaining(remaining.secondsRemaining);
-					setDelayMs(remaining.nextDelayMs);
 					return newMemory;
 				});
 			} else {
 				setMemory(memoryAction);
-				const remaining = getRemaining(memoryAction);
-				setSecondsRemaining(remaining.secondsRemaining);
-				setDelayMs(remaining.nextDelayMs);
 			}
 		},
 		[],
@@ -123,6 +85,12 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		},
 		[setIsFocus],
 	);
+
+	const elapsedSeconds = useElapsedSeconds(local.start, local.pause);
+	const durationSec =
+		timerStage === 'focus' ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
+	const secondsRemaining = durationSec - elapsedSeconds;
+	const isDone = secondsRemaining <= 0;
 
 	/**
 	 * isActive
@@ -210,17 +178,6 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 			}
 		},
 		[local.isFocus, setIsFocus, setIsActive],
-	);
-
-	useInterval(
-		() => {
-			setSecondsRemaining((s) => s - 1);
-			if (delayMs !== 1000) {
-				setDelayMs(1000);
-			}
-		},
-		delayMs,
-		isActive,
 	);
 
 	const [prevAnonMemory, setPrevAnonMemory] = useState<TimerMemory>();
