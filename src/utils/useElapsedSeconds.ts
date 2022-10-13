@@ -36,10 +36,15 @@ export function useElapsedSeconds(
 
 	useEffect(
 		function updateMsElapsed() {
-			if (pauseMs != null) {
+			if (startMs == null && pauseMs == null && timeout.current == null) {
+				// Timer stage changed.
+				setMsElapsed(0);
+			} else if (pauseMs != null) {
+				// Timer paused.
 				stopTimeout();
 				setMsElapsed(startMs == null ? 0 : pauseMs - startMs);
 			} else if (timeout.current == null) {
+				// Timer started.
 				const now = Date.now();
 				prevTimestamp.current = now;
 				const elapsed = startMs == null ? 0 : now - startMs;
