@@ -18,3 +18,9 @@ WaveFocus is built on Google Cloud Platform (GCP). It relies on:
 - Firebase Cloud Messaging for push notifications
 - Google Cloud Tasks API
   - A queue `wavefocus-notifications` in `us-central1` is used to queue notifications for deferred delivery
+
+### Android
+
+Follow [this](https://reactnative.dev/docs/signed-apk-android) guide to build the release variant of the application.
+
+After creating the keystore, run `./gradlew signingReport` in the `android` directory to get the SHA-1 and SHA-256 fingerprints of the newly created keystore. Then, make sure to copy the fingerprints over to the Firebase project settings for the Android application.
