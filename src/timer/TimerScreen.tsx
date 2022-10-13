@@ -58,10 +58,10 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	}, [canSkip, isDone, nextStage]);
 
 	const handlePlayPause = useCallback(() => {
-		toggleActive();
-		if (isActive) {
+		if (!isActive) {
 			onPlay?.();
 		}
+		toggleActive();
 	}, [toggleActive, onPlay, isActive]);
 
 	const theme = useTheme();
