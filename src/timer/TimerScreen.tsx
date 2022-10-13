@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {useSharedValue} from 'react-native-reanimated';
+import Animated, {useSharedValue} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
 import Centered from '../components/Centered';
@@ -39,15 +39,15 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		[timerStage, setAppTimerStage],
 	);
 
-	const handleResetPress = useCallback(() => {
+	const handleReset = useCallback(() => {
 		resetStage(false);
 	}, [resetStage]);
 
-	const handleNextPress = useCallback(() => {
+	const handleNext = useCallback(() => {
 		nextStage(isDone);
 	}, [isDone, nextStage]);
 
-	const handlePlayPausePress = useCallback(() => {
+	const handlePlayPause = useCallback(() => {
 		toggleActive();
 		if (isActive) {
 			onPlay?.();
@@ -56,16 +56,19 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 
 	const theme = useTheme();
 
-	const skipProgress = useSharedValue(0);
+	const skipResetProgress = useSharedValue(0);
 
 	return (
-		<Container>
+		<ZStackContainer>
 			<ZStack.Item>
 				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
 			</ZStack.Item>
 			<ZStack.Item>
-				<TimerHorizontalPanHandler skipProgress={skipProgress}>
-					<FixedSafeAreaView>
+				<TimerHorizontalPanHandler
+					skipResetProgress={skipResetProgress}
+					onSkip={handleNext}
+					onReset={handleReset}>
+					<AnimatedFixedSafeAreaView>
 						{user == null || isLoading ? (
 							<Centered>
 								<ActivityIndicator color={theme.timer.text} />
@@ -76,20 +79,20 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 									<IconPlaceholder />
 								</Bar>
 								<Centered>
-									<TouchableOpacity onPress={handlePlayPausePress}>
+									<TouchableOpacity onPress={handlePlayPause}>
 										<Timer seconds={secondsRemaining} timerStage={timerStage} />
 									</TouchableOpacity>
 								</Centered>
 								<Bar>
 									{!isActive && !isReset ? (
-										<TouchableOpacity onPress={handleResetPress}>
+										<TouchableOpacity onPress={handleReset}>
 											<ThemedIcon name="undo" size={42} />
 										</TouchableOpacity>
 									) : (
 										<IconPlaceholder />
 									)}
 									{!isActive ? (
-										<TouchableOpacity onPress={handleNextPress}>
+										<TouchableOpacity onPress={handleNext}>
 											<ThemedIcon name="arrow-right" size={42} />
 										</TouchableOpacity>
 									) : (
@@ -98,16 +101,19 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 								</Bar>
 							</>
 						)}
-					</FixedSafeAreaView>
+					</AnimatedFixedSafeAreaView>
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
-		</Container>
+		</ZStackContainer>
 	);
 }
 
-const Container = styled(ZStack.Container)`
+const ZStackContainer = styled(ZStack.Container)`
 	flex: 1;
 `;
+
+const AnimatedFixedSafeAreaView =
+	Animated.createAnimatedComponent(FixedSafeAreaView);
 
 const Bar = styled.View`
 	flex-direction: row;
