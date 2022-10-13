@@ -6,6 +6,7 @@ import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
 import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
 import * as VerticalSwipe from './layout/VerticalSwipe';
+import {SimultaneousGesturesProvider} from './layout/useSimultaneousGestures';
 import TimerScreen from './timer/TimerScreen';
 import {useBoolean} from './utils/useBoolean';
 
@@ -35,19 +36,21 @@ export default function AppContainer() {
 	}, []);
 
 	return (
-		<Container style={containerAnim}>
-			<StatusBar backgroundColor={theme.background} barStyle="dark-content" />
-			<VerticalSwipe.Navigator
-				showAlt={showLogin.value}
-				onUpdateShowAlt={showLogin.setValue}>
-				<VerticalSwipe.Screen forceMount>
-					<TimerScreen onPlay={handlePlay} />
-				</VerticalSwipe.Screen>
-				<VerticalSwipe.Screen isAlt>
-					<LoginScreen onDismiss={showLogin.setFalse} />
-				</VerticalSwipe.Screen>
-			</VerticalSwipe.Navigator>
-		</Container>
+		<SimultaneousGesturesProvider>
+			<Container style={containerAnim}>
+				<StatusBar backgroundColor={theme.background} barStyle="dark-content" />
+				<VerticalSwipe.Navigator
+					showAlt={showLogin.value}
+					onUpdateShowAlt={showLogin.setValue}>
+					<VerticalSwipe.Screen forceMount>
+						<TimerScreen onPlay={handlePlay} />
+					</VerticalSwipe.Screen>
+					<VerticalSwipe.Screen isAlt>
+						<LoginScreen onDismiss={showLogin.setFalse} />
+					</VerticalSwipe.Screen>
+				</VerticalSwipe.Navigator>
+			</Container>
+		</SimultaneousGesturesProvider>
 	);
 }
 

@@ -19,6 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {clampWorklet} from '../utils/clamp';
+import {useSimultaneousGestures} from './useSimultaneousGestures';
 
 type PanGestureContext = {
 	initialY: number;
@@ -117,13 +118,19 @@ export function Navigator({
 		},
 	});
 
+	const [gestureRef, otherGestures] = useSimultaneousGestures('verticalSwipe');
+
 	return (
 		<VerticalSwipeNavigatorContext.Provider
 			value={{
 				mainVisible,
 				altVisible,
 			}}>
-			<PanGestureHandler onGestureEvent={handlePanGesture}>
+			<PanGestureHandler
+				ref={gestureRef}
+				onGestureEvent={handlePanGesture}
+				enableTrackpadTwoFingerGesture
+				simultaneousHandlers={otherGestures}>
 				<NavigatorScreensContainer style={screensContainerAnim}>
 					{children}
 				</NavigatorScreensContainer>

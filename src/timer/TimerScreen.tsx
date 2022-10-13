@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useSharedValue} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
 import Centered from '../components/Centered';
@@ -9,6 +10,7 @@ import * as ZStack from '../components/ZStack';
 import ThemedIcon from '../theme/ThemedIcon';
 import Timer from './Timer';
 import {TimerFluidAnimation} from './TimerFluidAnimation';
+import TimerHorizontalPanHandler from './TimerHorizontalPanHandler';
 import {useTimerStage} from './TimerStageProvider';
 import {useTimerMemory} from './useTimerMemory';
 
@@ -54,46 +56,50 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 
 	const theme = useTheme();
 
+	const skipProgress = useSharedValue(0);
+
 	return (
 		<Container>
 			<ZStack.Item>
 				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
 			</ZStack.Item>
 			<ZStack.Item>
-				<FixedSafeAreaView>
-					{user == null || isLoading ? (
-						<Centered>
-							<ActivityIndicator color={theme.timer.text} />
-						</Centered>
-					) : (
-						<>
-							<Bar>
-								<IconPlaceholder />
-							</Bar>
+				<TimerHorizontalPanHandler skipProgress={skipProgress}>
+					<FixedSafeAreaView>
+						{user == null || isLoading ? (
 							<Centered>
-								<TouchableOpacity onPress={handlePlayPausePress}>
-									<Timer seconds={secondsRemaining} timerStage={timerStage} />
-								</TouchableOpacity>
+								<ActivityIndicator color={theme.timer.text} />
 							</Centered>
-							<Bar>
-								{!isActive && !isReset ? (
-									<TouchableOpacity onPress={handleResetPress}>
-										<ThemedIcon name="undo" size={42} />
-									</TouchableOpacity>
-								) : (
+						) : (
+							<>
+								<Bar>
 									<IconPlaceholder />
-								)}
-								{!isActive ? (
-									<TouchableOpacity onPress={handleNextPress}>
-										<ThemedIcon name="arrow-right" size={42} />
+								</Bar>
+								<Centered>
+									<TouchableOpacity onPress={handlePlayPausePress}>
+										<Timer seconds={secondsRemaining} timerStage={timerStage} />
 									</TouchableOpacity>
-								) : (
-									<IconPlaceholder />
-								)}
-							</Bar>
-						</>
-					)}
-				</FixedSafeAreaView>
+								</Centered>
+								<Bar>
+									{!isActive && !isReset ? (
+										<TouchableOpacity onPress={handleResetPress}>
+											<ThemedIcon name="undo" size={42} />
+										</TouchableOpacity>
+									) : (
+										<IconPlaceholder />
+									)}
+									{!isActive ? (
+										<TouchableOpacity onPress={handleNextPress}>
+											<ThemedIcon name="arrow-right" size={42} />
+										</TouchableOpacity>
+									) : (
+										<IconPlaceholder />
+									)}
+								</Bar>
+							</>
+						)}
+					</FixedSafeAreaView>
+				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 		</Container>
 	);
