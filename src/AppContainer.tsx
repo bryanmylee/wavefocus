@@ -5,11 +5,11 @@ import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
 import Toast from './components/Toast';
+import * as VerticalSwipe from './components/VerticalSwipe';
 import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
-import * as VerticalSwipe from './layout/VerticalSwipe';
-import {SimultaneousGesturesProvider} from './layout/useSimultaneousGestures';
 import TimerScreen from './timer/TimerScreen';
 import {useShowLoginPrompt} from './utils/useShowLoginPrompt';
+import {SimultaneousGesturesProvider} from './utils/useSimultaneousGestures';
 
 async function requestUserPermission() {
 	const status = await messaging().requestPermission();
