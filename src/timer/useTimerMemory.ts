@@ -86,10 +86,14 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		[setIsFocus],
 	);
 
-	const elapsedSeconds = useElapsedSeconds(local.start, local.pause);
-	const durationSec =
+	const maxDurationSec =
 		timerStage === 'focus' ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
-	const secondsRemaining = durationSec - elapsedSeconds;
+	const elapsedSeconds = useElapsedSeconds(
+		local.start,
+		local.pause,
+		maxDurationSec,
+	);
+	const secondsRemaining = maxDurationSec - elapsedSeconds;
 	const isDone = secondsRemaining <= 0;
 
 	/**

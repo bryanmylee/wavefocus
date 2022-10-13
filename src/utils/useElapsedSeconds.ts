@@ -5,8 +5,9 @@ function clamp(value: number, min: number, max: number) {
 }
 
 export function useElapsedSeconds(
-	startMs?: number | null,
-	pauseMs?: number | null,
+	startMs: number | null,
+	pauseMs: number | null,
+	maxDurationSec: number,
 ) {
 	const prevTimestamp = useRef(Date.now());
 	const [msElapsed, setMsElapsed] = useState(() =>
@@ -14,16 +15,6 @@ export function useElapsedSeconds(
 	);
 
 	const timeout = useRef<NodeJS.Timeout>();
-
-	const runner = useCallback(() => {
-		const now = Date.now();
-		const elapsed = startMs == null ? 0 : now - startMs;
-		const drift = clamp(elapsed % 1000, 800, 1200);
-		timeout.current = setTimeout(runner, 1000 - drift);
-		prevTimestamp.current = now;
-		setMsElapsed(elapsed);
-	}, [startMs]);
-
 	const stopTimeout = useCallback(() => {
 		if (timeout.current == null) {
 			return;
@@ -31,6 +22,20 @@ export function useElapsedSeconds(
 		clearTimeout(timeout.current);
 		timeout.current = undefined;
 	}, []);
+
+	const runner = useCallback(() => {
+		const now = Date.now();
+		const elapsed = startMs == null ? 0 : now - startMs;
+		const drift = clamp(elapsed % 1000, 800, 1200);
+		timeout.current = setTimeout(runner, 1000 - drift);
+		prevTimestamp.current = now;
+		if (Math.floor(elapsed / 1000) >= maxDurationSec) {
+			setMsElapsed(maxDurationSec * 1000);
+			stopTimeout();
+		} else {
+			setMsElapsed(elapsed);
+		}
+	}, [startMs, maxDurationSec, stopTimeout]);
 
 	useEffect(
 		function updateMsElapsed() {
