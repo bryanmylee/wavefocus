@@ -6,28 +6,31 @@ interface FixedSafeAreaViewProps extends PropsWithChildren {
 	centered?: boolean;
 }
 
-export default function FixedSafeAreaView({
-	centered = false,
-	children,
-}: FixedSafeAreaViewProps) {
+const FixedSafeAreaView = React.forwardRef<
+	typeof Container,
+	FixedSafeAreaViewProps
+>(({centered = false, children}, forwardedRef) => {
 	const insets = useSafeAreaInsets();
+	let resolvedInsets = {...insets};
 	if (centered) {
 		const vert = Math.max(insets.top, insets.bottom);
 		const hori = Math.max(insets.left, insets.right);
-		return (
-			<Container
-				insets={{
-					top: vert,
-					bottom: vert,
-					left: hori,
-					right: hori,
-				}}>
-				{children}
-			</Container>
-		);
+		resolvedInsets = {
+			top: vert,
+			bottom: vert,
+			left: hori,
+			right: hori,
+		};
 	}
-	return <Container insets={insets}>{children}</Container>;
-}
+	return (
+		<Container ref={forwardedRef} insets={resolvedInsets}>
+			{children}
+		</Container>
+	);
+});
+FixedSafeAreaView.displayName = 'FixedSafeAreaView';
+
+export default FixedSafeAreaView;
 
 interface ContainerProps {
 	insets: EdgeInsets;
