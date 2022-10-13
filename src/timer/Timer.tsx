@@ -1,6 +1,8 @@
 import React, {useEffect} from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
+	Extrapolate,
+	interpolate,
 	SharedValue,
 	useAnimatedProps,
 	useAnimatedStyle,
@@ -82,16 +84,24 @@ export default function Timer({
 	);
 
 	const resetAnim = useAnimatedStyle(() => {
-		const show = skipResetProgress.value <= -1;
 		return {
-			opacity: withSpring(show ? 1 : 0),
+			opacity: interpolate(
+				skipResetProgress.value,
+				[-1, -0.3],
+				[1, 0],
+				Extrapolate.CLAMP,
+			),
 		};
 	});
 
 	const nextAnim = useAnimatedStyle(() => {
-		const show = skipResetProgress.value >= 1;
 		return {
-			opacity: withSpring(show ? 1 : 0),
+			opacity: interpolate(
+				skipResetProgress.value,
+				[0.3, 1],
+				[0, 1],
+				Extrapolate.CLAMP,
+			),
 		};
 	});
 

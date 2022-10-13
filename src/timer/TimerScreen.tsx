@@ -1,7 +1,11 @@
 import React, {useCallback, useEffect} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import Animated, {useSharedValue} from 'react-native-reanimated';
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
 import Centered from '../components/Centered';
@@ -39,13 +43,19 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		[timerStage, setAppTimerStage],
 	);
 
+	const canReset = !isActive && !isReset;
 	const handleReset = useCallback(() => {
-		resetStage(false);
-	}, [resetStage]);
+		if (canReset) {
+			resetStage(false);
+		}
+	}, [canReset, resetStage]);
 
+	const canSkip = !isActive;
 	const handleNext = useCallback(() => {
-		nextStage(isDone);
-	}, [isDone, nextStage]);
+		if (canSkip) {
+			nextStage(isDone);
+		}
+	}, [canSkip, isDone, nextStage]);
 
 	const handlePlayPause = useCallback(() => {
 		toggleActive();
@@ -57,6 +67,9 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	const theme = useTheme();
 
 	const skipResetProgress = useSharedValue(0);
+	const barAnim = useAnimatedStyle(() => ({
+		opacity: withSpring(skipResetProgress.value === 0 ? 1 : 0),
+	}));
 
 	return (
 		<ZStackContainer>
@@ -66,7 +79,9 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 			<ZStack.Item>
 				<TimerHorizontalPanHandler
 					skipResetProgress={skipResetProgress}
+					canSkip={canSkip}
 					onSkip={handleNext}
+					canReset={canReset}
 					onReset={handleReset}>
 					<AnimatedFixedSafeAreaView>
 						{user == null || isLoading ? (
@@ -75,7 +90,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 							</Centered>
 						) : (
 							<>
-								<Bar>
+								<Bar style={barAnim}>
 									<IconPlaceholder />
 								</Bar>
 								<Centered>
@@ -87,15 +102,15 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 										/>
 									</TouchableOpacity>
 								</Centered>
-								<Bar>
-									{!isActive && !isReset ? (
+								<Bar style={barAnim}>
+									{canReset ? (
 										<TouchableOpacity onPress={handleReset}>
 											<ThemedIcon name="undo" size={42} />
 										</TouchableOpacity>
 									) : (
 										<IconPlaceholder />
 									)}
-									{!isActive ? (
+									{canSkip ? (
 										<TouchableOpacity onPress={handleNext}>
 											<ThemedIcon name="arrow-right" size={42} />
 										</TouchableOpacity>
@@ -119,13 +134,13 @@ const ZStackContainer = styled(ZStack.Container)`
 const AnimatedFixedSafeAreaView =
 	Animated.createAnimatedComponent(FixedSafeAreaView);
 
-const Bar = styled.View`
+const Bar = Animated.createAnimatedComponent(styled.View`
 	flex-direction: row;
 	justify-content: space-between;
 	margin-left: 48px;
 	margin-right: 48px;
 	margin-bottom: 32px;
-`;
+`);
 
 const IconPlaceholder = styled.View`
 	width: 42px;

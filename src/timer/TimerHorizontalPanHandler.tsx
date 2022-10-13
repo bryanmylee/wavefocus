@@ -15,16 +15,20 @@ import {clampWorklet} from '../utils/clamp';
 
 interface TimerHorizontalPanHandlerProps extends PropsWithChildren {
 	skipResetProgress: SharedValue<number>;
-	onReset?: () => void;
-	onSkip?: () => void;
+	canSkip: boolean;
+	onSkip: () => void;
+	canReset: boolean;
+	onReset: () => void;
 }
 
 const PROGRESS_RANGE_FACTOR = 0.3;
 
 export default function TimerHorizontalPanHandler({
 	skipResetProgress,
-	onReset,
+	canSkip,
 	onSkip,
+	canReset,
+	onReset,
 	children,
 }: TimerHorizontalPanHandlerProps) {
 	const {width} = useWindowDimensions();
@@ -40,17 +44,20 @@ export default function TimerHorizontalPanHandler({
 			onActive(ev) {
 				const dx = clampWorklet(ev.translationX, -width, width);
 				const progressRange = width * PROGRESS_RANGE_FACTOR;
-				skipResetProgress.value = -dx / progressRange;
+				let targetProgress = -dx / progressRange;
+				if (!canSkip && targetProgress > 0) {
+					return;
+				}
+				if (!canReset && targetProgress < 0) {
+					return;
+				}
+				skipResetProgress.value = targetProgress;
 			},
 			onEnd() {
 				if (skipResetProgress.value <= -1) {
-					if (onReset != null) {
-						runOnJS(onReset)();
-					}
+					runOnJS(onReset)();
 				} else if (skipResetProgress.value >= 1) {
-					if (onSkip != null) {
-						runOnJS(onSkip)();
-					}
+					runOnJS(onSkip)();
 				}
 				skipResetProgress.value = withTiming(0, {
 					duration: 300,
