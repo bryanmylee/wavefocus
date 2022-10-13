@@ -80,7 +80,11 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 								</Bar>
 								<Centered>
 									<TouchableOpacity onPress={handlePlayPause}>
-										<Timer seconds={secondsRemaining} timerStage={timerStage} />
+										<Timer
+											seconds={secondsRemaining}
+											timerStage={timerStage}
+											skipResetProgress={skipResetProgress}
+										/>
 									</TouchableOpacity>
 								</Centered>
 								<Bar>

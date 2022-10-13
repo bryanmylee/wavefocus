@@ -34,14 +34,14 @@ export default function TimerHorizontalPanHandler({
 			onActive(ev) {
 				const dx = clampWorklet(ev.translationX, -width, width);
 				const progressRange = width / 4;
-				skipResetProgress.value = dx / progressRange;
+				skipResetProgress.value = -dx / progressRange;
 			},
 			onEnd() {
-				if (skipResetProgress.value >= 1) {
+				if (skipResetProgress.value <= -1) {
 					if (onReset != null) {
 						runOnJS(onReset)();
 					}
-				} else if (skipResetProgress.value <= -1) {
+				} else if (skipResetProgress.value >= 1) {
 					if (onSkip != null) {
 						runOnJS(onSkip)();
 					}

@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
+	SharedValue,
 	useAnimatedProps,
 	useAnimatedStyle,
 	useSharedValue,
@@ -9,18 +10,24 @@ import Animated, {
 import Svg, {Circle} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
 import * as ZStack from '../components/ZStack';
+import {clampWorklet} from '../utils/clamp';
 import {TimerStage} from './types';
 
 const FOCUS_DURATION_SEC = 25 * 60;
 const RELAX_DURATION_SEC = 5 * 60;
-const MAX_PROGRESS = 0.9995;
+const MIN_PROGRESS = 0.0005;
 
 export interface TimerProps {
 	seconds: number;
 	timerStage: TimerStage;
+	skipResetProgress: SharedValue<number>;
 }
 
-export default function Timer({seconds, timerStage}: TimerProps) {
+export default function Timer({
+	seconds,
+	timerStage,
+	skipResetProgress,
+}: TimerProps) {
 	const minutePart = Math.floor(seconds / 60);
 	const secondPart = String(seconds % 60).padStart(2, '0');
 
@@ -42,22 +49,32 @@ export default function Timer({seconds, timerStage}: TimerProps) {
 
 	const duration =
 		timerStage === 'focus' ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
-	const progress = useSharedValue(MAX_PROGRESS);
+	const progress = useSharedValue(0);
 
 	useEffect(
 		function updateProgress() {
-			progress.value = withTiming(Math.min(MAX_PROGRESS, seconds / duration), {
+			progress.value = withTiming(Math.max(0, 1 - seconds / duration), {
 				duration: 1000,
 			});
 		},
 		[progress, seconds, duration],
 	);
-	const circleAnimProps = useAnimatedProps(
-		() => ({
-			strokeDashoffset: circumference * progress.value,
-		}),
-		[circumference],
-	);
+
+	const circleAnimProps = useAnimatedProps(() => {
+		const remainingProgress = 1 - progress.value;
+		let resolvedProgress = progress.value;
+		if (skipResetProgress.value > 0) {
+			resolvedProgress =
+				progress.value + remainingProgress * skipResetProgress.value;
+		} else if (skipResetProgress.value < 0) {
+			resolvedProgress =
+				progress.value + skipResetProgress.value * progress.value;
+		}
+		resolvedProgress = clampWorklet(resolvedProgress, MIN_PROGRESS, 1);
+		return {
+			strokeDashoffset: circumference * (1 - resolvedProgress),
+		};
+	}, [circumference]);
 
 	return (
 		<Container size={diameter}>
