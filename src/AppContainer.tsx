@@ -54,10 +54,6 @@ export default function AppContainer() {
 	return (
 		<SimultaneousGesturesProvider>
 			<Container style={containerAnim}>
-				<Toast
-					message="Swipe down to sync timers across devices"
-					show={showPrompt}
-				/>
 				<StatusBar backgroundColor={theme.background} barStyle="dark-content" />
 				<VerticalSwipe.Navigator
 					showAlt={showLogin}
@@ -69,6 +65,13 @@ export default function AppContainer() {
 						<LoginScreen onDismiss={hideLogin} />
 					</VerticalSwipe.Screen>
 				</VerticalSwipe.Navigator>
+				<ToastContainer>
+					<Toast
+						message="Swipe down to sync timers across devices"
+						show={showPrompt}
+						icon="arrow-down"
+					/>
+				</ToastContainer>
 			</Container>
 		</SimultaneousGesturesProvider>
 	);
@@ -76,4 +79,11 @@ export default function AppContainer() {
 
 const Container = styled(Animated.View)`
 	flex: 1;
+`;
+
+const ToastContainer = styled.View`
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
 `;

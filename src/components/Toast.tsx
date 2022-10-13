@@ -7,13 +7,15 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
+import ThemedIcon from '../theme/ThemedIcon';
 
 interface ToastProps {
 	message: string;
 	show: boolean;
+	icon?: string;
 }
 
-export default function Toast({message, show}: ToastProps) {
+export default function Toast({message, show, icon}: ToastProps) {
 	const showProgress = useDerivedValue(
 		() =>
 			withTiming(show ? 1 : 0, {duration: 500, easing: Easing.elastic(0.8)}),
@@ -31,7 +33,14 @@ export default function Toast({message, show}: ToastProps) {
 	return (
 		<ToastBase style={baseAnim}>
 			<ToastBackground />
-			<ToastText>{message}</ToastText>
+			<ToastText>
+				{icon != null && (
+					<>
+						<ThemedIcon name={icon} size={14} />{' '}
+					</>
+				)}
+				{message}
+			</ToastText>
 		</ToastBase>
 	);
 }
@@ -61,7 +70,6 @@ const ToastBackground = styled.View`
 
 const ToastText = styled.Text`
 	color: ${(p) => p.theme.timer.text};
-	font-size: 18px;
 	font-weight: 500;
 	font-family: Inter;
 	text-align: center;
