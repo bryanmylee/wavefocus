@@ -20,7 +20,7 @@ import Animated, {
 import styled from 'styled-components/native';
 import {clampWorklet} from '../utils/clamp';
 
-type TPanGestureContext = {
+type PanGestureContext = {
 	initialY: number;
 };
 
@@ -82,32 +82,32 @@ export function Navigator({
 
 	const handlePanGesture = useAnimatedGestureHandler<
 		PanGestureHandlerGestureEvent,
-		TPanGestureContext
+		PanGestureContext
 	>({
-		onStart(_, context) {
-			context.initialY = translateY.value;
+		onStart(_, ctx) {
+			ctx.initialY = translateY.value;
 			runOnJS(startTransition)();
 		},
-		onActive(event, context) {
+		onActive(ev, ctx) {
 			translateY.value = clampWorklet(
-				context.initialY + event.translationY,
+				ctx.initialY + ev.translationY,
 				0,
 				height,
 			);
 		},
-		onFail(event) {
-			const toShowAlt = translateY.value + event.velocityY > height / 2;
+		onFail(ev) {
+			const toShowAlt = translateY.value + ev.velocityY > height / 2;
 			runOnJS(endTransition)(toShowAlt);
 		},
-		onEnd(event) {
-			const toShowAlt = translateY.value + event.velocityY > height / 2;
+		onEnd(ev) {
+			const toShowAlt = translateY.value + ev.velocityY > height / 2;
 			runOnJS(onUpdateShowAlt)(toShowAlt);
 			const targetY = toShowAlt ? height : 0;
 			translateY.value = withSpring(
 				targetY,
 				{
 					damping: 20,
-					velocity: event.velocityY,
+					velocity: ev.velocityY,
 					overshootClamping: true,
 				},
 				() => {
