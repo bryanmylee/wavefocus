@@ -18,5 +18,11 @@ module.exports = {
 				'react-hooks/exhaustive-deps': ['warn'],
 			},
 		},
+		{
+			files: ['*.ts', '*.tsx'],
+			rules: {
+				'react-native/no-inline-styles': 'off',
+			},
+		},
 	],
 };
