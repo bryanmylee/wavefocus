@@ -60,12 +60,14 @@ const UsernameText = styled.Text`
 	font-weight: 600;
 	font-size: 24px;
 	margin-bottom: 16px;
+	color: ${(p) => p.theme.fill.primary};
 `;
 
 const EmailText = styled.Text`
 	font-family: Inter;
 	font-weight: 500;
 	font-size: 16px;
+	color: ${(p) => p.theme.fill.primary};
 	opacity: 0.5;
 	margin-bottom: 24px;
 `;
