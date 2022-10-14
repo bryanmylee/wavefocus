@@ -6,6 +6,7 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
+import {appleAuth} from '@invertase/react-native-apple-authentication';
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {
@@ -25,6 +26,30 @@ async function signInGoogleAsync() {
 	return auth().signInWithCredential(googleCredential);
 }
 
+async function signInAppleAsync() {
+	const response = await appleAuth.performRequest({
+		requestedOperation: appleAuth.Operation.LOGIN,
+		// FULL_NAME must come before EMAIL.
+		requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+	});
+
+	// Ensure that Apple returned a user identity token.
+	if (response.identityToken == null) {
+		throw new Error(
+			'signInAppleAsync: Failed sign in due to missing identity token',
+		);
+	}
+
+	// Create a Firebase credential from the response
+	const {identityToken, nonce} = response;
+	const appleCredential = auth.AppleAuthProvider.credential(
+		identityToken,
+		nonce,
+	);
+
+	return auth().signInWithCredential(appleCredential);
+}
+
 interface SignInAnonEvent {
 	user: FirebaseAuthTypes.User;
 	prevIsAnon: boolean;
@@ -34,6 +59,7 @@ export interface UserContext {
 	user: FirebaseAuthTypes.User | null;
 	isLoading: boolean;
 	signInGoogle: () => void;
+	signInApple: () => void;
 	signOut: () => void;
 	subscribeBeforeSignOutAnonymously: (
 		subscriber: Subscriber<FirebaseAuthTypes.User>,
@@ -47,6 +73,7 @@ const UserContext = createContext<UserContext>({
 	user: auth().currentUser,
 	isLoading: false,
 	signInGoogle: () => {},
+	signInApple: () => {},
 	signOut: () => {},
 	subscribeBeforeSignOutAnonymously: () => () => {},
 	subscribeAfterSignInAnonymously: () => () => {},
@@ -135,12 +162,23 @@ export default function UserProvider({children}: PropsWithChildren) {
 		setIsLoading(false);
 	}, [signOutAnonymous, signInAnonymous]);
 
+	const signInApple = useCallback(async () => {
+		setIsLoading(true);
+		await signOutAnonymous();
+		await signInAppleAsync().catch(() => {
+			console.warn('signInApple: Failed to sign in with Apple');
+			return signInAnonymous({prevIsAnon: true});
+		});
+		setIsLoading(false);
+	}, [signOutAnonymous, signInAnonymous]);
+
 	return (
 		<UserContext.Provider
 			value={{
 				user,
 				isLoading,
 				signInGoogle,
+				signInApple,
 				signOut,
 				subscribeBeforeSignOutAnonymously,
 				subscribeAfterSignInAnonymously,

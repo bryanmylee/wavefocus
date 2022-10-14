@@ -1,5 +1,7 @@
 import React from 'react';
+import {AppleButton} from '@invertase/react-native-apple-authentication';
 import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {useColorScheme} from 'react-native';
 import 'react-native-gesture-handler';
 import styled, {useTheme} from 'styled-components/native';
 import Button from '../components/Button';
@@ -14,7 +16,7 @@ interface LoginScreenProps {
 }
 
 export default function LoginScreen({onDismiss}: LoginScreenProps) {
-	const {user, isLoading, signInGoogle, signOut} = useUser();
+	const {user, isLoading, signInGoogle, signInApple, signOut} = useUser();
 
 	useBackHandler(() => {
 		onDismiss?.();
@@ -22,6 +24,7 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 	}, [onDismiss]);
 
 	const theme = useTheme();
+	const colorScheme = useColorScheme();
 
 	return (
 		<FixedSafeAreaView>
@@ -34,7 +37,21 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 				{isLoading ? (
 					<ActivityIndicator color={theme.timer.text} />
 				) : user == null || user?.isAnonymous ? (
-					<Button title="Sign in with Google" onPress={signInGoogle} />
+					<>
+						<Button title="Sign in with Google" onPress={signInGoogle} />
+						<Spacer />
+						<AppleButton
+							buttonStyle={
+								colorScheme === 'dark'
+									? AppleButton.Style.WHITE
+									: AppleButton.Style.BLACK
+							}
+							buttonType={AppleButton.Type.SIGN_IN}
+							style={{width: 180, height: 42}}
+							cornerRadius={13.5}
+							onPress={signInApple}
+						/>
+					</>
 				) : (
 					<>
 						<UsernameText>Signed in as {user.displayName}</UsernameText>
@@ -53,6 +70,10 @@ const Bar = styled.View`
 	padding-left: 42px;
 	padding-right: 42px;
 	padding-top: 32px;
+`;
+
+const Spacer = styled.View`
+	height: 12px;
 `;
 
 const UsernameText = styled.Text`
