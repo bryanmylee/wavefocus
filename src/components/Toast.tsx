@@ -34,14 +34,15 @@ export function Toast({message, show, icon}: ToastProps) {
 	return (
 		<ToastBase style={baseAnim}>
 			<ToastBackground />
-			<ToastText>
+			<ToastTextContainer>
 				{icon != null && (
 					<>
-						<ThemedIcon name={icon} size={14} />{' '}
+						<ThemedIcon name={icon} size={14} />
+						<Spacer />
 					</>
 				)}
-				{message}
-			</ToastText>
+				<ToastText>{message}</ToastText>
+			</ToastTextContainer>
 		</ToastBase>
 	);
 }
@@ -67,6 +68,15 @@ const ToastBackground = styled.View`
 	border-radius: 16px;
 	background-color: ${(p) => p.theme.timer.fluidFill};
 	opacity: ${(p) => p.theme.timer.fluidOpacity};
+`;
+
+const ToastTextContainer = styled.View`
+	flex-direction: row;
+	align-items: center;
+`;
+
+const Spacer = styled.View`
+	width: 6px;
 `;
 
 const ToastText = styled.Text`
