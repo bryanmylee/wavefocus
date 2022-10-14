@@ -48,6 +48,13 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 							}
 							buttonType={AppleButton.Type.SIGN_IN}
 							style={{width: 180, height: 42}}
+							// `textStyle` will only be applied on Android.
+							textStyle={{
+								fontSize: 18,
+								fontFamily: 'Inter',
+								fontWeight: '500',
+								letterSpacing: -0.5,
+							}}
 							cornerRadius={13.5}
 							onPress={signInApple}
 						/>

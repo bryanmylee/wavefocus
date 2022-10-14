@@ -6,9 +6,13 @@ import React, {
 	useEffect,
 	useState,
 } from 'react';
-import {appleAuth} from '@invertase/react-native-apple-authentication';
+import {
+	appleAuth,
+	appleAuthAndroid,
+} from '@invertase/react-native-apple-authentication';
 import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {Platform} from 'react-native';
 import {
 	Subscriber,
 	Unsubscriber,
@@ -26,22 +30,49 @@ async function signInGoogleAsync() {
 	return auth().signInWithCredential(googleCredential);
 }
 
-async function signInAppleAsync() {
+async function getAppleAuthResponseAndroid() {
+	appleAuthAndroid.configure({
+		clientId: 'com.bryanmylee.wavefocus.sign-in-with-apple',
+		redirectUri: 'https://wave-focus.firebaseapp.com/__/auth/handler',
+		responseType: appleAuthAndroid.ResponseType.ALL,
+		scope: appleAuthAndroid.Scope.ALL,
+	});
+
+	const response = await appleAuthAndroid.signIn();
+	const {id_token, nonce} = response;
+	if (id_token == null) {
+		throw new Error(
+			'getAppleResponseAndroid: Failed to retrieve Apple identity token',
+		);
+	}
+	return [id_token, nonce] as const;
+}
+
+async function getAppleAuthResponse() {
 	const response = await appleAuth.performRequest({
 		requestedOperation: appleAuth.Operation.LOGIN,
 		// FULL_NAME must come before EMAIL.
 		requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
 	});
 
-	// Ensure that Apple returned a user identity token.
-	if (response.identityToken == null) {
+	const {identityToken, nonce} = response;
+
+	if (identityToken == null) {
 		throw new Error(
 			'signInAppleAsync: Failed sign in due to missing identity token',
 		);
 	}
 
+	return [identityToken, nonce] as const;
+}
+
+async function signInAppleAsync() {
+	const [identityToken, nonce] =
+		Platform.OS === 'android'
+			? await getAppleAuthResponseAndroid()
+			: await getAppleAuthResponse();
+
 	// Create a Firebase credential from the response
-	const {identityToken, nonce} = response;
 	const appleCredential = auth.AppleAuthProvider.credential(
 		identityToken,
 		nonce,
