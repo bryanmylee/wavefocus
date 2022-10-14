@@ -2,6 +2,15 @@ import React from 'react';
 import {ButtonProps} from 'react-native';
 import styled from 'styled-components/native';
 
+export default function Button(props: ButtonProps) {
+	return (
+		<ButtonBase {...props} accessibilityLabel={props.title}>
+			<ButtonBackground />
+			<StyledText>{props.title}</StyledText>
+		</ButtonBase>
+	);
+}
+
 const ButtonBase = styled.TouchableOpacity`
 	position: relative;
 	padding-left: 16px;
@@ -26,13 +35,5 @@ const StyledText = styled.Text`
 	font-size: 18px;
 	font-weight: 500;
 	font-family: Inter;
+	letter-spacing: -0.5px;
 `;
-
-export default function Button(props: ButtonProps) {
-	return (
-		<ButtonBase {...props} accessibilityLabel={props.title}>
-			<ButtonBackground />
-			<StyledText>{props.title}</StyledText>
-		</ButtonBase>
-	);
-}
