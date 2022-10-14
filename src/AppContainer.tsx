@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import messaging from '@react-native-firebase/messaging';
-import {StatusBar} from 'react-native';
+import {StatusBar, useColorScheme} from 'react-native';
 import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
 import styled, {useTheme} from 'styled-components/native';
 import LoginScreen from './auth/LoginScreen';
@@ -51,10 +51,15 @@ export default function AppContainer() {
 		requestUserPermission();
 	}, [requestPrompt]);
 
+	const colorScheme = useColorScheme();
+
 	return (
 		<SimultaneousGesturesProvider>
 			<Container style={containerAnim}>
-				<StatusBar backgroundColor={theme.background} barStyle="dark-content" />
+				<StatusBar
+					backgroundColor={theme.background}
+					barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
+				/>
 				<VerticalSwipe.Navigator
 					showAlt={showLogin}
 					onChangeShowAlt={handleChangeShowAlt}>
