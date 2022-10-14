@@ -42,3 +42,33 @@ export const LIGHT_RELAX_THEME: Theme = {
 		primary: 'rgb(42, 107, 123)',
 	},
 };
+
+export const DARK_FOCUS_THEME: Theme = {
+	background: 'rgb(33, 38, 37)',
+	timer: {
+		text: 'rgb(129, 254, 231)',
+		progressFill: 'rgb(129, 254, 231)',
+		progressTrack: 'rgb(24, 73, 63)',
+		progressTrackOpacity: 1.0,
+		fluidFill: 'rgb(24, 197, 166)',
+		fluidOpacity: 0.3,
+	},
+	fill: {
+		primary: 'rgb(129, 254, 231)',
+	},
+};
+
+export const DARK_RELAX_THEME: Theme = {
+	background: 'rgb(33, 37, 38)',
+	timer: {
+		text: 'rgb(158, 237, 255)',
+		progressFill: 'rgb(158, 237, 255)',
+		progressTrack: 'rgb(60, 87, 93)',
+		progressTrackOpacity: 0.5,
+		fluidFill: 'rgb(133, 212, 229)',
+		fluidOpacity: 0.12,
+	},
+	fill: {
+		primary: 'rgb(158, 237, 255)',
+	},
+};
