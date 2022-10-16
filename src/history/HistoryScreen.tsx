@@ -1,21 +1,19 @@
 import React from 'react';
-import Svg from 'react-native-svg';
 import styled from 'styled-components/native';
-import WavesAnimation from '../timer/WavesAnimation';
+import * as ZStack from '../components/ZStack';
+import HistoryHeaderAnimation from './HistoryHeaderAnimation';
 
 export default function HistoryScreen() {
 	return (
 		<Container>
-			<FlippedSvg>
-				<WavesAnimation show move />
-			</FlippedSvg>
+			<ZStack.Container>
+				<ZStack.Item>
+					<HistoryHeaderAnimation />
+				</ZStack.Item>
+			</ZStack.Container>
 		</Container>
 	);
 }
-
-const FlippedSvg = styled(Svg)`
-	transform: scaleY(-1);
-`;
 
 const Container = styled.View`
 	flex: 1;

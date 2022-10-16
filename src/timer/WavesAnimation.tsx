@@ -8,7 +8,6 @@ import Animated, {
 	useSharedValue,
 	withTiming,
 } from 'react-native-reanimated';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Path} from 'react-native-svg';
 import {useTheme} from 'styled-components/native';
 import {useOscillatingValue} from '../utils/useOscillatingValue';
@@ -18,9 +17,14 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 interface WavesAnimationProps {
 	show: boolean;
 	move: boolean;
+	baseHeight: number;
 }
 
-export default function WavesAnimation({show, move}: WavesAnimationProps) {
+export default function WavesAnimation({
+	show,
+	move,
+	baseHeight,
+}: WavesAnimationProps) {
 	const scale = useSharedValue(1);
 	useEffect(
 		function animateWaveScale() {
@@ -31,8 +35,6 @@ export default function WavesAnimation({show, move}: WavesAnimationProps) {
 		},
 		[scale, move],
 	);
-	const insets = useSafeAreaInsets();
-	const baseHeight = insets.bottom + 110;
 	const waveHeight = useSharedValue(baseHeight);
 	useEffect(
 		function animateWaveHeight() {
