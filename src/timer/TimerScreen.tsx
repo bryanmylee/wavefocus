@@ -72,7 +72,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	}));
 
 	return (
-		<ZStackContainer>
+		<ZStack.Container>
 			<ZStack.Item>
 				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
 			</ZStack.Item>
@@ -123,13 +123,9 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 					</AnimatedFixedSafeAreaView>
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
-		</ZStackContainer>
+		</ZStack.Container>
 	);
 }
-
-const ZStackContainer = styled(ZStack.Container)`
-	flex: 1;
-`;
 
 const AnimatedFixedSafeAreaView =
 	Animated.createAnimatedComponent(FixedSafeAreaView);
