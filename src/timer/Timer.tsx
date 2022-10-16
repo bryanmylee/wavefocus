@@ -136,7 +136,7 @@ export default function Timer({
 						cx={paddedDiameter / 2}
 						cy={paddedDiameter / 2}
 						r={radius}
-						strokeWidth={15}
+						strokeWidth={strokeWidth}
 						stroke={theme.timer.progressTrack}
 						opacity={theme.timer.progressTrackOpacity}
 					/>
@@ -144,7 +144,7 @@ export default function Timer({
 						cx={paddedDiameter / 2}
 						cy={paddedDiameter / 2}
 						r={radius}
-						strokeWidth={15}
+						strokeWidth={strokeWidth}
 						strokeLinecap="round"
 						stroke={theme.timer.progressFill}
 						strokeDasharray={circumference}

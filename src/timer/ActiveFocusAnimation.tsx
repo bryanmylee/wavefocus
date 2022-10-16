@@ -31,7 +31,9 @@ export default function ActiveFocusAnimation({
 		},
 		[showProgress, show],
 	);
-	const radius = Math.min(width, height) * 0.4;
+	const size = Math.min(width, height);
+	const diameter = size * 0.75 + 15;
+	const radius = diameter / 2;
 	return (
 		<>
 			<FocusCircle radius={radius} showProgress={showProgress} cycleMs={1000} />
@@ -65,7 +67,7 @@ function FocusCircle({radius, showProgress, cycleMs}: FocusCircleProps) {
 		to: Math.PI * 4,
 		cycleMs: cycleMs * 2,
 	});
-	const wiggleRadius = radius * 0.05;
+	const wiggleRadius = 10;
 	const wiggle = useDerivedValue(() =>
 		getPointFromTheta(theta.value, wiggleRadius),
 	);
