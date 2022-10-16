@@ -123,6 +123,7 @@ export function Navigator({
 			const targetValue =
 				translateY.value + clampWorklet(ev.velocityY, -height, height);
 			const screenToShow = getScreenFromTargetWorklet(targetValue, height);
+			runOnJS(endTransition)(screenToShow);
 			runOnJS(onChangeScreen)(screenToShow);
 			const targetY =
 				screenToShow === 'main' ? 0 : screenToShow === 'top' ? height : -height;
