@@ -90,9 +90,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 							</Centered>
 						) : (
 							<>
-								<Bar style={barAnim}>
-									<IconPlaceholder />
-								</Bar>
+								<Bar />
 								<Centered>
 									<TouchableOpacity onPress={handlePlayPause}>
 										<Timer
@@ -133,6 +131,7 @@ const AnimatedFixedSafeAreaView =
 const Bar = Animated.createAnimatedComponent(styled.View`
 	flex-direction: row;
 	justify-content: space-between;
+	height: 42px;
 	margin-left: 48px;
 	margin-right: 48px;
 	margin-bottom: 32px;

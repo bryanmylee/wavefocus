@@ -64,14 +64,14 @@ export default function AppContainer() {
 				<VerticalSwipe.Navigator
 					screen={showLogin ? 'top' : 'main'}
 					onChangeScreen={handleChangeShowTop}>
-					<VerticalSwipe.Screen forceMount type="main">
-						<TimerScreen onPlay={handlePlay} />
+					<VerticalSwipe.Screen forceMount type="bottom">
+						<HistoryScreen />
 					</VerticalSwipe.Screen>
 					<VerticalSwipe.Screen type="top">
 						<LoginScreen onDismiss={hideLogin} />
 					</VerticalSwipe.Screen>
-					<VerticalSwipe.Screen forceMount type="bottom">
-						<HistoryScreen />
+					<VerticalSwipe.Screen forceMount type="main">
+						<TimerScreen onPlay={handlePlay} />
 					</VerticalSwipe.Screen>
 				</VerticalSwipe.Navigator>
 				<ToastContainer>
