@@ -41,7 +41,7 @@ export default function Timer({
 	const {width, height} = useWindowDimensions();
 	const size = Math.min(width, height);
 	const diameter = size * 0.75;
-	const strokeWidth = 15;
+	const strokeWidth = size * 0.036;
 	const radius = diameter / 2 - strokeWidth;
 	const paddedDiameter = 120 + diameter;
 	const circumference = Math.PI * 2 * radius;
@@ -153,7 +153,7 @@ export default function Timer({
 				</Svg>
 			</ZStackCenteredItem>
 			<ZStackCenteredItem>
-				<TimerText style={textAnim}>
+				<TimerText size={size} style={textAnim}>
 					{minutePart}:{secondPart}
 				</TimerText>
 			</ZStackCenteredItem>
@@ -193,9 +193,13 @@ const NextIndicatorContainer = Animated.createAnimatedComponent(styled.View`
 	justify-content: center;
 `);
 
-const TimerText = styled(Animated.Text)`
+interface TimerTextProps {
+	size: number;
+}
+
+const TimerText = styled(Animated.Text)<TimerTextProps>`
 	font-family: Inter;
-	font-size: 56px;
+	font-size: ${(p) => p.size * 0.14}px;
 	font-weight: 700;
 `;
 
