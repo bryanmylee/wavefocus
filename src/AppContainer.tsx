@@ -7,6 +7,7 @@ import LoginScreen from './auth/LoginScreen';
 import {Toast, ToastContainer} from './components/Toast';
 import * as VerticalSwipe from './components/VerticalSwipe';
 import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
+import HistoryScreen from './history/HistoryScreen';
 import TimerScreen from './timer/TimerScreen';
 import {useShowLoginPrompt} from './utils/useShowLoginPrompt';
 import {SimultaneousGesturesProvider} from './utils/useSimultaneousGestures';
@@ -69,8 +70,8 @@ export default function AppContainer() {
 					<VerticalSwipe.Screen type="top">
 						<LoginScreen onDismiss={hideLogin} />
 					</VerticalSwipe.Screen>
-					<VerticalSwipe.Screen type="bottom">
-						<LoginScreen onDismiss={hideLogin} />
+					<VerticalSwipe.Screen forceMount type="bottom">
+						<HistoryScreen />
 					</VerticalSwipe.Screen>
 				</VerticalSwipe.Navigator>
 				<ToastContainer>
