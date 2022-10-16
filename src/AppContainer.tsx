@@ -31,9 +31,9 @@ export default function AppContainer() {
 
 	const [showPrompt, requestPrompt, acknowledgePrompt] = useShowLoginPrompt();
 
-	const handleChangeShowAlt = useCallback(
-		(showAlt: boolean) => {
-			setShowLogin(showAlt);
+	const handleChangeShowTop = useCallback(
+		(screenToShow: VerticalSwipe.ScreenType) => {
+			setShowLogin(screenToShow === 'top');
 			acknowledgePrompt();
 		},
 		[acknowledgePrompt],
@@ -61,12 +61,15 @@ export default function AppContainer() {
 					barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
 				/>
 				<VerticalSwipe.Navigator
-					showAlt={showLogin}
-					onChangeShowAlt={handleChangeShowAlt}>
-					<VerticalSwipe.Screen forceMount>
+					screen={showLogin ? 'top' : 'main'}
+					onChangeScreen={handleChangeShowTop}>
+					<VerticalSwipe.Screen forceMount type="main">
 						<TimerScreen onPlay={handlePlay} />
 					</VerticalSwipe.Screen>
-					<VerticalSwipe.Screen isAlt>
+					<VerticalSwipe.Screen type="top">
+						<LoginScreen onDismiss={hideLogin} />
+					</VerticalSwipe.Screen>
+					<VerticalSwipe.Screen type="bottom">
 						<LoginScreen onDismiss={hideLogin} />
 					</VerticalSwipe.Screen>
 				</VerticalSwipe.Navigator>

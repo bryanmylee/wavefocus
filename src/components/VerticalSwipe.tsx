@@ -26,59 +26,77 @@ type PanGestureContext = {
 
 const VerticalSwipeNavigatorContext = React.createContext<{
 	mainVisible: boolean;
-	altVisible: boolean;
+	topVisible: boolean;
+	bottomVisible: boolean;
 }>({
-	altVisible: true,
+	topVisible: true,
 	mainVisible: true,
+	bottomVisible: true,
 });
 
+export type ScreenType = 'top' | 'bottom' | 'main';
+
 export interface VerticalSwipeNavigatorProps extends PropsWithChildren {
-	showAlt: boolean;
-	onChangeShowAlt: (showAlt: boolean) => void;
+	screen: ScreenType;
+	onChangeScreen: (screen: ScreenType) => void;
 }
 
+const getScreenFromTargetWorklet = (
+	targetValue: number,
+	screenHeight: number,
+): ScreenType => {
+	'worklet';
+	if (targetValue > screenHeight / 2) {
+		return 'top';
+	}
+	if (targetValue < -screenHeight / 2) {
+		return 'bottom';
+	}
+	return 'main';
+};
+
 export function Navigator({
-	showAlt,
-	onChangeShowAlt,
+	screen,
+	onChangeScreen: onChangeScreen,
 	children,
 }: VerticalSwipeNavigatorProps) {
 	const startTransition = useCallback(() => {
 		setMainVisible(true);
-		setAltVisible(true);
+		setTopVisible(true);
+		setBottomVisible(true);
 	}, []);
 
-	const endTransition = useCallback((onAlt: boolean) => {
-		setMainVisible(!onAlt);
-		setAltVisible(onAlt);
+	const endTransition = useCallback((newScreen: ScreenType) => {
+		setMainVisible(newScreen === 'main');
+		setTopVisible(newScreen === 'top');
+		setBottomVisible(newScreen === 'bottom');
 	}, []);
 
-	const [mainVisible, setMainVisible] = useState(!showAlt);
-	const [altVisible, setAltVisible] = useState(showAlt);
+	const [mainVisible, setMainVisible] = useState(screen === 'main');
+	const [topVisible, setTopVisible] = useState(screen === 'top');
+	const [bottomVisible, setBottomVisible] = useState(screen === 'bottom');
 
 	const {height} = useWindowDimensions();
 	const translateY = useSharedValue(0);
 	useEffect(
-		function updateTranslateYOnShowAlt() {
+		function updateTranslateYOnShowTop() {
 			translateY.value = withSpring(
-				showAlt ? height : 0,
+				screen === 'main' ? 0 : screen === 'top' ? height : -height,
 				{
 					damping: 20,
 					overshootClamping: true,
 				},
 				() => {
-					runOnJS(endTransition)(showAlt);
+					runOnJS(endTransition)(screen);
 				},
 			);
 		},
-		[height, showAlt, translateY, endTransition],
+		[height, screen, translateY, endTransition],
 	);
 
-	const screensContainerAnim = useAnimatedStyle(
-		() => ({
-			transform: [{translateY: translateY.value}],
-		}),
-		[showAlt, height],
-	);
+	const screensContainerAnim = useAnimatedStyle(() => ({
+		transform: [{translateY: translateY.value}],
+	}));
 
 	const handlePanGesture = useAnimatedGestureHandler<
 		PanGestureHandlerGestureEvent,
@@ -91,18 +109,23 @@ export function Navigator({
 		onActive(ev, ctx) {
 			translateY.value = clampWorklet(
 				ctx.initialY + ev.translationY,
-				0,
+				-height,
 				height,
 			);
 		},
 		onFail(ev) {
-			const toShowAlt = translateY.value + ev.velocityY > height / 2;
-			runOnJS(endTransition)(toShowAlt);
+			const targetValue =
+				translateY.value + clampWorklet(ev.velocityY, -height, height);
+			const screenToShow = getScreenFromTargetWorklet(targetValue, height);
+			runOnJS(endTransition)(screenToShow);
 		},
 		onEnd(ev) {
-			const toShowAlt = translateY.value + ev.velocityY > height / 2;
-			runOnJS(onChangeShowAlt)(toShowAlt);
-			const targetY = toShowAlt ? height : 0;
+			const targetValue =
+				translateY.value + clampWorklet(ev.velocityY, -height, height);
+			const screenToShow = getScreenFromTargetWorklet(targetValue, height);
+			runOnJS(onChangeScreen)(screenToShow);
+			const targetY =
+				screenToShow === 'main' ? 0 : screenToShow === 'top' ? height : -height;
 			translateY.value = withSpring(
 				targetY,
 				{
@@ -111,7 +134,7 @@ export function Navigator({
 					overshootClamping: true,
 				},
 				() => {
-					runOnJS(endTransition)(toShowAlt);
+					runOnJS(endTransition)(screenToShow);
 				},
 			);
 		},
@@ -121,7 +144,8 @@ export function Navigator({
 		<VerticalSwipeNavigatorContext.Provider
 			value={{
 				mainVisible,
-				altVisible,
+				topVisible,
+				bottomVisible,
 			}}>
 			<PanGestureHandler
 				onGestureEvent={handlePanGesture}
@@ -141,19 +165,24 @@ const NavigatorScreensContainer = styled(Animated.View)`
 
 interface VerticalSwipeScreenProps extends PropsWithChildren {
 	forceMount?: boolean;
-	isAlt?: boolean;
+	type?: ScreenType;
 }
 
 export function Screen({
 	children,
 	forceMount = false,
-	isAlt = false,
+	type,
 }: VerticalSwipeScreenProps) {
 	const {height} = useWindowDimensions();
-	const {mainVisible, altVisible} = useContext(VerticalSwipeNavigatorContext);
+	const {mainVisible, topVisible, bottomVisible} = useContext(
+		VerticalSwipeNavigatorContext,
+	);
 	return (
-		<ScreenContainer windowHeight={height} isAlt={isAlt}>
-			{(forceMount || (isAlt && altVisible) || (!isAlt && mainVisible)) &&
+		<ScreenContainer windowHeight={height} type={type}>
+			{(forceMount ||
+				(type === 'bottom' && bottomVisible) ||
+				(type === 'top' && topVisible) ||
+				(type === 'main' && mainVisible)) &&
 				children}
 		</ScreenContainer>
 	);
@@ -161,12 +190,13 @@ export function Screen({
 
 interface ScreenContainerProps {
 	windowHeight: number;
-	isAlt: boolean;
+	type: ScreenType;
 }
 
 const ScreenContainer = styled.View<ScreenContainerProps>`
 	position: absolute;
 	width: 100%;
 	height: ${({windowHeight}) => windowHeight}px;
-	bottom: ${({isAlt, windowHeight}) => (isAlt ? windowHeight : 0)}px;
+	bottom: ${({type, windowHeight}) =>
+		type === 'top' ? windowHeight : type === 'bottom' ? -windowHeight : 0}px;
 `;
