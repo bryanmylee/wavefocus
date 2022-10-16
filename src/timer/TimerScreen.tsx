@@ -72,7 +72,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	}));
 
 	return (
-		<ZStack.Container>
+		<ZStack.Container flex={1}>
 			<ZStack.Item>
 				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
 			</ZStack.Item>

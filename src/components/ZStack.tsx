@@ -1,8 +1,12 @@
 import styled from 'styled-components/native';
 
-export const Container = styled.View`
+interface ContainerProps {
+	flex?: number;
+}
+
+export const Container = styled.View<ContainerProps>`
 	position: relative;
-	flex: 1;
+	${(p) => (p.flex != null ? `flex: ${p.flex};` : '')}
 `;
 
 export const Item = styled.View`

@@ -6,7 +6,7 @@ import HistoryHeaderAnimation from './HistoryHeaderAnimation';
 export default function HistoryScreen() {
 	return (
 		<Container>
-			<ZStack.Container>
+			<ZStack.Container flex={1}>
 				<ZStack.Item>
 					<HistoryHeaderAnimation />
 				</ZStack.Item>
