@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Animated, {
@@ -12,8 +12,10 @@ import {useUser} from '../auth/UserProvider';
 import Centered from '../components/Centered';
 import Fade from '../components/Fade';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
+import {VSpace} from '../components/Space';
 import * as ZStack from '../components/ZStack';
 import ThemedIcon from '../theme/ThemedIcon';
+import FocusReviewSelect from './FocusReviewSelect';
 import Timer from './Timer';
 import {TimerFluidAnimation} from './TimerFluidAnimation';
 import TimerHorizontalPanHandler from './TimerHorizontalPanHandler';
@@ -75,6 +77,8 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 
 	const insets = useSafeAreaInsets();
 
+	const [reviewIndex, setReviewIndex] = useState(1);
+
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
@@ -106,18 +110,27 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 					</AnimatedFixedSafeAreaView>
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
-			<Bar insets={insets} style={barAnim}>
-				<Fade when={canReset} fallback={<IconPlaceholder />} duration={250}>
-					<TouchableOpacity onPress={handleReset}>
-						<ThemedIcon name="undo" size={42} />
-					</TouchableOpacity>
+			<BottomBar insets={insets} style={barAnim} pointerEvents="box-none">
+				<Fade when={secondsRemaining === 0}>
+					<FocusReviewSelect
+						currentIndex={reviewIndex}
+						onCurrentIndexChange={setReviewIndex}
+					/>
 				</Fade>
-				<Fade when={canSkip} fallback={<IconPlaceholder />} duration={250}>
-					<TouchableOpacity onPress={handleNext}>
-						<ThemedIcon name="arrow-right" size={42} />
-					</TouchableOpacity>
-				</Fade>
-			</Bar>
+				<VSpace size={32} />
+				<BottomActionContainer pointerEvents="box-none">
+					<Fade when={canReset} fallback={<IconPlaceholder />} duration={250}>
+						<TouchableOpacity onPress={handleReset}>
+							<ThemedIcon name="undo" size={42} />
+						</TouchableOpacity>
+					</Fade>
+					<Fade when={canSkip} fallback={<IconPlaceholder />} duration={250}>
+						<TouchableOpacity onPress={handleNext}>
+							<ThemedIcon name="arrow-right" size={42} />
+						</TouchableOpacity>
+					</Fade>
+				</BottomActionContainer>
+			</BottomBar>
 		</ZStack.Container>
 	);
 }
@@ -125,22 +138,24 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 const AnimatedFixedSafeAreaView =
 	Animated.createAnimatedComponent(FixedSafeAreaView);
 
-interface BarProps {
+interface BottomBarProps {
 	insets: EdgeInsets;
 }
 
-const Bar = Animated.createAnimatedComponent(styled.View<BarProps>`
-	flex-direction: row;
-	justify-content: space-between;
-	height: 42px;
-	margin-left: 48px;
-	margin-right: 48px;
-	margin-bottom: 32px;
+const BottomBar = Animated.createAnimatedComponent(styled.View<BottomBarProps>`
 	position: absolute;
 	bottom: ${({insets}) => insets.bottom}px;
 	left: ${({insets}) => insets.left}px;
 	right: ${({insets}) => insets.right}px;
 `);
+
+const BottomActionContainer = styled.View`
+	flex-direction: row;
+	justify-content: space-between;
+	margin-left: 48px;
+	margin-right: 48px;
+	margin-bottom: 32px;
+`;
 
 const IconPlaceholder = styled.View`
 	width: 42px;
