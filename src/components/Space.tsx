@@ -6,9 +6,9 @@ interface Space {
 }
 
 export function VSpace({size}: Space) {
-	return <View style={{height: size}} />;
+	return <View style={{height: size}} pointerEvents="none" />;
 }
 
 export function HSpace({size}: Space) {
-	return <View style={{width: size}} />;
+	return <View style={{width: size}} pointerEvents="none" />;
 }
