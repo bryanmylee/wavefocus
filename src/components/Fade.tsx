@@ -25,6 +25,14 @@ export default function Fade({
 	const [visible, setVisible] = useState(when);
 	const opacity = useSharedValue(0);
 	useEffect(
+		function immediatelyMakeVisible() {
+			if (when) {
+				setVisible(true);
+			}
+		},
+		[when],
+	);
+	useEffect(
 		function updateOpacity() {
 			opacity.value = withTiming(
 				when ? 1 : 0,
