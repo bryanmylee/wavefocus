@@ -10,6 +10,7 @@ import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
 import styled, {useTheme} from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
 import Centered from '../components/Centered';
+import Fade from '../components/Fade';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import * as ZStack from '../components/ZStack';
 import ThemedIcon from '../theme/ThemedIcon';
@@ -106,20 +107,16 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<Bar insets={insets} style={barAnim}>
-				{canReset ? (
+				<Fade when={canReset} fallback={<IconPlaceholder />}>
 					<TouchableOpacity onPress={handleReset}>
 						<ThemedIcon name="undo" size={42} />
 					</TouchableOpacity>
-				) : (
-					<IconPlaceholder />
-				)}
-				{canSkip ? (
+				</Fade>
+				<Fade when={canSkip} fallback={<IconPlaceholder />}>
 					<TouchableOpacity onPress={handleNext}>
 						<ThemedIcon name="arrow-right" size={42} />
 					</TouchableOpacity>
-				) : (
-					<IconPlaceholder />
-				)}
+				</Fade>
 			</Bar>
 		</ZStack.Container>
 	);
