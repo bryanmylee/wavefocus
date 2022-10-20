@@ -92,7 +92,9 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 							{user == null || isLoading ? (
 								<ActivityIndicator color={theme.timer.text} />
 							) : (
-								<TouchableOpacity onPress={handlePlayPause}>
+								<TouchableOpacity
+									onPress={handlePlayPause}
+									disabled={secondsRemaining === 0}>
 									<Timer
 										seconds={secondsRemaining}
 										timerStage={timerStage}
