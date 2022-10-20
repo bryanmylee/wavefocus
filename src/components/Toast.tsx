@@ -9,6 +9,7 @@ import Animated, {
 import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import ThemedIcon from '../theme/ThemedIcon';
+import {VSpace} from './Space';
 
 interface ToastProps {
 	message: string;
@@ -38,7 +39,7 @@ export function Toast({message, show, icon}: ToastProps) {
 				{icon != null && (
 					<>
 						<ThemedIcon name={icon} size={14} />
-						<Spacer />
+						<VSpace size={6} />
 					</>
 				)}
 				<ToastText>{message}</ToastText>
@@ -73,10 +74,6 @@ const ToastBackground = styled.View`
 const ToastTextContainer = styled.View`
 	flex-direction: row;
 	align-items: center;
-`;
-
-const Spacer = styled.View`
-	width: 6px;
 `;
 
 const ToastText = styled.Text`

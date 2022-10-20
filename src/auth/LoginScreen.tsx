@@ -7,6 +7,7 @@ import styled, {useTheme} from 'styled-components/native';
 import Button from '../components/Button';
 import Centered from '../components/Centered';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
+import {VSpace} from '../components/Space';
 import ThemedIcon from '../theme/ThemedIcon';
 import {useBackHandler} from '../utils/useBackHandler';
 import {useUser} from './UserProvider';
@@ -39,7 +40,7 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 				) : user == null || user?.isAnonymous ? (
 					<>
 						<Button title="Sign in with Google" onPress={signInGoogle} />
-						<Spacer />
+						<VSpace size={12} />
 						<AppleButton
 							buttonStyle={
 								colorScheme === 'dark'
@@ -77,10 +78,6 @@ const Bar = styled.View`
 	padding-left: 42px;
 	padding-right: 42px;
 	padding-top: 32px;
-`;
-
-const Spacer = styled.View`
-	height: 12px;
 `;
 
 const UsernameText = styled.Text`
