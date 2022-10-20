@@ -63,7 +63,9 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 				) : (
 					<>
 						<UsernameText>Signed in as {user.displayName}</UsernameText>
+						<VSpace size={12} />
 						<EmailText>{user.email}</EmailText>
+						<VSpace size={16} />
 						<Button title="Sign out" onPress={signOut} />
 					</>
 				)}
@@ -84,7 +86,6 @@ const UsernameText = styled.Text`
 	font-family: Inter;
 	font-weight: 600;
 	font-size: 24px;
-	margin-bottom: 16px;
 	color: ${(p) => p.theme.fill.primary};
 `;
 
@@ -94,5 +95,4 @@ const EmailText = styled.Text`
 	font-size: 16px;
 	color: ${(p) => p.theme.fill.primary};
 	opacity: 0.5;
-	margin-bottom: 24px;
 `;
