@@ -88,12 +88,10 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 					canReset={canReset}
 					onReset={handleReset}>
 					<AnimatedFixedSafeAreaView>
-						{user == null || isLoading ? (
-							<Centered>
+						<Centered>
+							{user == null || isLoading ? (
 								<ActivityIndicator color={theme.timer.text} />
-							</Centered>
-						) : (
-							<Centered>
+							) : (
 								<TouchableOpacity onPress={handlePlayPause}>
 									<Timer
 										seconds={secondsRemaining}
@@ -101,8 +99,8 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 										skipResetProgress={skipResetProgress}
 									/>
 								</TouchableOpacity>
-							</Centered>
-						)}
+							)}
+						</Centered>
 					</AnimatedFixedSafeAreaView>
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
