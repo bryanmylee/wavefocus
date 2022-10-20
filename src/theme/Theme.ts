@@ -16,7 +16,7 @@ export interface Theme {
 export const LIGHT_FOCUS_THEME: Theme = {
 	background: 'rgb(226, 255, 250)',
 	timer: {
-		text: 'rgb(0, 79, 64)',
+		text: 'rgb(7, 115, 95)',
 		progressFill: 'rgb(7, 115, 95)',
 		progressTrack: 'rgb(186, 235, 225)',
 		progressTrackOpacity: 0.6,
@@ -24,7 +24,7 @@ export const LIGHT_FOCUS_THEME: Theme = {
 		fluidOpacity: 0.3,
 	},
 	fill: {
-		primary: 'rgb(0, 79, 64)',
+		primary: 'rgb(7, 115, 95)',
 	},
 };
 
