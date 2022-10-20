@@ -8,7 +8,7 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 
-interface ShowProps extends React.PropsWithChildren {
+interface FadeProps extends React.PropsWithChildren {
 	when: boolean;
 	fallback?: React.ReactNode;
 	duration?: number;
@@ -21,7 +21,7 @@ export default function Fade({
 	fallback,
 	duration = 500,
 	easing = Easing.inOut(Easing.cubic),
-}: ShowProps) {
+}: FadeProps) {
 	const [visible, setVisible] = useState(when);
 	const opacity = useSharedValue(0);
 	useEffect(
