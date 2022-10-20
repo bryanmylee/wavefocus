@@ -1,13 +1,12 @@
 import {SetStateAction, useCallback, useEffect, useMemo, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
+import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
 import {useElapsedSeconds} from '../utils/useElapsedSeconds';
 import {TimerMemory, TimerStage} from './types';
 
 const timerMemoryCollection = firestore().collection<TimerMemory>('timers');
 
-const FOCUS_DURATION_SEC = 25 * 60;
-const RELAX_DURATION_SEC = 5 * 60;
 const DEFAULT_MEMORY: TimerMemory = {
 	isFocus: true,
 	start: null,

@@ -14,12 +14,11 @@ import Animated, {
 import Svg, {Circle} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
 import * as ZStack from '../components/ZStack';
+import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
 import ThemedIcon from '../theme/ThemedIcon';
 import {clampWorklet} from '../utils/clamp';
 import {TimerStage} from './types';
 
-const FOCUS_DURATION_SEC = 25 * 60;
-const RELAX_DURATION_SEC = 5 * 60;
 const MIN_PROGRESS = 0.0005;
 
 export interface TimerProps {
