@@ -13,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, {Circle} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
+import Fade from '../components/Fade';
 import * as ZStack from '../components/ZStack';
 import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
 import ThemedIcon from '../theme/ThemedIcon';
@@ -75,13 +76,6 @@ export default function Timer({
 			opacity: 1 - trigger.value * 0.5,
 		};
 	});
-
-	const textAnim = useAnimatedStyle(
-		() => ({
-			color: withTiming(theme.timer.text),
-		}),
-		[theme.timer.text],
-	);
 
 	const resetAnim = useAnimatedStyle(() => {
 		return {
@@ -152,9 +146,13 @@ export default function Timer({
 				</Svg>
 			</ZStackCenteredItem>
 			<ZStackCenteredItem>
-				<TimerText size={size} style={textAnim}>
-					{minutePart}:{secondPart}
-				</TimerText>
+				<Fade
+					when={seconds !== 0}
+					fallback={<ThemedIcon size={60} name="check" />}>
+					<TimerText size={size}>
+						{minutePart}:{secondPart}
+					</TimerText>
+				</Fade>
 			</ZStackCenteredItem>
 		</Container>
 	);
@@ -196,10 +194,11 @@ interface TimerTextProps {
 	size: number;
 }
 
-const TimerText = styled(Animated.Text)<TimerTextProps>`
+const TimerText = styled.Text<TimerTextProps>`
 	font-family: Inter;
-	font-size: ${(p) => p.size * 0.14}px;
+	font-size: ${({size}) => size * 0.14}px;
 	font-weight: 700;
+	color: ${({theme}) => theme.timer.text};
 `;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
