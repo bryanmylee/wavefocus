@@ -107,12 +107,12 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<Bar insets={insets} style={barAnim}>
-				<Fade when={canReset} fallback={<IconPlaceholder />}>
+				<Fade when={canReset} fallback={<IconPlaceholder />} duration={250}>
 					<TouchableOpacity onPress={handleReset}>
 						<ThemedIcon name="undo" size={42} />
 					</TouchableOpacity>
 				</Fade>
-				<Fade when={canSkip} fallback={<IconPlaceholder />}>
+				<Fade when={canSkip} fallback={<IconPlaceholder />} duration={250}>
 					<TouchableOpacity onPress={handleNext}>
 						<ThemedIcon name="arrow-right" size={42} />
 					</TouchableOpacity>
