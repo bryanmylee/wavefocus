@@ -6,6 +6,7 @@ import Animated, {
 	useSharedValue,
 	withSpring,
 } from 'react-native-reanimated';
+import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
 import styled, {useTheme} from 'styled-components/native';
 import {useUser} from '../auth/UserProvider';
 import Centered from '../components/Centered';
@@ -71,6 +72,8 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		opacity: withSpring(skipResetProgress.value === 0 ? 1 : 0),
 	}));
 
+	const insets = useSafeAreaInsets();
+
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
@@ -89,38 +92,35 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 								<ActivityIndicator color={theme.timer.text} />
 							</Centered>
 						) : (
-							<>
-								<Bar />
-								<Centered>
-									<TouchableOpacity onPress={handlePlayPause}>
-										<Timer
-											seconds={secondsRemaining}
-											timerStage={timerStage}
-											skipResetProgress={skipResetProgress}
-										/>
-									</TouchableOpacity>
-								</Centered>
-								<Bar style={barAnim}>
-									{canReset ? (
-										<TouchableOpacity onPress={handleReset}>
-											<ThemedIcon name="undo" size={42} />
-										</TouchableOpacity>
-									) : (
-										<IconPlaceholder />
-									)}
-									{canSkip ? (
-										<TouchableOpacity onPress={handleNext}>
-											<ThemedIcon name="arrow-right" size={42} />
-										</TouchableOpacity>
-									) : (
-										<IconPlaceholder />
-									)}
-								</Bar>
-							</>
+							<Centered>
+								<TouchableOpacity onPress={handlePlayPause}>
+									<Timer
+										seconds={secondsRemaining}
+										timerStage={timerStage}
+										skipResetProgress={skipResetProgress}
+									/>
+								</TouchableOpacity>
+							</Centered>
 						)}
 					</AnimatedFixedSafeAreaView>
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
+			<Bar insets={insets} style={barAnim}>
+				{canReset ? (
+					<TouchableOpacity onPress={handleReset}>
+						<ThemedIcon name="undo" size={42} />
+					</TouchableOpacity>
+				) : (
+					<IconPlaceholder />
+				)}
+				{canSkip ? (
+					<TouchableOpacity onPress={handleNext}>
+						<ThemedIcon name="arrow-right" size={42} />
+					</TouchableOpacity>
+				) : (
+					<IconPlaceholder />
+				)}
+			</Bar>
 		</ZStack.Container>
 	);
 }
@@ -128,13 +128,21 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 const AnimatedFixedSafeAreaView =
 	Animated.createAnimatedComponent(FixedSafeAreaView);
 
-const Bar = Animated.createAnimatedComponent(styled.View`
+interface BarProps {
+	insets: EdgeInsets;
+}
+
+const Bar = Animated.createAnimatedComponent(styled.View<BarProps>`
 	flex-direction: row;
 	justify-content: space-between;
 	height: 42px;
 	margin-left: 48px;
 	margin-right: 48px;
 	margin-bottom: 32px;
+	position: absolute;
+	bottom: ${({insets}) => insets.bottom}px;
+	left: ${({insets}) => insets.left}px;
+	right: ${({insets}) => insets.right}px;
 `);
 
 const IconPlaceholder = styled.View`
