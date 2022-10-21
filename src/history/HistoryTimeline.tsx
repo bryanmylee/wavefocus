@@ -29,9 +29,7 @@ export default function HistoryTimeline() {
 		dayStart = dayStart.subtract(1, 'day');
 	}
 	const filteredIntervals = useMemo(() => {
-		return intervals
-			.filter(({end}) => dayjs(end).isAfter(dayStart))
-			.sort((a, b) => a.start - b.start);
+		return intervals.filter(({end}) => dayjs(end).isAfter(dayStart));
 	}, [intervals, dayStart]);
 
 	const now = useCurrentMs(10000);
@@ -54,7 +52,7 @@ export default function HistoryTimeline() {
 	useEffect(
 		function setScrollOffset() {
 			setTimeout(() => {
-				scrollViewRef.current?.scrollTo({x: scrollOffset});
+				scrollViewRef.current?.scrollTo({x: scrollOffset, animated: false});
 			}, 0);
 		},
 		[scrollOffset],
