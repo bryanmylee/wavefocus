@@ -43,8 +43,8 @@ async function cleanupUser(
 	await admin.auth().deleteUser(userId);
 }
 
-export const cleanupEveryMonth = functions.pubsub
-	.schedule('every month')
+export const cleanupUsersEveryMonth = functions.pubsub
+	.schedule('0 0 1 * *') // first day of every month
 	.onRun(async () => {
 		const now = Date.now();
 		console.log(`cleanup: Initializing cleanup at ${now}`);
