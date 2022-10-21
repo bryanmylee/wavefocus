@@ -82,7 +82,12 @@ export function useBestHoursMemory() {
 				}
 				const scores = data.scores;
 				scores[hour] += durationMin * pendingWeight;
-				await memoryDoc.set({...GET_DEFAULT_MEMORY(), scores});
+				await memoryDoc.set({
+					...GET_DEFAULT_MEMORY(),
+					pendingStart: latestInterval?.start,
+					pendingEnd: latestInterval?.end,
+					scores,
+				});
 			}
 			async function updatePending() {
 				const snapshot = await memoryDoc.get();
