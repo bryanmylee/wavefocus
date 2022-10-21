@@ -1,4 +1,4 @@
-import {SetStateAction, useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
 import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
@@ -33,21 +33,7 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		() => timerMemoryCollection.doc(user?.uid ?? ''),
 		[user?.uid],
 	);
-	const [local, setMemory] = useState<TimerMemory>(DEFAULT_MEMORY);
-
-	const setLocalMemory = useCallback(
-		(memoryAction: SetStateAction<TimerMemory>) => {
-			if (memoryAction instanceof Function) {
-				setMemory((oldMemory) => {
-					const newMemory = memoryAction(oldMemory);
-					return newMemory;
-				});
-			} else {
-				setMemory(memoryAction);
-			}
-		},
-		[],
-	);
+	const [local, setLocal] = useState<TimerMemory>(DEFAULT_MEMORY);
 
 	useEffect(
 		function synchronizeMemory() {
@@ -57,13 +43,13 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 				}
 				const data = snapshot.data();
 				if (data == null) {
-					setLocalMemory(DEFAULT_MEMORY);
+					setLocal(DEFAULT_MEMORY);
 				} else {
-					setLocalMemory(data);
+					setLocal(data);
 				}
 			});
 		},
-		[memoryDoc, setLocalMemory],
+		[memoryDoc],
 	);
 
 	/**
