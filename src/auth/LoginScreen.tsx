@@ -84,15 +84,15 @@ const Bar = styled.View`
 
 const UsernameText = styled.Text`
 	font-family: Inter;
-	font-weight: 600;
 	font-size: 24px;
-	color: ${(p) => p.theme.fill.primary};
+	font-weight: 600;
+	color: ${(p) => p.theme.timer.text};
 `;
 
 const EmailText = styled.Text`
 	font-family: Inter;
-	font-weight: 500;
 	font-size: 16px;
-	color: ${(p) => p.theme.fill.primary};
+	font-weight: 500;
+	color: ${(p) => p.theme.timer.text};
 	opacity: 0.5;
 `;

@@ -52,8 +52,9 @@ const Container = styled.View<ContainerProps>`
 
 const QuestionText = styled.Text`
 	text-align: center;
+	font-family: Inter;
 	font-size: 20px;
-	font-weight: 800;
+	font-weight: 600;
 	color: ${(p) => p.theme.timer.text};
 `;
 
@@ -76,7 +77,7 @@ const SelectBackground = styled.View`
 	left: 0;
 	right: 0;
 	bottom: 0;
-	border-radius: 16px;
+	border-radius: 20px;
 	background-color: ${(p) => p.theme.timer.fluidFill};
 	opacity: ${(p) => p.theme.timer.fluidOpacity};
 `;
@@ -88,8 +89,9 @@ const OptionTouchable = styled.TouchableOpacity`
 
 const OptionText = styled.Text`
 	text-align: center;
-	font-size: 20px;
-	font-weight: 800;
+	font-family: Inter;
+	font-size: 16px;
+	font-weight: 500;
 	color: ${(p) => p.theme.timer.text};
 `;
 
@@ -119,6 +121,6 @@ const OptionBackgroundBase = styled(Animated.View)`
 	top: 0;
 	bottom: 0;
 	width: 33%;
-	border-radius: 8px;
+	border-radius: 12px;
 	background-color: ${(p) => p.theme.background};
 `;
