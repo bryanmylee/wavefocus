@@ -47,7 +47,7 @@ export const cleanupUsersEveryMonth = functions.pubsub
 	.schedule('0 0 1 * *') // first day of every month
 	.onRun(async () => {
 		const now = Date.now();
-		console.log(`cleanup: Initializing cleanup at ${now}`);
+		console.log(`cleanupUsersEveryMonth: Initializing cleanup at ${now}`);
 		const docs = await admin
 			.firestore()
 			.collection('last-active')
