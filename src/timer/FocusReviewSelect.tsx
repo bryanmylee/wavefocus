@@ -92,7 +92,7 @@ const OptionText = styled.Text`
 	font-family: Inter;
 	font-size: 16px;
 	font-weight: 600;
-	color: ${(p) => p.theme.text.base};
+	color: ${(p) => p.theme.button.text};
 `;
 
 interface OptionBackgroundProps {

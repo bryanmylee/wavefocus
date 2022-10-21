@@ -111,7 +111,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<BottomBar insets={insets} style={barAnim} pointerEvents="box-none">
-				<Fade when={timerStage === 'focus' && secondsRemaining === 0}>
+				<Fade when={secondsRemaining === 0}>
 					<FocusReviewSelect
 						currentIndex={reviewIndex}
 						onCurrentIndexChange={setReviewIndex}
@@ -121,16 +121,12 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				<BottomActionContainer pointerEvents="box-none">
 					<Fade when={canReset} fallback={<IconPlaceholder />} duration={250}>
 						<TouchableOpacity onPress={handleReset}>
-							<ThemedIcon name="undo" size={42} color={theme.text.base} />
+							<ThemedIcon name="undo" size={42} color={theme.primary} />
 						</TouchableOpacity>
 					</Fade>
 					<Fade when={canSkip} fallback={<IconPlaceholder />} duration={250}>
 						<TouchableOpacity onPress={handleNext}>
-							<ThemedIcon
-								name="arrow-right"
-								size={42}
-								color={theme.text.base}
-							/>
+							<ThemedIcon name="arrow-right" size={42} color={theme.primary} />
 						</TouchableOpacity>
 					</Fade>
 				</BottomActionContainer>

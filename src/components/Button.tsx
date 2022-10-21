@@ -30,7 +30,7 @@ const ButtonBackground = styled.View`
 `;
 
 const StyledText = styled.Text`
-	color: ${(p) => p.theme.text.base};
+	color: ${(p) => p.theme.button.text};
 	font-size: 18px;
 	font-weight: 500;
 	font-family: Inter;
