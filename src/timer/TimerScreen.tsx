@@ -134,7 +134,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<BottomBar insets={insets} style={barAnim} pointerEvents="box-none">
-				<Fade when={isFocus && !isActive}>
+				<Fade when={isFocus && !isActive && !isReset}>
 					<FocusReviewSelect
 						currentReview={pendingReview}
 						onCurrentReviewChange={setPendingReview}
