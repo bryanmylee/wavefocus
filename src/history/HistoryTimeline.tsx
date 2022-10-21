@@ -39,11 +39,12 @@ export default function HistoryTimeline() {
 
 	return (
 		<Container onLayout={handleLayout}>
-			<Svg style={{backgroundColor: 'white'}} height={10} width={width}>
+			<Svg height={10} width={width}>
 				<Line
 					strokeWidth={strokeWidth}
 					strokeLinecap="round"
-					stroke={theme.button.fill}
+					stroke={theme.timer.progressTrack}
+					opacity={theme.timer.progressTrackOpacity}
 					x1={strokeWidth / 2}
 					x2={width - strokeWidth / 2}
 					y={5}
@@ -53,7 +54,7 @@ export default function HistoryTimeline() {
 						key={x1}
 						strokeWidth={strokeWidth}
 						strokeLinecap="round"
-						stroke={theme.button.text}
+						stroke={theme.timer.progressFill}
 						x1={x1}
 						x2={x2}
 						y={5}
