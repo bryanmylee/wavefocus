@@ -20,22 +20,26 @@ export default function HistoryTimeline() {
 	const trackWidth = width - strokeWidth;
 
 	const {intervals} = useHistoryMemory();
-	const today8am = dayjs().startOf('day').add(8, 'hours');
+	const dayStartHour = 8;
+	let dayStart = dayjs().startOf('day').add(dayStartHour, 'hours');
+	if (dayjs().hour() < dayStartHour) {
+		dayStart = dayStart.subtract(1, 'day');
+	}
 	const filteredIntervals = useMemo(() => {
 		return intervals
-			.filter(({end}) => dayjs(end).isAfter(today8am))
+			.filter(({end}) => dayjs(end).isAfter(dayStart))
 			.sort((a, b) => a.start - b.start);
-	}, [intervals, today8am]);
+	}, [intervals, dayStart]);
 	const now = useCurrentMs(10000);
 	const intervalSizes: IntervalSize[] = useMemo(() => {
-		const today8amMs = today8am.unix() * 1000;
+		const today8amMs = dayStart.unix() * 1000;
 		return filteredIntervals.map(({start, end}) => {
 			const startPercent = Math.max(0, start - today8amMs) / DAY_DURATION_MS;
 			const endPercent =
 				Math.max(0, Math.min(end, now) - today8amMs) / DAY_DURATION_MS;
 			return [trackWidth * startPercent, trackWidth * endPercent];
 		});
-	}, [filteredIntervals, today8am, trackWidth, now]);
+	}, [filteredIntervals, dayStart, trackWidth, now]);
 
 	return (
 		<Container onLayout={handleLayout}>
