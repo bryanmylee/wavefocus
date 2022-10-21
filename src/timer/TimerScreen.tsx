@@ -111,7 +111,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<BottomBar insets={insets} style={barAnim} pointerEvents="box-none">
-				<Fade when={secondsRemaining === 0}>
+				<Fade when={timerStage === 'focus' && secondsRemaining === 0}>
 					<FocusReviewSelect
 						currentIndex={reviewIndex}
 						onCurrentIndexChange={setReviewIndex}
