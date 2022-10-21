@@ -4,11 +4,17 @@ import Svg from 'react-native-svg';
 import styled from 'styled-components/native';
 import WavesAnimation from '../timer/WavesAnimation';
 
-export default function HistoryHeaderAnimation() {
+interface HistoryHeaderAnimationProps {
+	pause?: boolean;
+}
+
+export default function HistoryHeaderAnimation({
+	pause,
+}: HistoryHeaderAnimationProps) {
 	const insets = useSafeAreaInsets();
 	return (
 		<FlippedSvg>
-			<WavesAnimation show move baseHeight={insets.top + 30} />
+			<WavesAnimation show move pause={pause} baseHeight={insets.top + 30} />
 		</FlippedSvg>
 	);
 }

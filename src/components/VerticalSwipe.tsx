@@ -169,6 +169,15 @@ interface VerticalSwipeScreenProps extends PropsWithChildren {
 	type?: ScreenType;
 }
 
+const VerticalSwipeScreenContext = React.createContext<{
+	visible: boolean;
+}>({
+	visible: true,
+});
+
+export const useVerticalSwipeScreenContext = () =>
+	useContext(VerticalSwipeScreenContext);
+
 export function Screen({
 	children,
 	forceMount = false,
@@ -178,14 +187,16 @@ export function Screen({
 	const {mainVisible, topVisible, bottomVisible} = useContext(
 		VerticalSwipeNavigatorContext,
 	);
+	const visible =
+		(type === 'bottom' && bottomVisible) ||
+		(type === 'top' && topVisible) ||
+		(type === 'main' && mainVisible);
 	return (
-		<ScreenContainer windowHeight={height} type={type}>
-			{(forceMount ||
-				(type === 'bottom' && bottomVisible) ||
-				(type === 'top' && topVisible) ||
-				(type === 'main' && mainVisible)) &&
-				children}
-		</ScreenContainer>
+		<VerticalSwipeScreenContext.Provider value={{visible}}>
+			<ScreenContainer windowHeight={height} type={type}>
+				{(forceMount || visible) && children}
+			</ScreenContainer>
+		</VerticalSwipeScreenContext.Provider>
 	);
 }
 

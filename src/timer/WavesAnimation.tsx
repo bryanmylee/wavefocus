@@ -18,12 +18,14 @@ interface WavesAnimationProps {
 	show: boolean;
 	move: boolean;
 	baseHeight: number;
+	pause?: boolean;
 }
 
 export default function WavesAnimation({
 	show,
 	move,
 	baseHeight,
+	pause,
 }: WavesAnimationProps) {
 	const scale = useSharedValue(1);
 	useEffect(
@@ -52,13 +54,20 @@ export default function WavesAnimation({
 				heightOffset={10}
 				cycleMs={5000}
 				scale={scale}
+				pause={pause}
 			/>
-			<Wave waveHeight={waveHeight} cycleMs={3000} scale={scale} />
+			<Wave
+				waveHeight={waveHeight}
+				cycleMs={3000}
+				scale={scale}
+				pause={pause}
+			/>
 			<Wave
 				waveHeight={waveHeight}
 				heightOffset={-10}
 				cycleMs={4000}
 				scale={scale}
+				pause={pause}
 			/>
 		</>
 	);
@@ -69,9 +78,10 @@ interface WaveProps {
 	heightOffset?: number;
 	cycleMs: number;
 	scale: SharedValue<number>;
+	pause?: boolean;
 }
 
-function Wave({waveHeight, heightOffset, cycleMs, scale}: WaveProps) {
+function Wave({waveHeight, heightOffset, cycleMs, scale, pause}: WaveProps) {
 	const theme = useTheme();
 	const {width, height} = useWindowDimensions();
 	return (
@@ -85,6 +95,7 @@ function Wave({waveHeight, heightOffset, cycleMs, scale}: WaveProps) {
 				heightOffset,
 				cycleMs,
 				scale,
+				pause,
 			})}
 		/>
 	);
@@ -97,6 +108,7 @@ interface WavePathProps {
 	heightOffset?: number;
 	cycleMs: number;
 	scale: SharedValue<number>;
+	pause?: boolean;
 }
 
 function useWavePath({
@@ -106,6 +118,7 @@ function useWavePath({
 	heightOffset,
 	cycleMs,
 	scale,
+	pause,
 }: WavePathProps) {
 	const dx = windowWidth / 3;
 	const waveLength = windowWidth + dx;
@@ -115,6 +128,7 @@ function useWavePath({
 		from: 0,
 		to: 1,
 		cycleMs,
+		pause,
 	});
 
 	const wavePoints = useDerivedValue(() =>
