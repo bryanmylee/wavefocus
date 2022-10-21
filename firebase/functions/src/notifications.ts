@@ -3,8 +3,6 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import {PROJECT_ID, LOCATION} from './constants';
 
-admin.initializeApp();
-
 const FOCUS_DURATION_SEC = 25 * 60;
 const RELAX_DURATION_SEC = 5 * 60;
 
