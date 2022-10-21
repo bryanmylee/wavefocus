@@ -79,7 +79,7 @@ const SelectBackground = styled.View`
 	right: 0;
 	bottom: 0;
 	border-radius: 18px;
-	background-color: ${(p) => p.theme.fill.button};
+	background-color: ${(p) => p.theme.button.fill};
 `;
 
 const OptionTouchable = styled.TouchableOpacity`

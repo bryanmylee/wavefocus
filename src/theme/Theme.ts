@@ -1,5 +1,6 @@
 export interface Theme {
 	background: string;
+	primary: string;
 	timer: {
 		text: string;
 		progressFill: string;
@@ -8,9 +9,8 @@ export interface Theme {
 		fluidFill: string;
 		fluidOpacity: number;
 	};
-	fill: {
-		primary: string;
-		button: string;
+	button: {
+		fill: string;
 	};
 	text: {
 		base: string;
@@ -20,6 +20,7 @@ export interface Theme {
 
 export const LIGHT_FOCUS_THEME: Theme = {
 	background: 'rgb(226, 255, 250)',
+	primary: 'rgb(7, 115, 95)',
 	timer: {
 		text: 'rgb(7, 115, 95)',
 		progressFill: 'rgb(7, 115, 95)',
@@ -28,9 +29,8 @@ export const LIGHT_FOCUS_THEME: Theme = {
 		fluidFill: 'rgb(24, 197, 166)',
 		fluidOpacity: 0.3,
 	},
-	fill: {
-		primary: 'rgb(7, 115, 95)',
-		button: 'rgb(175, 240, 228)',
+	button: {
+		fill: 'rgb(175, 240, 228)',
 	},
 	text: {
 		base: 'rgb(6, 67, 56)',
@@ -40,6 +40,7 @@ export const LIGHT_FOCUS_THEME: Theme = {
 
 export const LIGHT_RELAX_THEME: Theme = {
 	background: 'rgb(226, 250, 255)',
+	primary: 'rgb(42, 107, 123)',
 	timer: {
 		text: 'rgb(42, 107, 123)',
 		progressFill: 'rgb(42, 107, 123)',
@@ -48,9 +49,8 @@ export const LIGHT_RELAX_THEME: Theme = {
 		fluidFill: 'rgb(0, 113, 138)',
 		fluidOpacity: 0.12,
 	},
-	fill: {
-		primary: 'rgb(42, 107, 123)',
-		button: 'rgb(175, 240, 228)',
+	button: {
+		fill: 'rgb(175, 240, 228)',
 	},
 	text: {
 		base: 'rgb(6, 67, 56)',
@@ -60,6 +60,7 @@ export const LIGHT_RELAX_THEME: Theme = {
 
 export const DARK_FOCUS_THEME: Theme = {
 	background: 'rgb(33, 38, 37)',
+	primary: 'rgb(129, 254, 231)',
 	timer: {
 		text: 'rgb(129, 254, 231)',
 		progressFill: 'rgb(129, 254, 231)',
@@ -68,9 +69,8 @@ export const DARK_FOCUS_THEME: Theme = {
 		fluidFill: 'rgb(24, 197, 166)',
 		fluidOpacity: 0.3,
 	},
-	fill: {
-		primary: 'rgb(129, 254, 231)',
-		button: 'rgb(175, 240, 228)',
+	button: {
+		fill: 'rgb(175, 240, 228)',
 	},
 	text: {
 		base: 'rgb(6, 67, 56)',
@@ -80,6 +80,7 @@ export const DARK_FOCUS_THEME: Theme = {
 
 export const DARK_RELAX_THEME: Theme = {
 	background: 'rgb(33, 37, 38)',
+	primary: 'rgb(158, 237, 255)',
 	timer: {
 		text: 'rgb(158, 237, 255)',
 		progressFill: 'rgb(158, 237, 255)',
@@ -88,9 +89,8 @@ export const DARK_RELAX_THEME: Theme = {
 		fluidFill: 'rgb(133, 212, 229)',
 		fluidOpacity: 0.12,
 	},
-	fill: {
-		primary: 'rgb(158, 237, 255)',
-		button: 'rgb(175, 240, 228)',
+	button: {
+		fill: 'rgb(175, 240, 228)',
 	},
 	text: {
 		base: 'rgb(6, 67, 56)',

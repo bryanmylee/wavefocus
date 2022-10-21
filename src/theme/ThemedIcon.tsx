@@ -13,9 +13,9 @@ export default function ThemedIcon({color, ...props}: ThemedIconProps) {
 	const theme = useTheme();
 	const iconAnim = useAnimatedStyle(
 		() => ({
-			color: withTiming(color ?? theme.fill.primary),
+			color: withTiming(color ?? theme.primary),
 		}),
-		[color, theme.fill],
+		[color, theme.primary],
 	);
 	return <AnimatedIcon {...props} style={iconAnim} />;
 }

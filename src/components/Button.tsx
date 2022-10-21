@@ -26,7 +26,7 @@ const ButtonBackground = styled.View`
 	left: 0;
 	right: 0;
 	border-radius: 16px;
-	background-color: ${(p) => p.theme.fill.button};
+	background-color: ${(p) => p.theme.button.fill};
 `;
 
 const StyledText = styled.Text`
