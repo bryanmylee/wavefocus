@@ -16,6 +16,10 @@ const GET_DEFAULT_MEMORY = (): BestHoursMemory => ({
 	],
 });
 
+function getMinsBetween(start: dayjs.Dayjs, end: dayjs.Dayjs) {
+	return (end.unix() - start.unix()) / 60;
+}
+
 export function useBestHoursMemory() {
 	const {user} = useUser();
 	const memoryDoc = useMemo(
@@ -70,8 +74,6 @@ export function useBestHoursMemory() {
 				if (pendingStart == null || pendingEnd == null) {
 					return;
 				}
-				const hour = dayjs(pendingEnd).hour();
-				const durationMin = (pendingEnd - pendingStart) / 1000 / 60;
 				const snapshot = await memoryDoc.get();
 				if (!snapshot.exists) {
 					return;
@@ -81,7 +83,18 @@ export function useBestHoursMemory() {
 					return;
 				}
 				const scores = data.scores;
-				scores[hour] += durationMin * pendingWeight;
+				const start = dayjs(pendingStart);
+				const end = dayjs(pendingEnd);
+				// Account for durations that span across two separate hour buckets.
+				if (start.hour() === end.hour()) {
+					scores[start.hour()] += getMinsBetween(start, end) * pendingWeight;
+				} else {
+					const between = start.endOf('hour');
+					scores[start.hour()] +=
+						getMinsBetween(start, between) * pendingWeight;
+					scores[end.hour()] += getMinsBetween(between, end) * pendingWeight;
+				}
+
 				await memoryDoc.set({
 					...GET_DEFAULT_MEMORY(),
 					pendingStart: latestInterval?.start,
