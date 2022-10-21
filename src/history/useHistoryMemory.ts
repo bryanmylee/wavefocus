@@ -15,6 +15,11 @@ interface PlayPausePayload {
 	secondsRemaining: number;
 }
 
+interface Interval {
+	start: number;
+	end: number;
+}
+
 export function useHistoryMemory() {
 	const {
 		user,
@@ -128,8 +133,17 @@ export function useHistoryMemory() {
 		[subscribeAfterSignInAnonymously],
 	);
 
+	const intervals: Interval[] = useMemo(() => {
+		return Object.entries(local).map(([start, end]) => {
+			return {
+				start: parseInt(start, 10),
+				end,
+			};
+		});
+	}, [local]);
+
 	return {
-		intervals: local,
+		intervals,
 		updateHistoryOnActiveChange,
 	};
 }
