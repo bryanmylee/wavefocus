@@ -26,8 +26,7 @@ const ButtonBackground = styled.View`
 	left: 0;
 	right: 0;
 	border-radius: 16px;
-	background-color: ${(p) => p.theme.timer.fluidFill};
-	opacity: ${(p) => p.theme.timer.fluidOpacity};
+	background-color: ${(p) => p.theme.fill.button};
 `;
 
 const StyledText = styled.Text`
