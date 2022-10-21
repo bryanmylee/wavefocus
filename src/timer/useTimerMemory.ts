@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
 import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
@@ -147,12 +147,12 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		await setIsFocus(!local.isFocus);
 	}, [local.isFocus, setIsFocus]);
 
-	const [prevAnonMemory, setPrevAnonMemory] = useState<TimerMemory>();
+	const prevAnonMemory = useRef<TimerMemory>();
 	useEffect(
 		function savePrevAnonMemory() {
 			return subscribeBeforeSignOutAnonymously(async ({uid}) => {
 				const snapshot = await timerMemoryCollection.doc(uid).get();
-				setPrevAnonMemory(snapshot.data());
+				prevAnonMemory.current = snapshot.data();
 				await timerMemoryCollection.doc(uid).delete();
 			});
 		},
@@ -161,13 +161,15 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 	useEffect(
 		function transferPrevAnonMemory() {
 			return subscribeAfterSignInAnonymously(async (ev) => {
-				if (prevAnonMemory == null) {
+				if (prevAnonMemory.current == null) {
 					return;
 				}
 				if (!ev.prevIsAnon) {
 					return;
 				}
-				await timerMemoryCollection.doc(ev.user.uid).set(prevAnonMemory);
+				await timerMemoryCollection
+					.doc(ev.user.uid)
+					.set(prevAnonMemory.current);
 			});
 		},
 		[subscribeAfterSignInAnonymously, prevAnonMemory],
