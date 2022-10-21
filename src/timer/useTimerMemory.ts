@@ -135,27 +135,17 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		? secondsRemaining === FOCUS_DURATION_SEC
 		: secondsRemaining === RELAX_DURATION_SEC;
 
-	const resetStage = useCallback(
-		async (activeImmediately = true) => {
-			const now = Date.now();
-			await memoryDoc.set({
-				isFocus: local.isFocus,
-				start: activeImmediately ? now : null,
-				pause: null,
-			});
-		},
-		[local.isFocus, memoryDoc],
-	);
+	const resetStage = useCallback(async () => {
+		await memoryDoc.set({
+			isFocus: local.isFocus,
+			start: null,
+			pause: null,
+		});
+	}, [local.isFocus, memoryDoc]);
 
-	const nextStage = useCallback(
-		async (activeImmediately = true) => {
-			await setIsFocus(!local.isFocus);
-			if (activeImmediately) {
-				await setIsActive(true);
-			}
-		},
-		[local.isFocus, setIsFocus, setIsActive],
-	);
+	const nextStage = useCallback(async () => {
+		await setIsFocus(!local.isFocus);
+	}, [local.isFocus, setIsFocus]);
 
 	const [prevAnonMemory, setPrevAnonMemory] = useState<TimerMemory>();
 	useEffect(

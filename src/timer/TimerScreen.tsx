@@ -14,6 +14,7 @@ import Fade from '../components/Fade';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import {VSpace} from '../components/Space';
 import * as ZStack from '../components/ZStack';
+import {useHistoryMemory} from '../history/useHistoryMemory';
 import ThemedIcon from '../theme/ThemedIcon';
 import FocusReviewSelect from './FocusReviewSelect';
 import Timer from './Timer';
@@ -32,12 +33,12 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		isActive,
 		toggleActive,
 		secondsRemaining,
-		isDone,
 		isReset,
 		isFocus,
 		nextStage,
 		resetStage,
 	} = useTimerMemory();
+	const {updateHistoryOnActiveChange} = useHistoryMemory();
 
 	const [, setIsFocus] = useTimerStage();
 	useEffect(
@@ -49,17 +50,20 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 
 	const canReset = !isActive && !isReset;
 	const handleReset = useCallback(() => {
-		if (canReset) {
-			resetStage(false);
+		if (!canReset) {
+			return;
 		}
-	}, [canReset, resetStage]);
+		resetStage();
+		updateHistoryOnActiveChange({isActive: false, isFocus});
+	}, [canReset, resetStage, isFocus, updateHistoryOnActiveChange]);
 
 	const canSkip = !isActive;
 	const handleNext = useCallback(() => {
-		if (canSkip) {
-			nextStage(isDone);
+		if (!canSkip) {
+			return;
 		}
-	}, [canSkip, isDone, nextStage]);
+		nextStage();
+	}, [canSkip, nextStage]);
 
 	const handlePlayPause = useCallback(() => {
 		if (!isActive) {
