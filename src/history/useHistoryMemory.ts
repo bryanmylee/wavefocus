@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
-import {FOCUS_DURATION_SEC} from '../constants';
+import {DAY_DURATION_MS, FOCUS_DURATION_SEC} from '../constants';
 import {HistoryMemory} from './types';
 
 const historyMemoryCollection =
@@ -31,6 +31,36 @@ export function useHistoryMemory() {
 		[user?.uid],
 	);
 	const [local, setLocal] = useState<HistoryMemory>(DEFAULT_MEMORY);
+
+	/**
+	 * We only want to keep history data for up to 2 days.
+	 *
+	 * We run this client-side to reduce the load on our serverless functions.
+	 * This poses a risk of leaving stale data behind if a user does not launch
+	 * the application in awhile. However, non-active users will eventually be
+	 * cleaned up by a serverless function so it is okay if we miss some users.
+	 */
+	useEffect(function cleanupOldHistory() {
+		async function cleanup() {
+			const snapshot = await memoryDoc.get();
+			if (!snapshot.exists) {
+				return;
+			}
+			const data = snapshot.data();
+			if (data == null) {
+				return;
+			}
+			const twoDaysAgo = Date.now() - 2 * DAY_DURATION_MS;
+			for (const [start, end] of Object.entries(data)) {
+				if (end <= twoDaysAgo) {
+					delete data[start];
+				}
+			}
+			await memoryDoc.set(data);
+		}
+		cleanup();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(
 		function synchronizeMemory() {
