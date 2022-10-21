@@ -150,10 +150,10 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 	const prevAnonMemory = useRef<TimerMemory>();
 	useEffect(
 		function savePrevAnonMemory() {
-			return subscribeBeforeSignOutAnonymously(async ({uid}) => {
-				const snapshot = await timerMemoryCollection.doc(uid).get();
+			return subscribeBeforeSignOutAnonymously(async (ev) => {
+				const snapshot = await timerMemoryCollection.doc(ev.uid).get();
 				prevAnonMemory.current = snapshot.data();
-				await timerMemoryCollection.doc(uid).delete();
+				await timerMemoryCollection.doc(ev.uid).delete();
 			});
 		},
 		[subscribeBeforeSignOutAnonymously],
@@ -172,7 +172,7 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 					.set(prevAnonMemory.current);
 			});
 		},
-		[subscribeAfterSignInAnonymously, prevAnonMemory],
+		[subscribeAfterSignInAnonymously],
 	);
 
 	return {

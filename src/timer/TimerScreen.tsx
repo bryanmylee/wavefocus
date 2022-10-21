@@ -54,8 +54,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 			return;
 		}
 		resetStage();
-		updateHistoryOnActiveChange({isActive: false, isFocus});
-	}, [canReset, resetStage, isFocus, updateHistoryOnActiveChange]);
+	}, [canReset, resetStage]);
 
 	const canSkip = !isActive;
 	const handleNext = useCallback(() => {
@@ -66,11 +65,24 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	}, [canSkip, nextStage]);
 
 	const handlePlayPause = useCallback(() => {
-		if (!isActive) {
+		const newActive = !isActive;
+		if (newActive) {
 			onPlay?.();
 		}
 		toggleActive();
-	}, [toggleActive, onPlay, isActive]);
+		updateHistoryOnActiveChange({
+			isActive: newActive,
+			isFocus,
+			secondsRemaining,
+		});
+	}, [
+		toggleActive,
+		onPlay,
+		isActive,
+		updateHistoryOnActiveChange,
+		isFocus,
+		secondsRemaining,
+	]);
 
 	const theme = useTheme();
 
