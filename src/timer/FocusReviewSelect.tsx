@@ -33,7 +33,7 @@ export default function FocusReviewSelect({
 						<OptionTouchable
 							key={review}
 							onPress={() => onCurrentIndexChange?.(index)}>
-							<OptionText>{review}</OptionText>
+							<OptionText active={index === currentIndex}>{review}</OptionText>
 						</OptionTouchable>
 					))}
 				</SelectArea>
@@ -79,7 +79,7 @@ const SelectBackground = styled.View`
 	right: 0;
 	bottom: 0;
 	border-radius: 18px;
-	background-color: ${(p) => p.theme.button.fill};
+	background-color: ${(p) => p.theme.select.fill};
 `;
 
 const OptionTouchable = styled.TouchableOpacity`
@@ -87,12 +87,16 @@ const OptionTouchable = styled.TouchableOpacity`
 	padding: 8px;
 `;
 
-const OptionText = styled.Text`
+interface OptionTextProps {
+	active: boolean;
+}
+
+const OptionText = styled.Text<OptionTextProps>`
 	text-align: center;
 	font-family: Inter;
 	font-size: 16px;
 	font-weight: 600;
-	color: ${(p) => p.theme.button.text};
+	color: ${(p) => (p.active ? p.theme.select.activeText : p.theme.select.text)};
 `;
 
 interface OptionBackgroundProps {
@@ -122,5 +126,5 @@ const OptionBackgroundBase = styled(Animated.View)`
 	bottom: 0;
 	width: 33%;
 	border-radius: 12px;
-	background-color: ${(p) => p.theme.background};
+	background-color: ${(p) => p.theme.select.activeFill};
 `;

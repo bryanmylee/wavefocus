@@ -17,6 +17,12 @@ export interface Theme {
 		base: string;
 		subtitle: string;
 	};
+	select: {
+		fill: string;
+		text: string;
+		activeFill: string;
+		activeText: string;
+	};
 }
 
 export const LIGHT_FOCUS_THEME: Theme = {
@@ -37,6 +43,12 @@ export const LIGHT_FOCUS_THEME: Theme = {
 	text: {
 		base: 'hsl(170, 84%, 14%)',
 		subtitle: 'hsl(170, 21%, 49%)',
+	},
+	select: {
+		fill: 'hsl(170, 68%, 81%)',
+		text: 'hsl(170, 20%, 45%)',
+		activeFill: 'hsl(170, 100%, 94%)',
+		activeText: 'hsl(170, 84%, 14%)',
 	},
 };
 
@@ -59,6 +71,12 @@ export const LIGHT_RELAX_THEME: Theme = {
 		base: 'hsl(190, 84%, 14%)',
 		subtitle: 'hsl(190, 21%, 49%)',
 	},
+	select: {
+		fill: 'hsl(190, 60%, 86%)',
+		text: 'hsl(190, 20%, 40%)',
+		activeFill: 'hsl(190, 100%, 94%)',
+		activeText: 'hsl(190, 84%, 14%)',
+	},
 };
 
 export const DARK_FOCUS_THEME: Theme = {
@@ -80,6 +98,12 @@ export const DARK_FOCUS_THEME: Theme = {
 		base: 'hsl(170, 72%, 82%)',
 		subtitle: 'hsl(170, 21%, 60%)',
 	},
+	select: {
+		fill: 'hsl(170, 48%, 23%)',
+		text: 'hsl(170, 20%, 60%)',
+		activeFill: 'hsl(170, 100%, 94%)',
+		activeText: 'hsl(170, 84%, 14%)',
+	},
 };
 
 export const DARK_RELAX_THEME: Theme = {
@@ -100,5 +124,11 @@ export const DARK_RELAX_THEME: Theme = {
 	text: {
 		base: 'hsl(190, 72%, 82%)',
 		subtitle: 'hsl(190, 21%, 60%)',
+	},
+	select: {
+		fill: 'hsl(190, 15%, 21%)',
+		text: 'hsl(190, 20%, 60%)',
+		activeFill: 'hsl(190, 100%, 94%)',
+		activeText: 'hsl(190, 84%, 14%)',
 	},
 };
