@@ -20,8 +20,9 @@ export default function FocusReviewSelect({
 	onCurrentIndexChange,
 }: FocusReviewSelectProps) {
 	const window = useWindowDimensions();
+	const md = window.width > 480;
 	return (
-		<Container wide={window.width > 480}>
+		<Container md={md}>
 			<QuestionText>How was your focus?</QuestionText>
 			<VSpace size={12} />
 			<SelectContainer>
@@ -42,12 +43,12 @@ export default function FocusReviewSelect({
 }
 
 interface ContainerProps {
-	wide: boolean;
+	md: boolean;
 }
 
 const Container = styled.View<ContainerProps>`
 	margin: 24px;
-	${(p) => (p.wide ? 'margin-left: auto;' : '')}
+	${(p) => (p.md ? 'margin-left: auto;' : '')}
 `;
 
 const QuestionText = styled.Text`
@@ -60,8 +61,8 @@ const QuestionText = styled.Text`
 
 const SelectContainer = styled.View`
 	posiiton: relative;
-	padding: 8px;
-	width: 256px;
+	padding: 6px;
+	width: 224px;
 	margin-left: auto;
 	margin-right: auto;
 `;
@@ -77,9 +78,8 @@ const SelectBackground = styled.View`
 	left: 0;
 	right: 0;
 	bottom: 0;
-	border-radius: 20px;
-	background-color: ${(p) => p.theme.timer.fluidFill};
-	opacity: ${(p) => p.theme.timer.fluidOpacity};
+	border-radius: 18px;
+	background-color: ${(p) => p.theme.fill.button};
 `;
 
 const OptionTouchable = styled.TouchableOpacity`
@@ -91,7 +91,7 @@ const OptionText = styled.Text`
 	text-align: center;
 	font-family: Inter;
 	font-size: 16px;
-	font-weight: 500;
+	font-weight: 600;
 	color: ${(p) => p.theme.text.base};
 `;
 
