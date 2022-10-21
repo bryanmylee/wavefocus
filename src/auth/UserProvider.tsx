@@ -18,6 +18,7 @@ import {
 	Unsubscriber,
 	useCreateSubscriber,
 } from '../utils/useCreateSubscriber';
+import {useLastActive} from './useLastActive';
 
 GoogleSignin.configure({
 	webClientId:
@@ -114,8 +115,10 @@ export const useUser = () => useContext(UserContext);
 export default function UserProvider({children}: PropsWithChildren) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [user, setUser] = useState<FirebaseAuthTypes.User | null>(
-		auth().currentUser,
+		() => auth().currentUser,
 	);
+
+	useLastActive(user);
 
 	useEffect(
 		function syncAuthState() {
