@@ -13,6 +13,7 @@ import Centered from '../components/Centered';
 import Fade from '../components/Fade';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import {VSpace} from '../components/Space';
+import {useVerticalSwipeScreenContext} from '../components/VerticalSwipe';
 import * as ZStack from '../components/ZStack';
 import {useHistoryMemory} from '../history/useHistoryMemory';
 import ThemedIcon from '../theme/ThemedIcon';
@@ -93,12 +94,18 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 
 	const insets = useSafeAreaInsets();
 
+	const {visible} = useVerticalSwipeScreenContext();
+
 	const [reviewIndex, setReviewIndex] = useState(1);
 
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
-				<TimerFluidAnimation isActive={isActive} isFocus={isFocus} />
+				<TimerFluidAnimation
+					isActive={isActive}
+					isFocus={isFocus}
+					pause={!visible}
+				/>
 			</ZStack.Item>
 			<ZStack.Item>
 				<TimerHorizontalPanHandler

@@ -8,11 +8,13 @@ import WavesAnimation from './WavesAnimation';
 interface TimerFluidAnimationProps {
 	isActive: boolean;
 	isFocus: boolean;
+	pause?: boolean;
 }
 
 export function TimerFluidAnimation({
 	isActive,
 	isFocus,
+	pause,
 }: TimerFluidAnimationProps) {
 	const insets = useSafeAreaInsets();
 	return (
@@ -21,9 +23,10 @@ export function TimerFluidAnimation({
 				<WavesAnimation
 					show={!isFocus || !isActive}
 					move={!isFocus}
+					pause={pause}
 					baseHeight={insets.bottom + 110}
 				/>
-				<ActiveFocusAnimation show={isFocus && isActive} />
+				<ActiveFocusAnimation show={isFocus && isActive} pause={pause} />
 			</Svg>
 		</Container>
 	);

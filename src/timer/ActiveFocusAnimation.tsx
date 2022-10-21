@@ -18,10 +18,12 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface ActiveFocusAnimationProps {
 	show: boolean;
+	pause?: boolean;
 }
 
 export default function ActiveFocusAnimation({
 	show,
+	pause,
 }: ActiveFocusAnimationProps) {
 	const {width, height} = useWindowDimensions();
 	const showProgress = useSharedValue(show ? 1 : 0);
@@ -36,9 +38,24 @@ export default function ActiveFocusAnimation({
 	const radius = diameter / 2;
 	return (
 		<>
-			<FocusCircle radius={radius} showProgress={showProgress} cycleMs={1000} />
-			<FocusCircle radius={radius} showProgress={showProgress} cycleMs={1333} />
-			<FocusCircle radius={radius} showProgress={showProgress} cycleMs={1750} />
+			<FocusCircle
+				radius={radius}
+				showProgress={showProgress}
+				cycleMs={1000}
+				pause={pause}
+			/>
+			<FocusCircle
+				radius={radius}
+				showProgress={showProgress}
+				cycleMs={1333}
+				pause={pause}
+			/>
+			<FocusCircle
+				radius={radius}
+				showProgress={showProgress}
+				cycleMs={1750}
+				pause={pause}
+			/>
 		</>
 	);
 }
@@ -47,6 +64,7 @@ interface FocusCircleProps {
 	radius: number;
 	showProgress: SharedValue<number>;
 	cycleMs: number;
+	pause?: boolean;
 }
 
 type Point = [number, number];
@@ -55,7 +73,7 @@ function getPointFromTheta(theta: number, d: number): Point {
 	return [d * Math.cos(theta), d * Math.sin(theta)];
 }
 
-function FocusCircle({radius, showProgress, cycleMs}: FocusCircleProps) {
+function FocusCircle({radius, showProgress, cycleMs, pause}: FocusCircleProps) {
 	const theme = useTheme();
 	const insets = useSafeAreaInsets();
 	const {width, height} = useWindowDimensions();
@@ -66,6 +84,7 @@ function FocusCircle({radius, showProgress, cycleMs}: FocusCircleProps) {
 		from: 0,
 		to: Math.PI * 4,
 		cycleMs: cycleMs * 2,
+		pause,
 	});
 	const wiggleRadius = 10;
 	const wiggle = useDerivedValue(() =>
