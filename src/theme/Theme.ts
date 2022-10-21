@@ -100,7 +100,7 @@ export const DARK_FOCUS_THEME: Theme = {
 	},
 	select: {
 		fill: 'hsl(170, 48%, 23%)',
-		text: 'hsl(170, 20%, 60%)',
+		text: 'hsl(170, 40%, 70%)',
 		activeFill: 'hsl(170, 100%, 94%)',
 		activeText: 'hsl(170, 84%, 14%)',
 	},
