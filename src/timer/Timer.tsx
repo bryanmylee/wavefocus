@@ -18,19 +18,18 @@ import * as ZStack from '../components/ZStack';
 import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
 import ThemedIcon from '../theme/ThemedIcon';
 import {clampWorklet} from '../utils/clamp';
-import {TimerStage} from './types';
 
 const MIN_PROGRESS = 0.0005;
 
 export interface TimerProps {
 	seconds: number;
-	timerStage: TimerStage;
+	isFocus: boolean;
 	skipResetProgress: SharedValue<number>;
 }
 
 export default function Timer({
 	seconds,
-	timerStage,
+	isFocus,
 	skipResetProgress,
 }: TimerProps) {
 	const minutePart = Math.floor(seconds / 60);
@@ -46,8 +45,7 @@ export default function Timer({
 	const paddedDiameter = 120 + diameter;
 	const circumference = Math.PI * 2 * radius;
 
-	const duration =
-		timerStage === 'focus' ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
+	const duration = isFocus ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
 	const progress = useSharedValue(0);
 
 	useEffect(

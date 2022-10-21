@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
 import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
 import {useElapsedSeconds} from '../utils/useElapsedSeconds';
-import {TimerMemory, TimerStage} from './types';
+import {TimerMemory} from './types';
 
 const timerMemoryCollection = firestore().collection<TimerMemory>('timers');
 
@@ -15,7 +15,7 @@ const DEFAULT_MEMORY: TimerMemory = {
 
 interface OnActiveChangePayload {
 	isActive: boolean;
-	timerStage: TimerStage;
+	isFocus: boolean;
 	secondsRemaining: number;
 }
 
@@ -52,11 +52,6 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		[memoryDoc],
 	);
 
-	/**
-	 * timerStage
-	 */
-	const timerStage: TimerStage = local.isFocus ? 'focus' : 'relax';
-
 	const setIsFocus = useCallback(
 		async (isFocus: boolean) => {
 			await memoryDoc.set({isFocus, start: null, pause: null});
@@ -64,15 +59,9 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		[memoryDoc],
 	);
 
-	const setTimerStage = useCallback(
-		(stage: TimerStage) => {
-			setIsFocus(stage === 'focus');
-		},
-		[setIsFocus],
-	);
-
-	const maxDurationSec =
-		timerStage === 'focus' ? FOCUS_DURATION_SEC : RELAX_DURATION_SEC;
+	const maxDurationSec = local.isFocus
+		? FOCUS_DURATION_SEC
+		: RELAX_DURATION_SEC;
 	const elapsedSeconds = useElapsedSeconds(
 		local.start,
 		local.pause,
@@ -98,7 +87,7 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 				onActiveChange?.({
 					isActive: newIsActive,
 					secondsRemaining,
-					timerStage,
+					isFocus: local.isFocus,
 				});
 			}
 			if (newIsActive) {
@@ -129,7 +118,7 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 				}
 			}
 		},
-		[memoryDoc, secondsRemaining, onActiveChange, timerStage, user],
+		[memoryDoc, secondsRemaining, onActiveChange, local.isFocus, user],
 	);
 
 	const toggleActive = useCallback(async () => {
@@ -142,10 +131,9 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 	/**
 	 * isReset
 	 */
-	const isReset =
-		timerStage === 'focus'
-			? secondsRemaining === FOCUS_DURATION_SEC
-			: secondsRemaining === RELAX_DURATION_SEC;
+	const isReset = local.isFocus
+		? secondsRemaining === FOCUS_DURATION_SEC
+		: secondsRemaining === RELAX_DURATION_SEC;
 
 	const resetStage = useCallback(
 		async (activeImmediately = true) => {
@@ -202,8 +190,8 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		isReset,
 		toggleActive,
 		setIsActive,
-		timerStage,
-		setTimerStage,
+		isFocus: local.isFocus,
+		setIsFocus,
 		resetStage,
 		nextStage,
 	};

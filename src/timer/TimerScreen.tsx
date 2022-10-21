@@ -34,17 +34,17 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		secondsRemaining,
 		isDone,
 		isReset,
-		timerStage,
+		isFocus,
 		nextStage,
 		resetStage,
 	} = useTimerMemory();
 
-	const [, setAppTimerStage] = useTimerStage();
+	const [, setIsFocus] = useTimerStage();
 	useEffect(
 		function synchronizeAppTimerStage() {
-			setAppTimerStage(timerStage);
+			setIsFocus(isFocus);
 		},
-		[timerStage, setAppTimerStage],
+		[isFocus, setIsFocus],
 	);
 
 	const canReset = !isActive && !isReset;
@@ -82,7 +82,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
-				<TimerFluidAnimation isActive={isActive} timerStage={timerStage} />
+				<TimerFluidAnimation isActive={isActive} isFocus={isFocus} />
 			</ZStack.Item>
 			<ZStack.Item>
 				<TimerHorizontalPanHandler
@@ -101,7 +101,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 									disabled={secondsRemaining === 0}>
 									<Timer
 										seconds={secondsRemaining}
-										timerStage={timerStage}
+										isFocus={isFocus}
 										skipResetProgress={skipResetProgress}
 									/>
 								</TouchableOpacity>
@@ -111,7 +111,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<BottomBar insets={insets} style={barAnim} pointerEvents="box-none">
-				<Fade when={timerStage === 'focus' && secondsRemaining === 0}>
+				<Fade when={isFocus && secondsRemaining === 0}>
 					<FocusReviewSelect
 						currentIndex={reviewIndex}
 						onCurrentIndexChange={setReviewIndex}

@@ -10,14 +10,14 @@ import {
 } from './Theme';
 
 export default function ThemeProvider({children}: PropsWithChildren) {
-	const [timerStage] = useTimerStage();
+	const [isFocus] = useTimerStage();
 	const colorScheme = useColorScheme();
 	const theme =
 		colorScheme !== 'dark'
-			? timerStage === 'focus'
+			? isFocus
 				? LIGHT_FOCUS_THEME
 				: LIGHT_RELAX_THEME
-			: timerStage === 'focus'
+			: isFocus
 			? DARK_FOCUS_THEME
 			: DARK_RELAX_THEME;
 

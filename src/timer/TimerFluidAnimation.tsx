@@ -4,27 +4,26 @@ import Svg from 'react-native-svg';
 import styled from 'styled-components/native';
 import ActiveFocusAnimation from './ActiveFocusAnimation';
 import WavesAnimation from './WavesAnimation';
-import {TimerStage} from './types';
 
 interface TimerFluidAnimationProps {
 	isActive: boolean;
-	timerStage: TimerStage;
+	isFocus: boolean;
 }
 
 export function TimerFluidAnimation({
 	isActive,
-	timerStage,
+	isFocus,
 }: TimerFluidAnimationProps) {
 	const insets = useSafeAreaInsets();
 	return (
 		<Container>
 			<Svg>
 				<WavesAnimation
-					show={timerStage === 'relax' || !isActive}
-					move={timerStage === 'relax'}
+					show={!isFocus || !isActive}
+					move={!isFocus}
 					baseHeight={insets.bottom + 110}
 				/>
-				<ActiveFocusAnimation show={timerStage === 'focus' && isActive} />
+				<ActiveFocusAnimation show={isFocus && isActive} />
 			</Svg>
 		</Container>
 	);

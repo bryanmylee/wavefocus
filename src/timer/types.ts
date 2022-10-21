@@ -3,5 +3,3 @@ export interface TimerMemory {
 	start: number | null;
 	pause: number | null;
 }
-
-export type TimerStage = 'focus' | 'relax';
