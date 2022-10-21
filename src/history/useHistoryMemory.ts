@@ -79,30 +79,27 @@ export function useHistoryMemory() {
 		[memoryDoc],
 	);
 
-	const handlePause = useCallback(
-		async (secondsRemaining: number) => {
-			const snapshot = await memoryDoc.get();
-			if (!snapshot.exists) {
-				return;
-			}
-			const startToEnd = snapshot.data();
-			if (startToEnd == null) {
-				return;
-			}
-			const latestStart = Object.keys(startToEnd)
-				.map((start) => parseInt(start, 10))
-				.sort()
-				.at(-1);
-			if (latestStart == null) {
-				return;
-			}
-			await memoryDoc.update({
-				[latestStart]:
-					latestStart + (FOCUS_DURATION_SEC - secondsRemaining) * 1000,
-			});
-		},
-		[memoryDoc],
-	);
+	const handlePause = useCallback(async () => {
+		const snapshot = await memoryDoc.get();
+		if (!snapshot.exists) {
+			return;
+		}
+		const startToEnd = snapshot.data();
+		if (startToEnd == null) {
+			return;
+		}
+		const latestStart = Object.keys(startToEnd)
+			.map((start) => parseInt(start, 10))
+			.sort()
+			.at(-1);
+		if (latestStart == null) {
+			return;
+		}
+		const now = Date.now();
+		await memoryDoc.update({
+			[latestStart]: now,
+		});
+	}, [memoryDoc]);
 
 	const handlePlay = useCallback(
 		async (secondsRemaining: number) => {
@@ -129,7 +126,7 @@ export function useHistoryMemory() {
 			if (isActive) {
 				await handlePlay(secondsRemaining);
 			} else {
-				await handlePause(secondsRemaining);
+				await handlePause();
 			}
 		},
 		[handlePlay, handlePause],
@@ -164,12 +161,14 @@ export function useHistoryMemory() {
 	);
 
 	const intervals: Interval[] = useMemo(() => {
-		return Object.entries(local).map(([start, end]) => {
-			return {
-				start: parseInt(start, 10),
-				end,
-			};
-		});
+		return Object.entries(local)
+			.map(([start, end]) => {
+				return {
+					start: parseInt(start, 10),
+					end,
+				};
+			})
+			.sort((a, b) => a.start - b.start);
 	}, [local]);
 
 	return {
