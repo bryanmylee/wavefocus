@@ -6,21 +6,16 @@ import Icon, {
 import {useTheme} from 'styled-components/native';
 
 export interface ThemedIconProps extends FontAwesome5IconProps {
-	variant?: 'primary';
 	color?: string;
 }
 
-export default function ThemedIcon({
-	color,
-	variant = 'primary',
-	...props
-}: ThemedIconProps) {
+export default function ThemedIcon({color, ...props}: ThemedIconProps) {
 	const theme = useTheme();
 	const iconAnim = useAnimatedStyle(
 		() => ({
-			color: withTiming(color ?? theme.fill[variant]),
+			color: withTiming(color ?? theme.fill.primary),
 		}),
-		[color, theme.fill, variant],
+		[color, theme.fill],
 	);
 	return <AnimatedIcon {...props} style={iconAnim} />;
 }

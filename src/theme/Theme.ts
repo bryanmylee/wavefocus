@@ -11,6 +11,10 @@ export interface Theme {
 	fill: {
 		primary: string;
 	};
+	text: {
+		base: string;
+		subtitle: string;
+	};
 }
 
 export const LIGHT_FOCUS_THEME: Theme = {
@@ -25,6 +29,10 @@ export const LIGHT_FOCUS_THEME: Theme = {
 	},
 	fill: {
 		primary: 'rgb(7, 115, 95)',
+	},
+	text: {
+		base: 'rgb(6, 67, 56)',
+		subtitle: 'rgb(98, 151, 141)',
 	},
 };
 
@@ -41,6 +49,10 @@ export const LIGHT_RELAX_THEME: Theme = {
 	fill: {
 		primary: 'rgb(42, 107, 123)',
 	},
+	text: {
+		base: 'rgb(6, 67, 56)',
+		subtitle: 'rgb(98, 151, 141)',
+	},
 };
 
 export const DARK_FOCUS_THEME: Theme = {
@@ -56,6 +68,10 @@ export const DARK_FOCUS_THEME: Theme = {
 	fill: {
 		primary: 'rgb(129, 254, 231)',
 	},
+	text: {
+		base: 'rgb(6, 67, 56)',
+		subtitle: 'rgb(98, 151, 141)',
+	},
 };
 
 export const DARK_RELAX_THEME: Theme = {
@@ -70,5 +86,9 @@ export const DARK_RELAX_THEME: Theme = {
 	},
 	fill: {
 		primary: 'rgb(158, 237, 255)',
+	},
+	text: {
+		base: 'rgb(6, 67, 56)',
+		subtitle: 'rgb(98, 151, 141)',
 	},
 };

@@ -31,7 +31,7 @@ export default function LoginScreen({onDismiss}: LoginScreenProps) {
 		<FixedSafeAreaView>
 			<Bar>
 				<TouchableOpacity onPress={onDismiss}>
-					<ThemedIcon name="times" size={42} />
+					<ThemedIcon name="times" size={42} color={theme.text.base} />
 				</TouchableOpacity>
 			</Bar>
 			<Centered>
@@ -86,13 +86,12 @@ const UsernameText = styled.Text`
 	font-family: Inter;
 	font-size: 24px;
 	font-weight: 600;
-	color: ${(p) => p.theme.timer.text};
+	color: ${(p) => p.theme.text.base};
 `;
 
 const EmailText = styled.Text`
 	font-family: Inter;
 	font-size: 16px;
 	font-weight: 500;
-	color: ${(p) => p.theme.timer.text};
-	opacity: 0.5;
+	color: ${(p) => p.theme.text.subtitle};
 `;

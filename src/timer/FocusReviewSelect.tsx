@@ -55,7 +55,7 @@ const QuestionText = styled.Text`
 	font-family: Inter;
 	font-size: 20px;
 	font-weight: 600;
-	color: ${(p) => p.theme.timer.text};
+	color: ${(p) => p.theme.text.base};
 `;
 
 const SelectContainer = styled.View`
@@ -92,7 +92,7 @@ const OptionText = styled.Text`
 	font-family: Inter;
 	font-size: 16px;
 	font-weight: 500;
-	color: ${(p) => p.theme.timer.text};
+	color: ${(p) => p.theme.text.base};
 `;
 
 interface OptionBackgroundProps {

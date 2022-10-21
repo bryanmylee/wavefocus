@@ -121,12 +121,16 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				<BottomActionContainer pointerEvents="box-none">
 					<Fade when={canReset} fallback={<IconPlaceholder />} duration={250}>
 						<TouchableOpacity onPress={handleReset}>
-							<ThemedIcon name="undo" size={42} />
+							<ThemedIcon name="undo" size={42} color={theme.text.base} />
 						</TouchableOpacity>
 					</Fade>
 					<Fade when={canSkip} fallback={<IconPlaceholder />} duration={250}>
 						<TouchableOpacity onPress={handleNext}>
-							<ThemedIcon name="arrow-right" size={42} />
+							<ThemedIcon
+								name="arrow-right"
+								size={42}
+								color={theme.text.base}
+							/>
 						</TouchableOpacity>
 					</Fade>
 				</BottomActionContainer>

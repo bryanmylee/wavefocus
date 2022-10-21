@@ -31,7 +31,7 @@ const ButtonBackground = styled.View`
 `;
 
 const StyledText = styled.Text`
-	color: ${(p) => p.theme.timer.text};
+	color: ${(p) => p.theme.text.base};
 	font-size: 18px;
 	font-weight: 500;
 	font-family: Inter;
