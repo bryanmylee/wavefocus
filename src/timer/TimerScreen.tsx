@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Animated, {
@@ -15,6 +15,7 @@ import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import {VSpace} from '../components/Space';
 import {useVerticalSwipeScreenContext} from '../components/VerticalSwipe';
 import * as ZStack from '../components/ZStack';
+import {useBestHoursMemory} from '../history/useBestHoursMemory';
 import {useHistoryMemory} from '../history/useHistoryMemory';
 import ThemedIcon from '../theme/ThemedIcon';
 import FocusReviewSelect from './FocusReviewSelect';
@@ -40,6 +41,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		resetStage,
 	} = useTimerMemory();
 	const {updateHistoryOnActiveChange} = useHistoryMemory();
+	const {pendingReview, setPendingReview} = useBestHoursMemory();
 
 	const [, setIsFocus] = useTimerStage();
 	useEffect(
@@ -96,8 +98,6 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 
 	const {visible} = useVerticalSwipeScreenContext();
 
-	const [reviewIndex, setReviewIndex] = useState(1);
-
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
@@ -134,10 +134,10 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<BottomBar insets={insets} style={barAnim} pointerEvents="box-none">
-				<Fade when={isFocus && secondsRemaining === 0}>
+				<Fade when={isFocus && !isActive}>
 					<FocusReviewSelect
-						currentIndex={reviewIndex}
-						onCurrentIndexChange={setReviewIndex}
+						currentReview={pendingReview}
+						onCurrentReviewChange={setPendingReview}
 					/>
 				</Fade>
 				<VSpace size={32} />

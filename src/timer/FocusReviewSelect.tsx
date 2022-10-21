@@ -8,19 +8,20 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 import {VSpace} from '../components/Space';
-import {REVIEWS} from '../review/Review';
+import {Review, REVIEWS, REVIEW_TO_LABEL} from '../review/Review';
 
 interface FocusReviewSelectProps {
-	currentIndex: number;
-	onCurrentIndexChange?: (index: number) => void;
+	currentReview: Review;
+	onCurrentReviewChange?: (review: Review) => void;
 }
 
 export default function FocusReviewSelect({
-	currentIndex,
-	onCurrentIndexChange,
+	currentReview,
+	onCurrentReviewChange,
 }: FocusReviewSelectProps) {
 	const window = useWindowDimensions();
 	const md = window.width > 480;
+	const currentIndex = REVIEWS.findIndex((r) => r === currentReview);
 	return (
 		<Container md={md}>
 			<QuestionText>How was your focus?</QuestionText>
@@ -32,8 +33,10 @@ export default function FocusReviewSelect({
 					{REVIEWS.map((review, index) => (
 						<OptionTouchable
 							key={review}
-							onPress={() => onCurrentIndexChange?.(index)}>
-							<OptionText active={index === currentIndex}>{review}</OptionText>
+							onPress={() => onCurrentReviewChange?.(review)}>
+							<OptionText active={index === currentIndex}>
+								{REVIEW_TO_LABEL[review]}
+							</OptionText>
 						</OptionTouchable>
 					))}
 				</SelectArea>

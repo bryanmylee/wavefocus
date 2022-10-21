@@ -23,6 +23,9 @@ export default function HistoryScreen() {
 							<HeaderText>Today</HeaderText>
 							<VSpace size={20} />
 							<HistoryTimeline />
+							<VSpace size={32} />
+							<HeaderText>Best hours</HeaderText>
+							<VSpace size={20} />
 						</MainContent>
 					</Fade>
 				</FixedSafeAreaView>
