@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import dayjs from 'dayjs';
 import {useUser} from '../auth/UserProvider';
 import {Review, REVIEW_TO_WEIGHT} from '../review/Review';
-import {BestHoursMemory} from './types';
+import {BestHoursMemory, Period} from './types';
 import {useHistoryMemory} from './useHistoryMemory';
 
 const bestHoursMemoryCollection =
@@ -19,6 +19,40 @@ const GET_DEFAULT_MEMORY = (): BestHoursMemory => ({
 function getMinsBetween(start: dayjs.Dayjs, end: dayjs.Dayjs) {
 	return (end.unix() - start.unix()) / 60;
 }
+
+const getBestHour = (scores: number[]) => {
+	let maxIndex = 0;
+	let maxScore = 0;
+	for (let i = 0; i < scores.length; i++) {
+		if (scores[i] > maxScore) {
+			maxIndex = i;
+			maxScore = scores[i];
+		}
+	}
+	return maxIndex;
+};
+
+const getPeriod = (bestHour: number): Period => {
+	if (bestHour <= 4) {
+		return 'late-night';
+	}
+	if (bestHour <= 7) {
+		return 'early-morning';
+	}
+	if (bestHour <= 11) {
+		return 'morning';
+	}
+	if (bestHour <= 13) {
+		return 'noon';
+	}
+	if (bestHour <= 16) {
+		return 'afternoon';
+	}
+	if (bestHour <= 19) {
+		return 'evening';
+	}
+	return 'night';
+};
 
 export function useBestHoursMemory() {
 	const {user} = useUser();
@@ -160,9 +194,14 @@ export function useBestHoursMemory() {
 		return local.scores.map((s) => s / max);
 	}, [local.scores]);
 
+	const bestHour = useMemo(() => getBestHour(local.scores), [local.scores]);
+	const bestPeriod = useMemo(() => getPeriod(bestHour), [bestHour]);
+
 	return {
 		pendingReview,
 		setPendingReview,
 		normalizedScores,
+		bestHour,
+		bestPeriod,
 	};
 }

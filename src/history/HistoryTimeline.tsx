@@ -100,9 +100,7 @@ export default function HistoryTimeline() {
 	);
 }
 
-const Container = styled.View`
-	flex: 1;
-`;
+const Container = styled.View``;
 
 const TimeLabelContainer = styled.View`
 	position: relative;

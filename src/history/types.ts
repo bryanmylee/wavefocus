@@ -15,3 +15,12 @@ export interface BestHoursMemory {
 	pendingReview: Review;
 	scores: number[];
 }
+
+export type Period =
+	| 'early-morning'
+	| 'morning'
+	| 'noon'
+	| 'afternoon'
+	| 'evening'
+	| 'night'
+	| 'late-night';
