@@ -155,8 +155,14 @@ export function useBestHoursMemory() {
 		],
 	);
 
+	const normalizedScores = useMemo(() => {
+		const max = Math.max(...local.scores);
+		return local.scores.map((s) => s / max);
+	}, [local.scores]);
+
 	return {
 		pendingReview,
 		setPendingReview,
+		normalizedScores,
 	};
 }

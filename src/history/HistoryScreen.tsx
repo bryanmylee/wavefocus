@@ -5,6 +5,7 @@ import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import {VSpace} from '../components/Space';
 import {useVerticalSwipeScreenContext} from '../components/VerticalSwipe';
 import * as ZStack from '../components/ZStack';
+import BestHoursHistogram from './BestHoursHistogram';
 import HistoryHeaderAnimation from './HistoryHeaderAnimation';
 import HistoryTimeline from './HistoryTimeline';
 
@@ -26,6 +27,7 @@ export default function HistoryScreen() {
 							<VSpace size={32} />
 							<HeaderText>Best hours</HeaderText>
 							<VSpace size={20} />
+							<BestHoursHistogram />
 						</MainContent>
 					</Fade>
 				</FixedSafeAreaView>
