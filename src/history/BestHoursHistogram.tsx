@@ -60,7 +60,7 @@ export default function BestHoursHistogram() {
 				<TimeLabel style={{left: 0}}>12am</TimeLabel>
 				<TimeLabel style={{left: width * 0.25}}>6am</TimeLabel>
 				<TimeLabel style={{left: width * 0.5}}>12pm</TimeLabel>
-				<TimeLabel style={{left: width * 0.75}}>2am</TimeLabel>
+				<TimeLabel style={{left: width * 0.75}}>6pm</TimeLabel>
 			</TimeLabelContainer>
 		</Container>
 	);
