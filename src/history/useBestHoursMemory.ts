@@ -197,11 +197,20 @@ export function useBestHoursMemory() {
 	const bestHour = useMemo(() => getBestHour(local.scores), [local.scores]);
 	const bestPeriod = useMemo(() => getPeriod(bestHour), [bestHour]);
 
+	const resetHours = useCallback(() => {
+		memoryDoc.update({
+			scores: [
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			],
+		});
+	}, [memoryDoc]);
+
 	return {
 		pendingReview,
 		setPendingReview,
 		normalizedScores,
 		bestHour,
 		bestPeriod,
+		resetHours,
 	};
 }

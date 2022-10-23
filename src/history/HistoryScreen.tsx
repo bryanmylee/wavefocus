@@ -25,7 +25,7 @@ const PHRASES: Record<Period, string> = {
 
 export default function HistoryScreen() {
 	const {visible} = useVerticalSwipeScreenContext();
-	const {bestPeriod} = useBestHoursMemory();
+	const {bestPeriod, resetHours} = useBestHoursMemory();
 	const {md} = useBreakpoints();
 	return (
 		<ZStack.Container flex={1}>
@@ -48,7 +48,7 @@ export default function HistoryScreen() {
 									<BestHoursHistogram />
 								</HistogramContainer>
 								<Space size={20} />
-								<AdviceContainer>
+								<AdviceContainer md={md}>
 									<AdviceText>
 										You are most productive {PHRASES[bestPeriod]}.
 									</AdviceText>
@@ -56,6 +56,7 @@ export default function HistoryScreen() {
 									<Button
 										title="Reset hours"
 										style={{marginLeft: 'auto', marginRight: 'auto'}}
+										onPress={resetHours}
 									/>
 								</AdviceContainer>
 							</HistogramLayout>
@@ -94,9 +95,10 @@ const HistogramLayout = styled.View<HistogramLayoutProps>`
 `;
 
 const HistogramContainer = styled.View<HistogramLayoutProps>`
-	${(p) => (p.md ? 'flex: 2;' : '')}
+	${(p) => (p.md ? 'flex: 3;' : '')}
 `;
 
-const AdviceContainer = styled.View`
+const AdviceContainer = styled.View<HistogramLayoutProps>`
+	${(p) => (p.md ? 'flex: 2;' : '')}
 	align-items: flex-start;
 `;
