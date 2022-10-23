@@ -93,10 +93,10 @@ export function useHistoryMemory() {
 		if (data == null) {
 			return;
 		}
-		const latestStart = Object.keys(data.history ?? {})
+		const starts = Object.keys(data.history ?? {})
 			.map((start) => parseInt(start, 10))
-			.sort()
-			.at(-1);
+			.sort();
+		const latestStart = starts[starts.length - 1];
 		if (latestStart == null) {
 			return;
 		}

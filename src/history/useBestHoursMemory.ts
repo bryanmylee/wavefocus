@@ -93,7 +93,7 @@ export function useBestHoursMemory() {
 	);
 
 	const {intervals} = useHistoryMemory();
-	const latestInterval = intervals.at(-1);
+	const latestInterval = intervals[intervals.length - 1];
 	const prevLatestInterval = useRef(
 		local.pendingStart != null && local.pendingEnd != null
 			? {start: local.pendingStart, end: local.pendingEnd}
