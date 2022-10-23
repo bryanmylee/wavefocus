@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useCallback} from 'react';
+import {Alert} from 'react-native';
 import styled from 'styled-components/native';
 import Button from '../components/Button';
 import Fade from '../components/Fade';
@@ -27,6 +28,20 @@ export default function HistoryScreen() {
 	const {visible} = useVerticalSwipeScreenContext();
 	const {bestPeriod, resetHours, isReset} = useBestHoursMemory();
 	const {md} = useBreakpoints();
+
+	const createResetAlert = useCallback(() => {
+		Alert.alert('Reset hours?', 'This will reset recommendations.', [
+			{
+				text: 'Cancel',
+				style: 'cancel',
+			},
+			{
+				text: 'Reset',
+				onPress: resetHours,
+				style: 'destructive',
+			},
+		]);
+	}, [resetHours]);
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
@@ -60,7 +75,7 @@ export default function HistoryScreen() {
 									<Button
 										title="Reset hours"
 										style={{marginLeft: 'auto', marginRight: 'auto'}}
-										onPress={resetHours}
+										onPress={createResetAlert}
 									/>
 								</AdviceContainer>
 							</HistogramLayout>
