@@ -205,6 +205,11 @@ export function useBestHoursMemory() {
 		});
 	}, [memoryDoc]);
 
+	const isReset = useMemo(
+		() => local.scores.every((s) => s === 0),
+		[local.scores],
+	);
+
 	return {
 		pendingReview,
 		setPendingReview,
@@ -212,5 +217,6 @@ export function useBestHoursMemory() {
 		bestHour,
 		bestPeriod,
 		resetHours,
+		isReset,
 	};
 }
