@@ -7,7 +7,9 @@ import {HistoryMemory} from './types';
 const historyMemoryCollection =
 	firestore().collection<HistoryMemory>('history');
 
-const DEFAULT_MEMORY: HistoryMemory = {};
+const DEFAULT_MEMORY: HistoryMemory = {
+	history: {},
+};
 
 interface PlayPausePayload {
 	isActive: boolean;
@@ -50,10 +52,13 @@ export function useHistoryMemory() {
 			if (data == null) {
 				return;
 			}
+			if (data.history == null) {
+				data.history = {};
+			}
 			const twoDaysAgo = Date.now() - 2 * DAY_DURATION_MS;
-			for (const [start, end] of Object.entries(data)) {
+			for (const [start, end] of Object.entries(data.history)) {
 				if (end <= twoDaysAgo) {
-					delete data[start];
+					delete data.history[start];
 				}
 			}
 			await memoryDoc.set(data);
@@ -84,11 +89,11 @@ export function useHistoryMemory() {
 		if (!snapshot.exists) {
 			return;
 		}
-		const startToEnd = snapshot.data();
-		if (startToEnd == null) {
+		const data = snapshot.data();
+		if (data == null) {
 			return;
 		}
-		const latestStart = Object.keys(startToEnd)
+		const latestStart = Object.keys(data.history ?? {})
 			.map((start) => parseInt(start, 10))
 			.sort()
 			.at(-1);
@@ -96,8 +101,11 @@ export function useHistoryMemory() {
 			return;
 		}
 		const now = Date.now();
-		await memoryDoc.update({
-			[latestStart]: now,
+		await memoryDoc.set({
+			history: {
+				...data?.history,
+				[latestStart]: now,
+			},
 		});
 	}, [memoryDoc]);
 
@@ -107,12 +115,18 @@ export function useHistoryMemory() {
 			const snapshot = await memoryDoc.get();
 			if (!snapshot.exists) {
 				await memoryDoc.set({
-					[now]: now + FOCUS_DURATION_SEC * 1000,
+					history: {
+						[now]: now + FOCUS_DURATION_SEC * 1000,
+					},
 				});
 				return;
 			}
-			await memoryDoc.update({
-				[now]: now + secondsRemaining * 1000,
+			const data = snapshot.data();
+			await memoryDoc.set({
+				history: {
+					...data?.history,
+					[now]: now + secondsRemaining * 1000,
+				},
 			});
 		},
 		[memoryDoc],
@@ -161,7 +175,7 @@ export function useHistoryMemory() {
 	);
 
 	const intervals: Interval[] = useMemo(() => {
-		return Object.entries(local)
+		return Object.entries(local.history ?? {})
 			.map(([start, end]) => {
 				return {
 					start: parseInt(start, 10),
