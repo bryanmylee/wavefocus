@@ -1,8 +1,8 @@
 import React from 'react';
-import {ButtonProps} from 'react-native';
+import {ButtonProps, ViewProps} from 'react-native';
 import styled from 'styled-components/native';
 
-export default function Button(props: ButtonProps) {
+export default function Button(props: ButtonProps & ViewProps) {
 	return (
 		<ButtonBase {...props} accessibilityLabel={props.title}>
 			<ButtonBackground />

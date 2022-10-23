@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components/native';
+import Button from '../components/Button';
 import Fade from '../components/Fade';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
 import {Space, VSpace} from '../components/Space';
@@ -47,9 +48,16 @@ export default function HistoryScreen() {
 									<BestHoursHistogram />
 								</HistogramContainer>
 								<Space size={20} />
-								<AdviceText>
-									You are most productive {PHRASES[bestPeriod]}.
-								</AdviceText>
+								<AdviceContainer>
+									<AdviceText>
+										You are most productive {PHRASES[bestPeriod]}.
+									</AdviceText>
+									<VSpace size={20} />
+									<Button
+										title="Reset hours"
+										style={{marginLeft: 'auto', marginRight: 'auto'}}
+									/>
+								</AdviceContainer>
 							</HistogramLayout>
 						</MainContent>
 					</Fade>
@@ -87,4 +95,8 @@ const HistogramLayout = styled.View<HistogramLayoutProps>`
 
 const HistogramContainer = styled.View<HistogramLayoutProps>`
 	${(p) => (p.md ? 'flex: 2;' : '')}
+`;
+
+const AdviceContainer = styled.View`
+	align-items: flex-start;
 `;
