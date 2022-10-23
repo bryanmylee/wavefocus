@@ -55,7 +55,11 @@ const getPeriod = (bestHour: number): Period => {
 };
 
 export function useBestHoursMemory() {
-	const {user} = useUser();
+	const {
+		user,
+		subscribeAfterSignInAnonymously,
+		subscribeBeforeSignOutAnonymously,
+	} = useUser();
 	const memoryDoc = useMemo(
 		() => bestHoursMemoryCollection.doc(user?.uid ?? ''),
 		[user?.uid],
@@ -208,6 +212,34 @@ export function useBestHoursMemory() {
 	const isReset = useMemo(
 		() => local.scores.every((s) => s === 0),
 		[local.scores],
+	);
+
+	const prevAnonMemory = useRef<BestHoursMemory>();
+	useEffect(
+		function savePrevAnonMemory() {
+			return subscribeBeforeSignOutAnonymously(async (ev) => {
+				const snapshot = await bestHoursMemoryCollection.doc(ev.uid).get();
+				prevAnonMemory.current = snapshot.data();
+				await bestHoursMemoryCollection.doc(ev.uid).delete();
+			});
+		},
+		[subscribeBeforeSignOutAnonymously],
+	);
+	useEffect(
+		function transferPrevAnonMemory() {
+			return subscribeAfterSignInAnonymously(async (ev) => {
+				if (prevAnonMemory.current == null) {
+					return;
+				}
+				if (!ev.prevIsAnon) {
+					return;
+				}
+				await bestHoursMemoryCollection
+					.doc(ev.user.uid)
+					.set(prevAnonMemory.current);
+			});
+		},
+		[subscribeAfterSignInAnonymously],
 	);
 
 	return {
