@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import {useWindowDimensions} from 'react-native';
 import Animated, {
 	Easing,
 	useAnimatedStyle,
@@ -9,6 +8,7 @@ import Animated, {
 import styled from 'styled-components/native';
 import {VSpace} from '../components/Space';
 import {Review, REVIEWS, REVIEW_TO_LABEL} from '../review/Review';
+import {useBreakpoints} from '../utils/useBreakpoints';
 
 interface FocusReviewSelectProps {
 	currentReview: Review;
@@ -19,8 +19,7 @@ export default function FocusReviewSelect({
 	currentReview,
 	onCurrentReviewChange,
 }: FocusReviewSelectProps) {
-	const window = useWindowDimensions();
-	const md = window.width > 480;
+	const {md} = useBreakpoints();
 	const currentIndex = REVIEWS.findIndex((r) => r === currentReview);
 	return (
 		<Container md={md}>

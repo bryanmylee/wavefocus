@@ -1,6 +1,6 @@
 import React from 'react';
 import {useCallback, useState} from 'react';
-import {LayoutChangeEvent} from 'react-native';
+import {LayoutChangeEvent, useWindowDimensions} from 'react-native';
 import Svg, {Line} from 'react-native-svg';
 import styled, {useTheme} from 'styled-components/native';
 import {VSpace} from '../components/Space';
@@ -18,52 +18,50 @@ export default function BestHoursHistogram() {
 	}, []);
 	const strokeWidth = 10;
 	const histogramWidth = width - strokeWidth;
-	const histogramHeight = 128;
+	const {height} = useWindowDimensions();
+	const histogramHeight = Math.min(128, height / 4);
 	return (
-		<Container>
-			<Container onLayout={handleLayout}>
-				<Svg height={histogramHeight} width={width}>
-					{HOURS.map((hour) => (
-						<Line
-							key={hour}
-							strokeWidth={strokeWidth}
-							strokeLinecap="round"
-							stroke={theme.timer.progressTrack}
-							opacity={theme.timer.progressTrackOpacity}
-							y1={strokeWidth / 2}
-							y2={histogramHeight - strokeWidth / 2}
-							x={strokeWidth / 2 + (histogramWidth * hour) / (HOURS.length - 1)}
-						/>
-					))}
-					{normalizedScores.map(
-						(score, hour) =>
-							score >= 0.05 && (
-								<Line
-									key={hour}
-									strokeWidth={strokeWidth}
-									strokeLinecap="round"
-									stroke={theme.timer.progressFill}
-									y1={
-										strokeWidth / 2 +
-										(1 - score) * (histogramHeight - strokeWidth)
-									}
-									y2={histogramHeight - strokeWidth / 2}
-									x={
-										strokeWidth / 2 +
-										(histogramWidth * hour) / (HOURS.length - 1)
-									}
-								/>
-							),
-					)}
-				</Svg>
-				<VSpace size={12} />
-				<TimeLabelContainer>
-					<TimeLabel style={{left: 0}}>12am</TimeLabel>
-					<TimeLabel style={{left: width * 0.25}}>6am</TimeLabel>
-					<TimeLabel style={{left: width * 0.5}}>12pm</TimeLabel>
-					<TimeLabel style={{left: width * 0.75}}>2am</TimeLabel>
-				</TimeLabelContainer>
-			</Container>
+		<Container onLayout={handleLayout}>
+			<Svg height={histogramHeight} width={width}>
+				{HOURS.map((hour) => (
+					<Line
+						key={hour}
+						strokeWidth={strokeWidth}
+						strokeLinecap="round"
+						stroke={theme.timer.progressTrack}
+						opacity={theme.timer.progressTrackOpacity}
+						y1={strokeWidth / 2}
+						y2={histogramHeight - strokeWidth / 2}
+						x={strokeWidth / 2 + (histogramWidth * hour) / (HOURS.length - 1)}
+					/>
+				))}
+				{normalizedScores.map(
+					(score, hour) =>
+						score >= 0.05 && (
+							<Line
+								key={hour}
+								strokeWidth={strokeWidth}
+								strokeLinecap="round"
+								stroke={theme.timer.progressFill}
+								y1={
+									strokeWidth / 2 +
+									(1 - score) * (histogramHeight - strokeWidth)
+								}
+								y2={histogramHeight - strokeWidth / 2}
+								x={
+									strokeWidth / 2 + (histogramWidth * hour) / (HOURS.length - 1)
+								}
+							/>
+						),
+				)}
+			</Svg>
+			<VSpace size={12} />
+			<TimeLabelContainer>
+				<TimeLabel style={{left: 0}}>12am</TimeLabel>
+				<TimeLabel style={{left: width * 0.25}}>6am</TimeLabel>
+				<TimeLabel style={{left: width * 0.5}}>12pm</TimeLabel>
+				<TimeLabel style={{left: width * 0.75}}>2am</TimeLabel>
+			</TimeLabelContainer>
 		</Container>
 	);
 }

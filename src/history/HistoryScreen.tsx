@@ -2,9 +2,10 @@ import React from 'react';
 import styled from 'styled-components/native';
 import Fade from '../components/Fade';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
-import {VSpace} from '../components/Space';
+import {Space, VSpace} from '../components/Space';
 import {useVerticalSwipeScreenContext} from '../components/VerticalSwipe';
 import * as ZStack from '../components/ZStack';
+import {useBreakpoints} from '../utils/useBreakpoints';
 import BestHoursHistogram from './BestHoursHistogram';
 import HistoryHeaderAnimation from './HistoryHeaderAnimation';
 import HistoryTimeline from './HistoryTimeline';
@@ -24,6 +25,7 @@ const PHRASES: Record<Period, string> = {
 export default function HistoryScreen() {
 	const {visible} = useVerticalSwipeScreenContext();
 	const {bestPeriod} = useBestHoursMemory();
+	const {md} = useBreakpoints();
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
@@ -40,11 +42,15 @@ export default function HistoryScreen() {
 							<VSpace size={32} />
 							<HeaderText>Best hours</HeaderText>
 							<VSpace size={20} />
-							<BestHoursHistogram />
-							<VSpace size={20} />
-							<AdviceText>
-								You are most productive {PHRASES[bestPeriod]}.
-							</AdviceText>
+							<HistogramLayout md={md}>
+								<HistogramContainer md={md}>
+									<BestHoursHistogram />
+								</HistogramContainer>
+								<Space size={20} />
+								<AdviceText>
+									You are most productive {PHRASES[bestPeriod]}.
+								</AdviceText>
+							</HistogramLayout>
 						</MainContent>
 					</Fade>
 				</FixedSafeAreaView>
@@ -69,4 +75,16 @@ const AdviceText = styled.Text`
 	font-family: Inter;
 	font-weight: 600;
 	color: ${(p) => p.theme.text.base};
+`;
+
+interface HistogramLayoutProps {
+	md: boolean;
+}
+
+const HistogramLayout = styled.View<HistogramLayoutProps>`
+	flex-direction: ${(p) => (p.md ? 'row' : 'column')};
+`;
+
+const HistogramContainer = styled.View<HistogramLayoutProps>`
+	${(p) => (p.md ? 'flex: 2;' : '')}
 `;
