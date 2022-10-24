@@ -156,6 +156,12 @@ export function useHistoryMemory() {
 		[handlePlay, handlePause],
 	);
 
+	const resetHistory = useCallback(() => {
+		memoryDoc.set({
+			history: {},
+		});
+	}, [memoryDoc]);
+
 	const prevAnonMemory = useRef<HistoryMemory>();
 	useEffect(
 		function savePrevAnonMemory() {
@@ -190,6 +196,7 @@ export function useHistoryMemory() {
 
 	return {
 		intervals,
+		resetHistory,
 		updateHistoryOnActiveChange,
 	};
 }

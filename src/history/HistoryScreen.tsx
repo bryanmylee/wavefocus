@@ -13,6 +13,7 @@ import HistoryHeaderAnimation from './HistoryHeaderAnimation';
 import HistoryTimeline from './HistoryTimeline';
 import {Period} from './types';
 import {useBestHoursMemory} from './useBestHoursMemory';
+import {useHistoryMemory} from './useHistoryMemory';
 
 const PHRASES: Record<Period, string> = {
 	'early-morning': 'early in the morning',
@@ -26,6 +27,7 @@ const PHRASES: Record<Period, string> = {
 
 export default function HistoryScreen() {
 	const {visible} = useVerticalSwipeScreenContext();
+	const {resetHistory} = useHistoryMemory();
 	const {bestPeriod, resetHours, isReset} = useBestHoursMemory();
 	const {md} = useBreakpoints();
 
@@ -37,11 +39,14 @@ export default function HistoryScreen() {
 			},
 			{
 				text: 'Reset',
-				onPress: resetHours,
+				onPress: () => {
+					resetHistory();
+					resetHours();
+				},
 				style: 'destructive',
 			},
 		]);
-	}, [resetHours]);
+	}, [resetHistory, resetHours]);
 	return (
 		<ZStack.Container flex={1}>
 			<ZStack.Item>
