@@ -77,11 +77,7 @@ export default function HistoryScreen() {
 											<VSpace size={20} />
 										</>
 									)}
-									<Button
-										title="Reset hours"
-										style={{marginLeft: 'auto', marginRight: 'auto'}}
-										onPress={createResetAlert}
-									/>
+									<Button title="Reset hours" onPress={createResetAlert} />
 								</AdviceContainer>
 							</HistogramLayout>
 						</MainContent>
