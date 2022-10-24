@@ -2,7 +2,6 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import dayjs from 'dayjs';
 import {useUser} from '../auth/UserProvider';
-import {Review, REVIEW_TO_WEIGHT} from '../review/Review';
 import {BestHoursMemory, Period, Interval} from './types';
 
 const bestHoursMemoryCollection =
@@ -11,11 +10,27 @@ const bestHoursMemoryCollection =
 const GET_DEFAULT_MEMORY = (): BestHoursMemory => ({
 	pendingStart: null,
 	pendingEnd: null,
-	pendingReview: 'okay',
 	scores: [
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	],
 });
+
+function getUpdatedScores(
+	scores: number[],
+	start: dayjs.Dayjs,
+	end: dayjs.Dayjs,
+) {
+	const newScores = [...scores];
+	// Account for durations that span across two separate hour buckets.
+	if (start.hour() === end.hour()) {
+		newScores[start.hour()] += getMinsBetween(start, end);
+	} else {
+		const between = start.endOf('hour');
+		newScores[start.hour()] += getMinsBetween(start, between);
+		newScores[end.hour()] += getMinsBetween(between, end);
+	}
+	return newScores;
+}
 
 function getMinsBetween(start: dayjs.Dayjs, end: dayjs.Dayjs) {
 	return (end.unix() - start.unix()) / 60;
@@ -89,26 +104,53 @@ export function useBestHoursMemory() {
 		[memoryDoc],
 	);
 
-	const pendingReview = local.pendingReview;
-	const setPendingReview = useCallback(
-		async (review: Review) => {
-			const snapshot = await memoryDoc.get();
-			if (snapshot.exists) {
-				memoryDoc.update({pendingReview: review});
-			} else {
-				memoryDoc.set({...GET_DEFAULT_MEMORY(), pendingReview: review});
-			}
-		},
-		[memoryDoc],
-	);
-
-	const updateBestHours = useCallback(
+	const updateBestHoursOnActiveChange = useCallback(
 		async ({isActive, latestInterval}: UpdateBestHoursPayload) => {
-			async function commitPending() {
-				const pendingEnd = local.pendingEnd;
-				const pendingStart = local.pendingStart;
-				const pendingWeight = REVIEW_TO_WEIGHT[local.pendingReview];
+			async function setPendingWithoutCommit() {
+				await memoryDoc.update({
+					pendingStart: latestInterval?.start ?? null,
+					pendingEnd: latestInterval?.end ?? null,
+				});
+			}
+			async function setPendingWithCommit(
+				scores: number[],
+				pendingStart: number,
+				pendingEnd: number,
+			) {
+				const newScores = getUpdatedScores(
+					scores,
+					dayjs(pendingStart),
+					dayjs(pendingEnd),
+				);
+				await memoryDoc.update({
+					pendingStart: latestInterval?.start,
+					pendingEnd: latestInterval?.end,
+					scores: newScores,
+				});
+			}
+			/**
+			 * After a timer completes, it is possible to trigger a play event while
+			 * a pending start/end exists. Make sure to commit any pending start/end
+			 * before updating.
+			 */
+			async function setPending() {
+				const snapshot = await memoryDoc.get();
+				if (!snapshot.exists) {
+					return await setPendingWithoutCommit();
+				}
+				const data = snapshot.data();
+				if (data == null) {
+					return await setPendingWithoutCommit();
+				}
+				const {scores, pendingEnd, pendingStart} = data;
 				if (pendingStart == null || pendingEnd == null) {
+					return await setPendingWithoutCommit();
+				}
+				return await setPendingWithCommit(scores, pendingStart, pendingEnd);
+			}
+			async function commitPending() {
+				const pendingStart = local.pendingStart;
+				if (pendingStart == null) {
 					return;
 				}
 				const snapshot = await memoryDoc.get();
@@ -119,48 +161,23 @@ export function useBestHoursMemory() {
 				if (data == null) {
 					return;
 				}
-				const scores = data.scores;
 				const start = dayjs(pendingStart);
-				const end = dayjs(pendingEnd);
-				// Account for durations that span across two separate hour buckets.
-				if (start.hour() === end.hour()) {
-					scores[start.hour()] += getMinsBetween(start, end) * pendingWeight;
-				} else {
-					const between = start.endOf('hour');
-					scores[start.hour()] +=
-						getMinsBetween(start, between) * pendingWeight;
-					scores[end.hour()] += getMinsBetween(between, end) * pendingWeight;
-				}
-
+				const end = dayjs();
+				const newScores = getUpdatedScores(data.scores, start, end);
 				await memoryDoc.set({
 					...GET_DEFAULT_MEMORY(),
-					pendingStart: latestInterval?.start,
-					pendingEnd: latestInterval?.end,
-					scores,
+					pendingStart: null,
+					pendingEnd: null,
+					scores: newScores,
 				});
 			}
-			async function updatePending() {
-				const snapshot = await memoryDoc.get();
-				if (snapshot.exists) {
-					await memoryDoc.update({
-						pendingStart: latestInterval?.start,
-						pendingEnd: latestInterval?.end,
-					});
-				} else {
-					await memoryDoc.set({
-						...GET_DEFAULT_MEMORY(),
-						pendingStart: latestInterval?.start,
-						pendingEnd: latestInterval?.end,
-					});
-				}
-			}
 			if (isActive) {
-				await commitPending();
+				await setPending();
 			} else {
-				await updatePending();
+				await commitPending();
 			}
 		},
-		[local.pendingEnd, local.pendingStart, local.pendingReview, memoryDoc],
+		[local.pendingStart, memoryDoc],
 	);
 
 	const normalizedScores = useMemo(() => {
@@ -215,12 +232,10 @@ export function useBestHoursMemory() {
 	);
 
 	return {
-		pendingReview,
-		setPendingReview,
 		normalizedScores,
 		bestHour,
 		bestPeriod,
-		updateBestHours,
+		updateBestHoursOnActiveChange,
 		resetHours,
 		isReset,
 	};

@@ -1,5 +1,3 @@
-import {Review} from '../review/Review';
-
 export type HistoryMemory = {
 	/**
 	 * Avoid arbitrary data as fields on the document to reduce unnecessary index
@@ -12,7 +10,6 @@ export type HistoryMemory = {
 export interface BestHoursMemory {
 	pendingStart: number | null;
 	pendingEnd: number | null;
-	pendingReview: Review;
 	scores: number[];
 }
 

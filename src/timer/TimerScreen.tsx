@@ -12,7 +12,6 @@ import {useUser} from '../auth/UserProvider';
 import Centered from '../components/Centered';
 import Fade from '../components/Fade';
 import FixedSafeAreaView from '../components/FixedSafeAreaView';
-import {VSpace} from '../components/Space';
 import {useVerticalSwipeScreenContext} from '../components/VerticalSwipe';
 import * as ZStack from '../components/ZStack';
 import {useBestHoursMemory} from '../history/useBestHoursMemory';
@@ -21,7 +20,6 @@ import {
 	getIntervalsFromHistory,
 } from '../history/useHistoryMemory';
 import ThemedIcon from '../theme/ThemedIcon';
-import FocusReviewSelect from './FocusReviewSelect';
 import Timer from './Timer';
 import {TimerFluidAnimation} from './TimerFluidAnimation';
 import TimerHorizontalPanHandler from './TimerHorizontalPanHandler';
@@ -44,8 +42,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		resetStage,
 	} = useTimerMemory();
 	const {updateHistoryOnActiveChange} = useHistoryMemory();
-	const {pendingReview, setPendingReview, updateBestHours} =
-		useBestHoursMemory();
+	const {updateBestHoursOnActiveChange} = useBestHoursMemory();
 
 	const [, setIsFocus] = useTimerStage();
 	useEffect(
@@ -88,7 +85,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		const intervals = getIntervalsFromHistory(newHistory.history);
 		const latestInterval = intervals[intervals.length - 1];
 		if (latestInterval != null) {
-			updateBestHours({
+			updateBestHoursOnActiveChange({
 				isActive: newActive,
 				latestInterval,
 			});
@@ -100,7 +97,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		updateHistoryOnActiveChange,
 		isFocus,
 		secondsRemaining,
-		updateBestHours,
+		updateBestHoursOnActiveChange,
 	]);
 
 	const theme = useTheme();
@@ -150,13 +147,6 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 				</TimerHorizontalPanHandler>
 			</ZStack.Item>
 			<BottomBar insets={insets} style={barAnim} pointerEvents="box-none">
-				<Fade when={isFocus && !isActive && !isReset}>
-					<FocusReviewSelect
-						currentReview={pendingReview}
-						onCurrentReviewChange={setPendingReview}
-					/>
-				</Fade>
-				<VSpace size={32} />
 				<BottomActionContainer pointerEvents="box-none">
 					<Fade when={canReset} fallback={<IconPlaceholder />} duration={250}>
 						<TouchableOpacity onPress={handleReset}>
