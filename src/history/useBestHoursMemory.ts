@@ -3,13 +3,14 @@ import firestore from '@react-native-firebase/firestore';
 import dayjs from 'dayjs';
 import {useUser} from '../auth/UserProvider';
 import {Review, REVIEW_TO_WEIGHT} from '../review/Review';
-import {BestHoursMemory, Period} from './types';
-import {useHistoryMemory} from './useHistoryMemory';
+import {BestHoursMemory, Period, Interval} from './types';
 
 const bestHoursMemoryCollection =
 	firestore().collection<BestHoursMemory>('best-hours');
 
 const GET_DEFAULT_MEMORY = (): BestHoursMemory => ({
+	pendingStart: null,
+	pendingEnd: null,
 	pendingReview: 'okay',
 	scores: [
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -54,6 +55,11 @@ const getPeriod = (bestHour: number): Period => {
 	return 'night';
 };
 
+interface UpdateBestHoursPayload {
+	isActive: boolean;
+	latestInterval: Interval;
+}
+
 export function useBestHoursMemory() {
 	const {
 		user,
@@ -96,15 +102,8 @@ export function useBestHoursMemory() {
 		[memoryDoc],
 	);
 
-	const {intervals} = useHistoryMemory();
-	const latestInterval = intervals[intervals.length - 1];
-	const prevLatestInterval = useRef(
-		local.pendingStart != null && local.pendingEnd != null
-			? {start: local.pendingStart, end: local.pendingEnd}
-			: undefined,
-	);
-	useEffect(
-		function updateBestHours() {
+	const updateBestHours = useCallback(
+		async ({isActive, latestInterval}: UpdateBestHoursPayload) => {
 			async function commitPending() {
 				const pendingEnd = local.pendingEnd;
 				const pendingStart = local.pendingStart;
@@ -155,42 +154,13 @@ export function useBestHoursMemory() {
 					});
 				}
 			}
-			async function updatePendingInterval() {
-				if (latestInterval == null) {
-					return;
-				}
-				const {start, end} = latestInterval;
-				if (start == null || end == null) {
-					return;
-				}
-				if (
-					start === prevLatestInterval.current?.start &&
-					end === prevLatestInterval.current?.end
-				) {
-					return;
-				}
-				prevLatestInterval.current = latestInterval;
-
-				const now = Date.now();
-				// If the latest interval end is in the future, then the timer is being
-				// started.
-				if (end > now) {
-					// When the timer is started, commit pending weight changes.
-					await commitPending();
-				} else {
-					// When the timer is paused, update the pending interval.
-					await updatePending();
-				}
+			if (isActive) {
+				await commitPending();
+			} else {
+				await updatePending();
 			}
-			updatePendingInterval();
 		},
-		[
-			latestInterval,
-			memoryDoc,
-			local.pendingReview,
-			local.pendingStart,
-			local.pendingEnd,
-		],
+		[local.pendingEnd, local.pendingStart, local.pendingReview, memoryDoc],
 	);
 
 	const normalizedScores = useMemo(() => {
@@ -203,6 +173,8 @@ export function useBestHoursMemory() {
 
 	const resetHours = useCallback(() => {
 		memoryDoc.update({
+			pendingEnd: null,
+			pendingStart: null,
 			scores: [
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			],
@@ -248,6 +220,7 @@ export function useBestHoursMemory() {
 		normalizedScores,
 		bestHour,
 		bestPeriod,
+		updateBestHours,
 		resetHours,
 		isReset,
 	};

@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {useUser} from '../auth/UserProvider';
 import {DAY_DURATION_MS, FOCUS_DURATION_SEC} from '../constants';
-import {HistoryMemory} from './types';
+import {HistoryMemory, Interval} from './types';
 
 const historyMemoryCollection =
 	firestore().collection<HistoryMemory>('history');
@@ -15,11 +15,6 @@ interface PlayPausePayload {
 	isActive: boolean;
 	isFocus: boolean;
 	secondsRemaining: number;
-}
-
-interface Interval {
-	start: number;
-	end: number;
 }
 
 export function useHistoryMemory() {
@@ -175,7 +170,7 @@ export function useHistoryMemory() {
 	);
 
 	const intervals: Interval[] = useMemo(() => {
-		return Object.entries(local.history ?? {})
+		return Object.entries(local.history)
 			.map(([start, end]) => {
 				return {
 					start: parseInt(start, 10),
@@ -183,10 +178,16 @@ export function useHistoryMemory() {
 				};
 			})
 			.sort((a, b) => a.start - b.start);
-	}, [local]);
+	}, [local.history]);
+
+	const latestInterval = useMemo<Interval | undefined>(
+		() => intervals[intervals.length - 1],
+		[intervals],
+	);
 
 	return {
 		intervals,
+		latestInterval,
 		updateHistoryOnActiveChange,
 	};
 }

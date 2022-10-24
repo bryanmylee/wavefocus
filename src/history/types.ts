@@ -10,8 +10,8 @@ export type HistoryMemory = {
 };
 
 export interface BestHoursMemory {
-	pendingStart?: number;
-	pendingEnd?: number;
+	pendingStart: number | null;
+	pendingEnd: number | null;
 	pendingReview: Review;
 	scores: number[];
 }
@@ -24,3 +24,8 @@ export type Period =
 	| 'evening'
 	| 'night'
 	| 'late-night';
+
+export interface Interval {
+	start: number;
+	end: number;
+}

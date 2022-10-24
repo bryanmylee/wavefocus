@@ -40,8 +40,9 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		nextStage,
 		resetStage,
 	} = useTimerMemory();
-	const {updateHistoryOnActiveChange} = useHistoryMemory();
-	const {pendingReview, setPendingReview} = useBestHoursMemory();
+	const {updateHistoryOnActiveChange, latestInterval} = useHistoryMemory();
+	const {pendingReview, setPendingReview, updateBestHours} =
+		useBestHoursMemory();
 
 	const [, setIsFocus] = useTimerStage();
 	useEffect(
@@ -78,6 +79,12 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 			isFocus,
 			secondsRemaining,
 		});
+		if (latestInterval != null) {
+			updateBestHours({
+				isActive: newActive,
+				latestInterval,
+			});
+		}
 	}, [
 		toggleActive,
 		onPlay,
@@ -85,6 +92,8 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		updateHistoryOnActiveChange,
 		isFocus,
 		secondsRemaining,
+		updateBestHours,
+		latestInterval,
 	]);
 
 	const theme = useTheme();
