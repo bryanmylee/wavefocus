@@ -146,6 +146,10 @@ export function useBestHoursMemory() {
 				if (pendingStart == null || pendingEnd == null) {
 					return await setPendingWithoutCommit();
 				}
+				const now = Date.now();
+				if (pendingEnd > now) {
+					return await setPendingWithoutCommit();
+				}
 				return await setPendingWithCommit(scores, pendingStart, pendingEnd);
 			}
 			async function commitPending() {
