@@ -17,6 +17,17 @@ interface PlayPausePayload {
 	secondsRemaining: number;
 }
 
+export function getIntervalsFromHistory(history: Record<string, number>) {
+	return Object.entries(history)
+		.map(([start, end]) => {
+			return {
+				start: parseInt(start, 10),
+				end,
+			};
+		})
+		.sort((a, b) => a.start - b.start);
+}
+
 export function useHistoryMemory() {
 	const {
 		user,
@@ -96,12 +107,14 @@ export function useHistoryMemory() {
 			return;
 		}
 		const now = Date.now();
-		await memoryDoc.set({
+		const newMemory = {
 			history: {
 				...data?.history,
 				[latestStart]: now,
 			},
-		});
+		};
+		await memoryDoc.set(newMemory);
+		return newMemory;
 	}, [memoryDoc]);
 
 	const handlePlay = useCallback(
@@ -117,12 +130,14 @@ export function useHistoryMemory() {
 				return;
 			}
 			const data = snapshot.data();
-			await memoryDoc.set({
+			const newMemory = {
 				history: {
 					...data?.history,
 					[now]: now + secondsRemaining * 1000,
 				},
-			});
+			};
+			await memoryDoc.set(newMemory);
+			return newMemory;
 		},
 		[memoryDoc],
 	);
@@ -133,9 +148,9 @@ export function useHistoryMemory() {
 				return;
 			}
 			if (isActive) {
-				await handlePlay(secondsRemaining);
+				return await handlePlay(secondsRemaining);
 			} else {
-				await handlePause();
+				return await handlePause();
 			}
 		},
 		[handlePlay, handlePause],
@@ -170,24 +185,11 @@ export function useHistoryMemory() {
 	);
 
 	const intervals: Interval[] = useMemo(() => {
-		return Object.entries(local.history)
-			.map(([start, end]) => {
-				return {
-					start: parseInt(start, 10),
-					end,
-				};
-			})
-			.sort((a, b) => a.start - b.start);
+		return getIntervalsFromHistory(local.history);
 	}, [local.history]);
-
-	const latestInterval = useMemo<Interval | undefined>(
-		() => intervals[intervals.length - 1],
-		[intervals],
-	);
 
 	return {
 		intervals,
-		latestInterval,
 		updateHistoryOnActiveChange,
 	};
 }

@@ -16,7 +16,10 @@ import {VSpace} from '../components/Space';
 import {useVerticalSwipeScreenContext} from '../components/VerticalSwipe';
 import * as ZStack from '../components/ZStack';
 import {useBestHoursMemory} from '../history/useBestHoursMemory';
-import {useHistoryMemory} from '../history/useHistoryMemory';
+import {
+	useHistoryMemory,
+	getIntervalsFromHistory,
+} from '../history/useHistoryMemory';
 import ThemedIcon from '../theme/ThemedIcon';
 import FocusReviewSelect from './FocusReviewSelect';
 import Timer from './Timer';
@@ -40,7 +43,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		nextStage,
 		resetStage,
 	} = useTimerMemory();
-	const {updateHistoryOnActiveChange, latestInterval} = useHistoryMemory();
+	const {updateHistoryOnActiveChange} = useHistoryMemory();
 	const {pendingReview, setPendingReview, updateBestHours} =
 		useBestHoursMemory();
 
@@ -68,17 +71,22 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		nextStage();
 	}, [canSkip, nextStage]);
 
-	const handlePlayPause = useCallback(() => {
+	const handlePlayPause = useCallback(async () => {
 		const newActive = !isActive;
 		if (newActive) {
 			onPlay?.();
 		}
 		toggleActive();
-		updateHistoryOnActiveChange({
+		const newHistory = await updateHistoryOnActiveChange({
 			isActive: newActive,
 			isFocus,
 			secondsRemaining,
 		});
+		if (newHistory == null) {
+			return;
+		}
+		const intervals = getIntervalsFromHistory(newHistory.history);
+		const latestInterval = intervals[intervals.length - 1];
 		if (latestInterval != null) {
 			updateBestHours({
 				isActive: newActive,
@@ -93,7 +101,6 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		isFocus,
 		secondsRemaining,
 		updateBestHours,
-		latestInterval,
 	]);
 
 	const theme = useTheme();
