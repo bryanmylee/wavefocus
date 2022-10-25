@@ -9,7 +9,7 @@ import * as VerticalSwipe from './components/VerticalSwipe';
 import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
 import HistoryScreen from './history/HistoryScreen';
 import TimerScreen from './timer/TimerScreen';
-import {useShowLoginPrompt} from './utils/useShowLoginPrompt';
+import {useShowPrompt} from './utils/useShowPrompt';
 import {SimultaneousGesturesProvider} from './utils/useSimultaneousGestures';
 
 async function requestUserPermission() {
@@ -20,24 +20,35 @@ async function requestUserPermission() {
 	return enabled;
 }
 
+const LOGIN_PROMPT_KEY = 'viewed_login';
+const HISTORY_PROMPT_KEY = 'viewed_history';
+
 export default function AppContainer() {
 	useRegisterDeviceToken();
 
 	const theme = useTheme();
 
-	const [showLogin, setShowLogin] = useState(false);
+	const [screen, setScreen] = useState<VerticalSwipe.ScreenType>('main');
 	const hideLogin = useCallback(() => {
-		setShowLogin(false);
+		setScreen('main');
 	}, []);
 
-	const [showPrompt, requestPrompt, acknowledgePrompt] = useShowLoginPrompt();
+	const [showLoginPrompt, requestLoginPrompt, dismissLoginPrompt] =
+		useShowPrompt(LOGIN_PROMPT_KEY);
+	const [showHistoryPrompt, requestHistoryPrompt, dissmissHistoryPrompt] =
+		useShowPrompt(HISTORY_PROMPT_KEY);
 
-	const handleChangeShowTop = useCallback(
+	const handleChangeScreen = useCallback(
 		(screenToShow: VerticalSwipe.ScreenType) => {
-			setShowLogin(screenToShow === 'top');
-			acknowledgePrompt();
+			setScreen(screenToShow);
+			if (screenToShow === 'top') {
+				dismissLoginPrompt();
+			}
+			if (screenToShow === 'bottom') {
+				dissmissHistoryPrompt();
+			}
 		},
-		[acknowledgePrompt],
+		[dismissLoginPrompt, dissmissHistoryPrompt],
 	);
 
 	const containerAnim = useAnimatedStyle(
@@ -48,9 +59,10 @@ export default function AppContainer() {
 	);
 
 	const handlePlay = useCallback(() => {
-		requestPrompt();
+		requestLoginPrompt();
+		requestHistoryPrompt();
 		requestUserPermission();
-	}, [requestPrompt]);
+	}, [requestLoginPrompt, requestHistoryPrompt]);
 
 	const colorScheme = useColorScheme();
 
@@ -62,8 +74,8 @@ export default function AppContainer() {
 					barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
 				/>
 				<VerticalSwipe.Navigator
-					screen={showLogin ? 'top' : 'main'}
-					onChangeScreen={handleChangeShowTop}>
+					screen={screen}
+					onChangeScreen={handleChangeScreen}>
 					<VerticalSwipe.Screen forceMount type="bottom">
 						<HistoryScreen />
 					</VerticalSwipe.Screen>
@@ -74,11 +86,17 @@ export default function AppContainer() {
 						<TimerScreen onPlay={handlePlay} />
 					</VerticalSwipe.Screen>
 				</VerticalSwipe.Navigator>
-				<ToastContainer>
+				<ToastContainer top={16} bottom={144}>
 					<Toast
 						message="Swipe down to sync timers across devices"
-						show={showPrompt}
+						show={screen === 'main' && showLoginPrompt}
 						icon="arrow-down"
+					/>
+					<Toast
+						position="bottom"
+						message="Swipe up to view history"
+						show={screen === 'main' && showHistoryPrompt}
+						icon="arrow-up"
 					/>
 				</ToastContainer>
 			</Container>

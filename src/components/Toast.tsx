@@ -9,37 +9,39 @@ import Animated, {
 import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import ThemedIcon from '../theme/ThemedIcon';
-import {VSpace} from './Space';
+import {HSpace} from './Space';
 
 interface ToastProps {
 	message: string;
 	show: boolean;
 	icon?: string;
+	position?: 'top' | 'bottom';
 }
 
-export function Toast({message, show, icon}: ToastProps) {
+export function Toast({message, show, icon, position = 'top'}: ToastProps) {
 	const showProgress = useDerivedValue(
 		() =>
 			withTiming(show ? 1 : 0, {duration: 500, easing: Easing.elastic(0.8)}),
 		[show],
 	);
+	const hideY = position === 'top' ? -80 : 80;
 	const baseAnim = useAnimatedStyle(
 		() => ({
 			opacity: showProgress.value,
 			transform: [
-				{translateY: interpolate(showProgress.value, [0, 1], [-80, 0])},
+				{translateY: interpolate(showProgress.value, [0, 1], [hideY, 0])},
 			],
 		}),
-		[show],
+		[show, hideY],
 	);
 	return (
-		<ToastBase style={baseAnim}>
+		<ToastBase style={baseAnim} position={position}>
 			<ToastBackground />
 			<ToastTextContainer>
 				{icon != null && (
 					<>
 						<ThemedIcon name={icon} size={14} />
-						<VSpace size={6} />
+						<HSpace size={6} />
 					</>
 				)}
 				<ToastText>{message}</ToastText>
@@ -48,13 +50,17 @@ export function Toast({message, show, icon}: ToastProps) {
 	);
 }
 
-const ToastBase = Animated.createAnimatedComponent(styled.View`
+interface ToastBaseProps {
+	position: 'top' | 'bottom';
+}
+
+const ToastBase = Animated.createAnimatedComponent(styled.View<ToastBaseProps>`
 	position: relative;
 	padding-left: 16px;
 	padding-right: 16px;
 	padding-top: 10px;
 	padding-bottom: 10px;
-	margin-top: 16px;
+	margin-top: ${(p) => (p.position === 'top' ? 0 : 'auto')};
 	margin-left: auto;
 	margin-right: auto;
 	align-self: flex-start;
@@ -83,9 +89,27 @@ const ToastText = styled.Text`
 	text-align: center;
 `;
 
-export function ToastContainer({children}: PropsWithChildren) {
+interface ToastContainerProps extends PropsWithChildren, Partial<EdgeInsets> {}
+
+export function ToastContainer({
+	children,
+	left = 0,
+	right = 0,
+	top = 0,
+	bottom = 0,
+}: ToastContainerProps) {
 	const insets = useSafeAreaInsets();
-	return <ToastContainerBase insets={insets}>{children}</ToastContainerBase>;
+	const totalInsets = {
+		top: insets.top + top,
+		bottom: insets.bottom + bottom,
+		left: insets.left + left,
+		right: insets.right + right,
+	};
+	return (
+		<ToastContainerBase insets={totalInsets} pointerEvents="none">
+			{children}
+		</ToastContainerBase>
+	);
 }
 
 interface ToastContainerBaseProps {
@@ -95,6 +119,7 @@ interface ToastContainerBaseProps {
 const ToastContainerBase = styled.View<ToastContainerBaseProps>`
 	position: absolute;
 	top: ${({insets}) => insets.top}px;
+	bottom: ${({insets}) => insets.bottom}px;
 	left: ${({insets}) => insets.left}px;
 	right: ${({insets}) => insets.right}px;
 `;
