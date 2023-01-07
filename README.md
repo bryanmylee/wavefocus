@@ -1,4 +1,4 @@
-# WaveFocus
+# Wave Focus
 
 ![feature](./assets/features/android_feature%402x.png)
 
@@ -18,7 +18,7 @@ After creating the keystore, run `./gradlew signingReport` in the `android` dire
 
 ## Backend
 
-WaveFocus is built on Google Cloud Platform (GCP). It relies on:
+Wave Focus is built on Google Cloud Platform (GCP). It relies on:
 
 - Firebase Authentication to provide user accounts and timer sync across multiple devices
 - Firebase Firestore for its realtime document database
