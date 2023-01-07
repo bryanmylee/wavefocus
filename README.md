@@ -1,14 +1,22 @@
 # WaveFocus
 
+![feature](./assets/features/android_feature%402x.png)
+
 A beautiful and simple Pomodoro timer application.
 
-## Architecture
+## Frontend
 
-### Frontend
+### Mobile
 
-I am using React Native for the iOS and Android application. If time permits, I would like to create a Windows and macOS application with Electron and a browser extension.
+We use React Native for iOS and Android.
 
-### Backend
+#### Android
+
+Follow [this](https://reactnative.dev/docs/signed-apk-android) guide to build the release variant of the application.
+
+After creating the keystore, run `./gradlew signingReport` in the `android` directory to get the SHA-1 and SHA-256 fingerprints of the newly created keystore. Then, make sure to copy the fingerprints over to the Firebase project settings for the Android application.
+
+## Backend
 
 WaveFocus is built on Google Cloud Platform (GCP). It relies on:
 
@@ -19,8 +27,6 @@ WaveFocus is built on Google Cloud Platform (GCP). It relies on:
 - Google Cloud Tasks API
   - A queue `wavefocus-notifications` in `us-central1` is used to queue notifications for deferred delivery
 
-### Android
+### Notifications
 
-Follow [this](https://reactnative.dev/docs/signed-apk-android) guide to build the release variant of the application.
-
-After creating the keystore, run `./gradlew signingReport` in the `android` directory to get the SHA-1 and SHA-256 fingerprints of the newly created keystore. Then, make sure to copy the fingerprints over to the Firebase project settings for the Android application.
+For more information about its notification architecture, refer to [this blog post](https://bryanmylee.com/blog/serverless-scheduled-push-notifications-with-163ece2f7f2c42edbcbfac027c15dabf).
