@@ -30,3 +30,17 @@ Wave Focus is built on Google Cloud Platform (GCP). It relies on:
 ### Notifications
 
 For more information about its notification architecture, refer to [this blog post](https://bryanmylee.com/blog/serverless-scheduled-push-notifications-with-163ece2f7f2c42edbcbfac027c15dabf).
+
+## API Keys
+
+### iOS
+
+Visit the iOS application settings on [Firebase console](https://console.firebase.google.com/).
+
+Download `GoogleService-Info.plist` and add it to the root of the Xcode project at `/ios/GoogleService-Info.plist`. If prompted, add the file to all targets.
+
+### Android
+
+Visit the Android application settings on [Firebase console](https://console.firebase.google.com/).
+
+Download `google-services.json` and add it to `/android/app/google-services.json`.
