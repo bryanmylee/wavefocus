@@ -1,0 +1,8 @@
+{
+	"bracketSameLine": true,
+	"bracketSpacing": false,
+	"singleQuote": true,
+	"trailingComma": "all",
+	"useTabs": true,
+	"importOrder": ["^react$", "<THIRD_PARTY_MODULES>", "^[./]"]
+}
