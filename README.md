@@ -16,6 +16,10 @@ Follow [this](https://reactnative.dev/docs/signed-apk-android) guide to build th
 
 After creating the keystore, run `./gradlew signingReport` in the `android` directory to get the SHA-1 and SHA-256 fingerprints of the newly created keystore. Then, make sure to copy the fingerprints over to the Firebase project settings for the Android application.
 
+#### iOS
+
+Follow [this](https://reactnative.dev/docs/publishing-to-app-store) guide to build and publish the application.
+
 ## Backend
 
 Wave Focus is built on Google Cloud Platform (GCP). It relies on:
