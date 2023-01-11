@@ -2,34 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-	:root:where(.focus) {
-		--color-background: hsl(170, 100%, 94%);
-		--color-primary: hsl(170, 89%, 24%);
-		--color-timer-text: hsl(170, 89%, 24%);
-		--color-timer-prog-fill: hsl(170, 89%, 24%);
-		--color-timer-prog-track: hsl(170, 55%, 83%);
-    --opacity-timer-prog-track: 0.5,
+
+body:where(.focus) * {
+	--color-background: hsl(170, 100%, 94%);
+	--color-primary: hsl(170, 89%, 24%);
+	--color-timer-text: hsl(170, 89%, 24%);
+	--color-timer-prog-fill: hsl(170, 89%, 24%);
+	--color-timer-prog-track: hsl(170, 55%, 83%);
+	--opacity-timer-prog-track: 0.5,
+	--color-timer-fluid-fill: hsl(170, 78%, 43%);
+	--opacity-timer-fluid: 0.3,
+	--color-button-fill: hsl(170, 68%, 81%);
+	--color-button-text: hsl(170, 84%, 14%);
+	--color-text-base: hsl(170, 84%, 14%);
+	--color-text-subtitle: hsl(170, 21%, 49%);
+}
+
+body:where(.relax) * {
+	--color-background: hsl(190, 100%, 94%);
+	--color-primary: hsl(190, 89%, 24%);
+	--color-timer-text: hsl(190, 49%, 32%);
+	--color-timer-prog-fill: hsl(190, 49%, 32%);
+	--color-timer-prog-track: hsl(190, 38%, 27%);
+	--opacity-timer-prog-track: 0.12;
+	--color-timer-fluid-fill: hsl(190, 100%, 27%);
+	--opacity-timer-fluid: 0.12;
+	--color-button-fill: hsl(190, 69%, 81%);
+	--color-button-text: hsl(190, 84%, 14%);
+	--color-text-base: hsl(190, 84%, 14%);
+	--color-text-subtitle: hsl(190, 21%, 49%);
+}
+
+@media (prefers-color-scheme: dark) {
+	body:where(.focus) * {
+		--color-background: hsl(170, 7%, 14%);
+		--color-primary: hsl(170, 98%, 75%);
+		--color-timer-text: hsl(170, 98%, 75%);
+		--color-timer-prog-fill: hsl(170, 98%, 75%);
+		--color-timer-prog-track: hsl(170, 50%, 19%);
+		--opacity-timer-prog-track: 1.0,
 		--color-timer-fluid-fill: hsl(170, 78%, 43%);
-    --opacity-timer-fluid: 0.3,
-		--color-button-fill: hsl(170, 68%, 81%);
+		--opacity-timer-fluid: 0.3,
+		--color-button-fill: hsl(170, 98%, 75%);
 		--color-button-text: hsl(170, 84%, 14%);
-		--color-text-base: hsl(170, 84%, 14%);
-		--color-text-subtitle: hsl(170, 21%, 49%);
+		--color-text-base: hsl(170, 72%, 82%);
+		--color-text-subtitle: hsl(170, 21%, 60%);
 	}
-  
-  :root:where(.relax) {
-		--color-background: hsl(190, 100%, 94%);
-		--color-primary: hsl(190, 89%, 24%);
-		--color-timer-text: hsl(190, 49%, 32%);
-		--color-timer-prog-fill: hsl(190, 49%, 32%);
-		--color-timer-prog-track: hsl(190, 38%, 27%);
-    --opacity-timer-prog-track: 0.12;
-		--color-timer-fluid-fill: hsl(190, 100%, 27%);
-    --opacity-timer-fluid: 0.12;
-		--color-button-fill: hsl(190, 69%, 81%);
+	
+	body:where(.relax) * {
+		--color-background: hsl(190, 7%, 14%);
+		--color-primary: hsl(190, 98%, 75%);
+		--color-timer-text: hsl(190, 98%, 75%);
+		--color-timer-prog-fill: hsl(190, 98%, 75%);
+		--color-timer-prog-track: hsl(190, 50%, 19%);
+		--opacity-timer-prog-track: 0.5;
+		--color-timer-fluid-fill: hsl(190, 78%, 63%);
+		--opacity-timer-fluid: 0.12;
+		--color-button-fill: hsl(190, 98%, 75%);
 		--color-button-text: hsl(190, 84%, 14%);
-		--color-text-base: hsl(190, 84%, 14%);
-		--color-text-subtitle: hsl(190, 21%, 49%);
-  }
+		--color-text-base: hsl(190, 72%, 82%);
+		--color-text-subtitle: hsl(190, 21%, 60%);
+	}
 }
