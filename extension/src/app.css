@@ -2,16 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body:where(.focus) * {
 	--color-background: hsl(170, 100%, 94%);
 	--color-primary: hsl(170, 89%, 24%);
 	--color-timer-text: hsl(170, 89%, 24%);
 	--color-timer-prog-fill: hsl(170, 89%, 24%);
 	--color-timer-prog-track: hsl(170, 55%, 83%);
-	--opacity-timer-prog-track: 0.5,
+	--opacity-timer-prog-track: 0.5;
 	--color-timer-fluid-fill: hsl(170, 78%, 43%);
-	--opacity-timer-fluid: 0.3,
+	--opacity-timer-fluid: 0.3;
 	--color-button-fill: hsl(170, 68%, 81%);
 	--color-button-text: hsl(170, 84%, 14%);
 	--color-text-base: hsl(170, 84%, 14%);
@@ -40,15 +39,15 @@ body:where(.relax) * {
 		--color-timer-text: hsl(170, 98%, 75%);
 		--color-timer-prog-fill: hsl(170, 98%, 75%);
 		--color-timer-prog-track: hsl(170, 50%, 19%);
-		--opacity-timer-prog-track: 1.0,
+		--opacity-timer-prog-track: 1;
 		--color-timer-fluid-fill: hsl(170, 78%, 43%);
-		--opacity-timer-fluid: 0.3,
+		--opacity-timer-fluid: 0.3;
 		--color-button-fill: hsl(170, 98%, 75%);
 		--color-button-text: hsl(170, 84%, 14%);
 		--color-text-base: hsl(170, 72%, 82%);
 		--color-text-subtitle: hsl(170, 21%, 60%);
 	}
-	
+
 	body:where(.relax) * {
 		--color-background: hsl(190, 7%, 14%);
 		--color-primary: hsl(190, 98%, 75%);

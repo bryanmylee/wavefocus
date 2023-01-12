@@ -25,10 +25,8 @@ module.exports = {
         },
       },
       opacity: {
-        timer: {
-          'prog-track': 'var(--opacity-timer-prog-track)',
-          'fluid': 'var(--opacity-timer-fluid)',
-        },
+        'timer-prog-track': 'var(--opacity-timer-prog-track)',
+        'timer-fluid': 'var(--opacity-timer-fluid)',
       },
     },
   },
