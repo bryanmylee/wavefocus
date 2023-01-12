@@ -25,7 +25,6 @@ export function useRegisterDeviceToken() {
 			async function load() {
 				if (user == null) return;
 				const {fcm_token} = await browser.storage.local.get(['fcm_token']);
-				console.log('loaded token', fcm_token, 'user', user.uid);
 				await updateDeviceTokenMemory(
 					firestore,
 					user.uid,

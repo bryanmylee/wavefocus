@@ -1,11 +1,19 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import firestore from '@react-native-firebase/firestore';
+import {
+	collection,
+	CollectionReference,
+	deleteDoc,
+	doc,
+	getDoc,
+	onSnapshot,
+	setDoc,
+	updateDoc,
+} from 'firebase/firestore';
 import {useUser} from '../auth/UserProvider';
 import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
+import {useFirebase} from '../firebase/FirebaseProvider';
 import {useElapsedSeconds} from '../utils/useElapsedSeconds';
 import {TimerMemory} from './types';
-
-const timerMemoryCollection = firestore().collection<TimerMemory>('timers');
 
 const DEFAULT_MEMORY: TimerMemory = {
 	isFocus: true,
@@ -24,20 +32,26 @@ interface UseTimerMemoryProps {
 }
 
 export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
+	const {firestore} = useFirebase();
+	const timerMemoryCollection = useMemo(
+		() => collection(firestore, 'timers') as CollectionReference<TimerMemory>,
+		[firestore],
+	);
 	const {
 		user,
 		subscribeBeforeSignOutAnonymously,
 		subscribeAfterSignInAnonymously,
 	} = useUser();
 	const memoryDoc = useMemo(
-		() => timerMemoryCollection.doc(user?.uid ?? ''),
+		() => (user?.uid == null ? null : doc(timerMemoryCollection, user.uid)),
 		[user?.uid],
 	);
 	const [local, setLocal] = useState<TimerMemory>(DEFAULT_MEMORY);
 
 	useEffect(
 		function synchronizeMemory() {
-			return memoryDoc.onSnapshot((snapshot) => {
+			if (memoryDoc == null) return;
+			return onSnapshot(memoryDoc, (snapshot) => {
 				if (snapshot == null) {
 					return;
 				}
@@ -54,7 +68,8 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 
 	const setIsFocus = useCallback(
 		async (isFocus: boolean) => {
-			await memoryDoc.set({isFocus, start: null, pause: null});
+			if (memoryDoc == null) return;
+			await setDoc(memoryDoc, {isFocus, start: null, pause: null});
 		},
 		[memoryDoc],
 	);
@@ -78,8 +93,9 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 
 	const setIsActive = useCallback(
 		async (newIsActive: boolean) => {
+			if (memoryDoc == null) return;
 			if (secondsRemaining <= 0) return;
-			const snapshot = await memoryDoc.get();
+			const snapshot = await getDoc(memoryDoc);
 			const now = Date.now();
 			if (user != null) {
 				onActiveChange?.({
@@ -89,8 +105,8 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 				});
 			}
 			if (newIsActive) {
-				if (!snapshot.exists) {
-					await memoryDoc.set({...DEFAULT_MEMORY, start: Date.now()});
+				if (!snapshot.exists()) {
+					await setDoc(memoryDoc, {...DEFAULT_MEMORY, start: Date.now()});
 					return;
 				}
 				const data = snapshot.data();
@@ -99,17 +115,17 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 				}
 				const start = data.start ?? now;
 				const msSincePause = now - (data.pause ?? now);
-				await memoryDoc.update({
+				await updateDoc(memoryDoc, {
 					pause: null,
 					start: start + msSincePause,
 				});
 			} else {
-				if (snapshot.exists) {
-					await memoryDoc.update({
+				if (snapshot.exists()) {
+					await updateDoc(memoryDoc, {
 						pause: now,
 					});
 				} else {
-					await memoryDoc.set({
+					await setDoc(memoryDoc, {
 						...DEFAULT_MEMORY,
 						pause: now,
 					});
@@ -134,7 +150,8 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		: secondsRemaining === RELAX_DURATION_SEC;
 
 	const resetStage = useCallback(async () => {
-		await memoryDoc.set({
+		if (memoryDoc == null) return;
+		await setDoc(memoryDoc, {
 			isFocus: local.isFocus,
 			start: null,
 			pause: null,
@@ -149,9 +166,10 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 	useEffect(
 		function savePrevAnonMemory() {
 			return subscribeBeforeSignOutAnonymously(async (ev) => {
-				const snapshot = await timerMemoryCollection.doc(ev.uid).get();
+				const timerDoc = doc(timerMemoryCollection, ev.uid);
+				const snapshot = await getDoc(timerDoc);
 				prevAnonMemory.current = snapshot.data();
-				await timerMemoryCollection.doc(ev.uid).delete();
+				await deleteDoc(timerDoc);
 			});
 		},
 		[subscribeBeforeSignOutAnonymously],
@@ -165,9 +183,8 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 				if (!ev.prevIsAnon) {
 					return;
 				}
-				await timerMemoryCollection
-					.doc(ev.user.uid)
-					.set(prevAnonMemory.current);
+				const timerDoc = doc(timerMemoryCollection, ev.user.uid);
+				await setDoc(timerDoc, prevAnonMemory.current);
 			});
 		},
 		[subscribeAfterSignInAnonymously],
