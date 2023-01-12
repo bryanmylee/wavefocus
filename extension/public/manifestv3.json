@@ -3,7 +3,7 @@
 	"name": "Wave",
 	"description": "A simple and beautiful pomodoro app to keep you focused",
 	"version": "1.0",
-	"permissions": ["alarms", "notifications", "storage"],
+	"permissions": ["alarms", "notifications", "storage", "gcm"],
 	"background": {
 		"service_worker": "./background.js"
 	},
