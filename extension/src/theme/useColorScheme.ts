@@ -1,8 +1,8 @@
-import { useMediaQuery } from "../utils/useMediaQuery";
+import {useMediaQuery} from '../utils/useMediaQuery';
 
 type ColorSchemeName = 'light' | 'dark' | null | undefined;
 
 export function useColorScheme(): ColorSchemeName {
-  const isDark = useMediaQuery('(prefers-color-scheme: dark)');
-  return isDark ? 'dark' : 'light';
+	const isDark = useMediaQuery('(prefers-color-scheme: dark)');
+	return isDark ? 'dark' : 'light';
 }

@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { useEffect } from "react";
-import { PopupOpenMessage } from './background/messages';
+import { PopupOpenMessage } from '../background/messages';
 
 export function useNotifyBackground() {
   useEffect(function notifyBackground() {

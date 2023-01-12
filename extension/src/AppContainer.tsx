@@ -1,6 +1,6 @@
 import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
 import {useThemeBodyClassList} from './theme/useThemeBodyClassList';
-import {useNotifyBackground} from './useNotifyBackground';
+import {useNotifyBackground} from './utils/useNotifyBackground';
 
 export default function App() {
 	useNotifyBackground();

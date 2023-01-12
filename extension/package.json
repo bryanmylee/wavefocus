@@ -12,7 +12,8 @@
 		"build": "run-p check build:popup build:background build:assets",
 		"gen:v3": "mv dist/manifestv3.json dist/manifest.json",
 		"gen:safari": "xcrun safari-web-extension-converter --project-location ./safari dist",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"format": "prettier --write ./src '**/*.{js,jsx,ts,tsx}'"
 	},
 	"dependencies": {
 		"npm-run-all": "^4.1.5",
