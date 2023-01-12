@@ -9,6 +9,7 @@ import {
 	setDoc,
 	updateDoc,
 } from 'firebase/firestore';
+import browser from 'webextension-polyfill';
 import {useUser} from '../auth/UserProvider';
 import {FOCUS_DURATION_SEC, RELAX_DURATION_SEC} from '../constants';
 import {useFirebase} from '../firebase/FirebaseProvider';
@@ -31,6 +32,16 @@ interface UseTimerMemoryProps {
 	onActiveChange?: (payload: OnActiveChangePayload) => void;
 }
 
+async function saveLocalToStorage(timer: TimerMemory) {
+	await browser.storage.local.set({timer});
+}
+
+async function getLocalFromStorage() {
+	const {timer} = await browser.storage.local.get(['timer']);
+	console.log('in storage', timer);
+	return (timer ?? DEFAULT_MEMORY) as TimerMemory;
+}
+
 export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 	const {firestore} = useFirebase();
 	const timerMemoryCollection = useMemo(
@@ -48,6 +59,13 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 	);
 	const [local, setLocal] = useState<TimerMemory>(DEFAULT_MEMORY);
 
+	useEffect(function loadInitialFromStorage() {
+		async function load() {
+			setLocal(await getLocalFromStorage());
+		}
+		load();
+	}, []);
+
 	useEffect(
 		function synchronizeMemory() {
 			if (memoryDoc == null) return;
@@ -56,11 +74,9 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 					return;
 				}
 				const data = snapshot.data();
-				if (data == null) {
-					setLocal(DEFAULT_MEMORY);
-				} else {
-					setLocal(data);
-				}
+				const resolvedData = data ?? DEFAULT_MEMORY;
+				setLocal(resolvedData);
+				saveLocalToStorage(resolvedData);
 			});
 		},
 		[memoryDoc],

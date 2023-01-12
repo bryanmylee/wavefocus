@@ -88,7 +88,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 			<div className="relative w-48 h-48">
 				<button
 					onClick={handlePlayPause}
-					className="absolute inset-0 flex justify-center items-center hover:opacity-50 active:opacity-25">
+					className="absolute inset-0 flex justify-center items-center hover:opacity-80 active:opacity-50">
 					<Timer seconds={secondsRemaining} />
 				</button>
 			</div>
