@@ -106,6 +106,13 @@ export function useBestHoursMemory() {
 
 	const updateBestHoursOnActiveChange = useCallback(
 		async ({isActive, latestInterval}: UpdateBestHoursPayload) => {
+			async function setPendingInitial() {
+				await memoryDoc.set({
+					...GET_DEFAULT_MEMORY(),
+					pendingStart: latestInterval?.start ?? null,
+					pendingEnd: latestInterval?.end ?? null,
+				});
+			}
 			async function setPendingWithoutCommit() {
 				await memoryDoc.update({
 					pendingStart: latestInterval?.start ?? null,
@@ -136,11 +143,11 @@ export function useBestHoursMemory() {
 			async function setPending() {
 				const snapshot = await memoryDoc.get();
 				if (!snapshot.exists) {
-					return await setPendingWithoutCommit();
+					return await setPendingInitial();
 				}
 				const data = snapshot.data();
 				if (data == null) {
-					return await setPendingWithoutCommit();
+					return await setPendingInitial();
 				}
 				const {scores, pendingEnd, pendingStart} = data;
 				if (pendingStart == null || pendingEnd == null) {
