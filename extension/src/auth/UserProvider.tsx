@@ -8,14 +8,13 @@ import {
 } from 'react';
 import {
 	Auth,
-	getAuth,
 	GoogleAuthProvider,
 	OAuthProvider,
 	signInAnonymously,
 	signInWithPopup,
 	User,
 } from 'firebase/auth';
-import {useFirebase} from '../FirebaseProvider';
+import {useFirebase} from '../firebase/FirebaseProvider';
 import {
 	Subscriber,
 	Unsubscriber,

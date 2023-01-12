@@ -1,6 +1,10 @@
+import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
 import {useThemeBodyClassList} from './theme/useThemeBodyClassList';
+import {useNotifyBackground} from './useNotifyBackground';
 
 export default function App() {
+	useNotifyBackground();
+	useRegisterDeviceToken();
 	useThemeBodyClassList();
 	return (
 		<div className="w-80 h-96 bg-background">

@@ -1,6 +1,21 @@
+import {FirebaseApp} from 'firebase/app';
 import browser from 'webextension-polyfill';
-import {fcmSenderId} from './firebase/config';
-import {Notification} from './notifications';
+import {fcmSenderId} from '../firebase/config';
+
+export type Notification = {
+	title: string;
+	body: string;
+};
+
+export const FOCUS_END_NOTIFICATION: Notification = {
+	title: 'Focus over!',
+	body: 'Take a five minute break.',
+};
+
+export const RELAX_END_NOTIFICATION: Notification = {
+	title: 'Ready to focus again?',
+	body: 'Get 25 minutes of uninterrupted work done.',
+};
 
 /**
  * Chrome-specific.
@@ -25,10 +40,7 @@ declare let chrome: {
 	};
 };
 
-/**
- * Main
- */
-async function main() {
+export function initializeNotifications(app: FirebaseApp) {
 	if (typeof chrome !== 'undefined') {
 		chrome_registerGcm();
 		chrome_addMessageListener();
@@ -43,8 +55,8 @@ function chrome_registerGcm() {
 	chrome.gcm.register([fcmSenderId], onTokenRegistered);
 }
 
-async function onTokenRegistered(fcmToken: string) {
-	await browser.storage.local.set({fcm_token: fcmToken});
+async function onTokenRegistered(token: string) {
+	await browser.storage.local.set({fcm_token: token});
 }
 
 function chrome_addMessageListener() {
@@ -65,5 +77,3 @@ function onNotification(notification: Notification) {
 		message: notification.body,
 	});
 }
-
-main();
