@@ -38,7 +38,6 @@ async function saveLocalToStorage(timer: TimerMemory) {
 
 async function getLocalFromStorage() {
 	const {timer} = await browser.storage.local.get(['timer']);
-	console.log('in storage', timer);
 	return (timer ?? DEFAULT_MEMORY) as TimerMemory;
 }
 
@@ -98,7 +97,7 @@ export function useTimerMemory({onActiveChange}: UseTimerMemoryProps = {}) {
 		local.pause,
 		maxDurationSec,
 	);
-	const secondsRemaining = maxDurationSec - elapsedSeconds;
+	const secondsRemaining = Math.max(0, maxDurationSec - elapsedSeconds);
 	const isDone = secondsRemaining <= 0;
 
 	/**
