@@ -56,7 +56,7 @@ export default function Timer({seconds, isFocus}: TimerProps) {
 				</svg>
 			</div>
 			<div className="absolute inset-0 flex justify-center items-center">
-				<h1 className="text-3xl font-bold text-timer-text">
+				<h1 className="text-3xl font-bold text-timer-text transition-colors">
 					{minutePart}:{secondPart}
 				</h1>
 			</div>

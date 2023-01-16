@@ -10,6 +10,8 @@ export default function App() {
 	useThemeBodyClassList();
 	const [showLogin, setShowLogin] = useState(false);
 	return (
-		<div className="bg-background">{showLogin ? null : <TimerScreen />}</div>
+		<div className="bg-background transition-colors">
+			{showLogin ? null : <TimerScreen />}
+		</div>
 	);
 }

@@ -107,19 +107,26 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 					</button>
 				</main>
 				<footer className="flex justify-between items-center h-10 ">
-					<button
-						onClick={handleReset}
-						className="p-2 hover:opacity-75 active:opacity-50">
-						<FontAwesomeIcon icon={faUndo} className="w-6 h-6 text-text-base" />
-					</button>
-					<button
-						onClick={handleNext}
-						className="p-2 hover:opacity-75 active:opacity-50">
-						<FontAwesomeIcon
-							icon={faArrowRight}
-							className="w-6 h-6 text-text-base"
-						/>
-					</button>
+					{isActive ? null : (
+						<>
+							<button
+								onClick={handleReset}
+								className="p-2 hover:opacity-75 active:opacity-50">
+								<FontAwesomeIcon
+									icon={faUndo}
+									className="w-6 h-6 text-text-base"
+								/>
+							</button>
+							<button
+								onClick={handleNext}
+								className="p-2 hover:opacity-75 active:opacity-50">
+								<FontAwesomeIcon
+									icon={faArrowRight}
+									className="w-6 h-6 text-text-base"
+								/>
+							</button>
+						</>
+					)}
 				</footer>
 			</section>
 		</div>

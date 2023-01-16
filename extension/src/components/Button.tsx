@@ -10,7 +10,7 @@ const Button = React.forwardRef<
 			ref={forwardedRef}
 			{...restProps}
 			className={
-				'rounded-2xl bg-button-fill px-3 py-[7.5px] font-medium text-button-text text-base tracking-tight hover:opacity-75 active:opacity-50' +
+				'transition-colors rounded-2xl bg-button-fill px-3 py-[7.5px] font-medium text-button-text text-base tracking-tight hover:opacity-75 active:opacity-50' +
 				className
 			}>
 			{children}
