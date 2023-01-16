@@ -1,5 +1,5 @@
 import {useCallback, useEffect} from 'react';
-import {faUndo, faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import {faUndo, faArrowRight, faUser} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import clsx from 'classnames';
 import {useUser} from '../auth/UserProvider';
@@ -107,7 +107,14 @@ export default function TimerScreen({
 				</section>
 				<section className="absolute inset-0 p-4 flex flex-col">
 					<header className="flex justify-end items-center h-10">
-						<Button>Sign in</Button>
+						<button
+							onClick={onShowSignInPage}
+							className="p-2 hover:opacity-75 active:opacity-50">
+							<FontAwesomeIcon
+								icon={faUser}
+								className="w-6 h-6 text-text-base"
+							/>
+						</button>
 					</header>
 					<main className="flex-1 flex justify-center items-center">
 						<button

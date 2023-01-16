@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite",
 		"check": "tsc",
-		"build:assets": "mkdir -p dist/v${VERSION}/assets && cp ../assets/extension/*.png dist/v${VERSION}/assets/",
+		"build:assets": "mkdir -p dist/v${VERSION}/assets && cp ../assets/extension/*.* dist/v${VERSION}/assets/",
 		"build:manifest": "mkdir -p dist/v${VERSION} && cp manifest/v${VERSION}.json dist/v${VERSION}/manifest.json",
 		"build:background": "vite build ${WATCH} --config vite.background.config.ts --outDir dist/v${VERSION}",
 		"build:popup": "vite build ${WATCH} --outDir dist/v${VERSION}",
@@ -24,7 +24,8 @@
 		"@fortawesome/react-fontawesome": "^0.2.0",
 		"classnames": "^2.3.2",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"tailwind-merge": "^1.8.1"
 	},
 	"devDependencies": {
 		"@trivago/prettier-plugin-sort-imports": "^4.0.0",

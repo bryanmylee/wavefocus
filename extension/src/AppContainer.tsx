@@ -1,4 +1,5 @@
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
+import SignInScreen from './auth/SignInScreen';
 import {useRegisterDeviceToken} from './device/useRegisterDeviceToken';
 import {useThemeBodyClassList} from './theme/useThemeBodyClassList';
 import TimerScreen from './timer/TimerScreen';
@@ -8,10 +9,16 @@ export default function App() {
 	useNotifyBackground();
 	useRegisterDeviceToken();
 	useThemeBodyClassList();
-	const [showLogin, setShowLogin] = useState(false);
+
+	const [showSignIn, setShowSignIn] = useState(false);
+	const toggleShowSignIn = useCallback(() => {
+		setShowSignIn((s) => !s);
+	}, []);
+
 	return (
 		<div className="bg-background transition-colors">
-			{showLogin ? null : <TimerScreen />}
+			<SignInScreen show={showSignIn} />
+			<TimerScreen onShowSignInPage={toggleShowSignIn} />
 		</div>
 	);
 }
