@@ -1,3 +1,11 @@
+.circle__wiggle {
+	animation-name: wiggle;
+	animation-duration: var(--cycleMs);
+	animation-iteration-count: infinite;
+	animation-fill-mode: both;
+	animation-direction: alternate;
+}
+
 @keyframes wiggle {
 	from {
 		transform: rotate(0deg);
@@ -5,12 +13,4 @@
 	to {
 		transform: rotate(1080deg);
 	}
-}
-
-.wiggle {
-	animation-name: wiggle;
-	animation-duration: var(--cycleMs);
-	animation-iteration-count: infinite;
-	animation-fill-mode: both;
-	animation-direction: alternate;
 }

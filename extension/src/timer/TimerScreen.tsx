@@ -93,11 +93,7 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	return (
 		<div className="relative" style={{width, height}}>
 			<section className="absolute inset-0 flex">
-				<TimerFluidAnimation
-					isActive={isActive}
-					isFocus={isFocus}
-					pause={false}
-				/>
+				<TimerFluidAnimation isActive={isActive} isFocus={isFocus} />
 			</section>
 			<section className="absolute inset-0 p-4 flex flex-col">
 				<header className="flex justify-end items-center h-10">

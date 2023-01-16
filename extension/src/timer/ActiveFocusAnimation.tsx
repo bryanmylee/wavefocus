@@ -1,3 +1,4 @@
+import clsx from 'classnames';
 import classes from './ActiveFocusAnimation.module.css';
 import {useTimerScreenDimensions} from './useTimerScreenDimensions';
 
@@ -8,7 +9,6 @@ interface ActiveFocusAnimationProps {
 
 export default function ActiveFocusAnimation({
 	show,
-	pause,
 }: ActiveFocusAnimationProps) {
 	const {width, height} = useTimerScreenDimensions();
 	const size = Math.min(width, height);
@@ -16,9 +16,9 @@ export default function ActiveFocusAnimation({
 	const radius = diameter / 2;
 	return (
 		<>
-			<FocusCircle radius={radius} cycleMs={1000} pause={pause} />
-			<FocusCircle radius={radius} cycleMs={1333} pause={pause} />
-			<FocusCircle radius={radius} cycleMs={1750} pause={pause} />
+			<FocusCircle radius={radius} cycleMs={1000} show={show} />
+			<FocusCircle radius={radius} cycleMs={1333} show={show} />
+			<FocusCircle radius={radius} cycleMs={1750} show={show} />
 		</>
 	);
 }
@@ -26,10 +26,10 @@ export default function ActiveFocusAnimation({
 interface FocusCircleProps {
 	radius: number;
 	cycleMs: number;
-	pause?: boolean;
+	show: boolean;
 }
 
-function FocusCircle({radius, cycleMs, pause}: FocusCircleProps) {
+function FocusCircle({radius, cycleMs, show}: FocusCircleProps) {
 	const {width, height} = useTimerScreenDimensions();
 	const cx = width / 2;
 	const cy = height / 2;
@@ -41,7 +41,11 @@ function FocusCircle({radius, cycleMs, pause}: FocusCircleProps) {
 			r={radius}
 			cx={cx}
 			cy={cy - wiggle}
-			className={classes.wiggle}
+			className={clsx(
+				classes.circle__wiggle,
+				'transition-opacity duration-500',
+				!show && 'opacity-0',
+			)}
 			style={
 				{
 					transformOrigin: `${cx}px ${cy}px`,
