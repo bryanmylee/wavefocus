@@ -1,6 +1,7 @@
 import {useCallback, useEffect} from 'react';
 import {faUndo, faArrowRight} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import clsx from 'classnames';
 import {useUser} from '../auth/UserProvider';
 import Button from '../components/Button';
 import {useBestHoursMemory} from '../history/useBestHoursMemory';
@@ -15,10 +16,14 @@ import {useTimerMemory} from './useTimerMemory';
 import {useTimerScreenDimensions} from './useTimerScreenDimensions';
 
 export interface TimerScreenProps {
+	onShowSignInPage?: () => void;
 	onPlay?: () => void;
 }
 
-export default function TimerScreen({onPlay}: TimerScreenProps) {
+export default function TimerScreen({
+	onShowSignInPage,
+	onPlay,
+}: TimerScreenProps) {
 	const {user, isLoading} = useUser();
 	const {
 		isActive,
@@ -91,44 +96,50 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 	const {width, height} = useTimerScreenDimensions();
 
 	return (
-		<div className="relative" style={{width, height}}>
-			<section className="absolute inset-0 flex">
-				<TimerFluidAnimation isActive={isActive} isFocus={isFocus} />
-			</section>
-			<section className="absolute inset-0 p-4 flex flex-col">
-				<header className="flex justify-end items-center h-10">
-					<Button>Sign in</Button>
-				</header>
-				<main className="flex-1 flex justify-center items-center">
-					<button
-						onClick={handlePlayPause}
-						className="flex justify-center items-center hover:opacity-75 active:opacity-50">
-						<Timer seconds={secondsRemaining} isFocus={isFocus} />
-					</button>
-				</main>
-				<footer className="flex justify-between items-center h-10 ">
-					{isActive ? null : (
-						<>
-							<button
-								onClick={handleReset}
-								className="p-2 hover:opacity-75 active:opacity-50">
-								<FontAwesomeIcon
-									icon={faUndo}
-									className="w-6 h-6 text-text-base"
-								/>
-							</button>
-							<button
-								onClick={handleNext}
-								className="p-2 hover:opacity-75 active:opacity-50">
-								<FontAwesomeIcon
-									icon={faArrowRight}
-									className="w-6 h-6 text-text-base"
-								/>
-							</button>
-						</>
-					)}
-				</footer>
-			</section>
+		<div className="flex" style={{width, height}}>
+			<div
+				className={clsx(
+					'flex-1 relative transition-opacity duration-1000 ease-in-out',
+					user == null || isLoading ? 'opacity-0' : 'opacity-100',
+				)}>
+				<section className="absolute inset-0 flex">
+					<TimerFluidAnimation isActive={isActive} isFocus={isFocus} />
+				</section>
+				<section className="absolute inset-0 p-4 flex flex-col">
+					<header className="flex justify-end items-center h-10">
+						<Button>Sign in</Button>
+					</header>
+					<main className="flex-1 flex justify-center items-center">
+						<button
+							onClick={handlePlayPause}
+							className="flex justify-center items-center hover:opacity-75 active:opacity-50">
+							<Timer seconds={secondsRemaining} isFocus={isFocus} />
+						</button>
+					</main>
+					<footer className="flex justify-between items-center h-10 ">
+						{isActive ? null : (
+							<>
+								<button
+									onClick={handleReset}
+									className="p-2 hover:opacity-75 active:opacity-50">
+									<FontAwesomeIcon
+										icon={faUndo}
+										className="w-6 h-6 text-text-base"
+									/>
+								</button>
+								<button
+									onClick={handleNext}
+									className="p-2 hover:opacity-75 active:opacity-50">
+									<FontAwesomeIcon
+										icon={faArrowRight}
+										className="w-6 h-6 text-text-base"
+									/>
+								</button>
+							</>
+						)}
+					</footer>
+				</section>
+			</div>
 		</div>
 	);
 }
