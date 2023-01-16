@@ -104,19 +104,21 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 					<Button>Sign in</Button>
 				</header>
 				<main className="flex-1 flex justify-center items-center">
-					<div className="relative w-48 h-48">
-						<button
-							onClick={handlePlayPause}
-							className="absolute inset-0 flex justify-center items-center hover:opacity-75 active:opacity-50">
-							<Timer seconds={secondsRemaining} />
-						</button>
-					</div>
+					<button
+						onClick={handlePlayPause}
+						className="flex justify-center items-center hover:opacity-75 active:opacity-50">
+						<Timer seconds={secondsRemaining} isFocus={isFocus} />
+					</button>
 				</main>
 				<footer className="flex justify-between items-center h-10 ">
-					<button className="p-2 hover:opacity-75 active:opacity-50">
+					<button
+						onClick={handleReset}
+						className="p-2 hover:opacity-75 active:opacity-50">
 						<FontAwesomeIcon icon={faUndo} className="w-6 h-6 text-text-base" />
 					</button>
-					<button className="p-2 hover:opacity-75 active:opacity-50">
+					<button
+						onClick={handleNext}
+						className="p-2 hover:opacity-75 active:opacity-50">
 						<FontAwesomeIcon
 							icon={faArrowRight}
 							className="w-6 h-6 text-text-base"
