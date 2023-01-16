@@ -39,8 +39,7 @@ export default function Timer({seconds, isFocus}: TimerProps) {
 						r={radius}
 						strokeWidth={strokeWidth}
 						fill="transparent"
-						stroke="var(--color-timer-prog-track)"
-						opacity="var(--opacity-timer-prog-track)"
+						stroke="hsl(var(--color-timer-prog-track) / var(--opacity-timer-prog-track))"
 					/>
 					<circle
 						cx={paddedDiameter / 2}
@@ -49,7 +48,7 @@ export default function Timer({seconds, isFocus}: TimerProps) {
 						strokeWidth={strokeWidth}
 						strokeLinecap="round"
 						fill="transparent"
-						stroke="var(--color-timer-prog-fill)"
+						stroke="hsl(var(--color-timer-prog-fill))"
 						strokeDasharray={circumference}
 						strokeDashoffset={circleDashoffset}
 					/>

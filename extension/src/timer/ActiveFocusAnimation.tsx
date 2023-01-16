@@ -36,8 +36,7 @@ function FocusCircle({radius, cycleMs, show}: FocusCircleProps) {
 	const wiggle = 5;
 	return (
 		<circle
-			fill="var(--color-timer-fluid-fill)"
-			opacity="var(--opacity-timer-fluid)"
+			fill="hsl(var(--color-timer-fluid-fill) / var(--opacity-timer-fluid))"
 			r={radius}
 			cx={cx}
 			cy={cy - wiggle}
