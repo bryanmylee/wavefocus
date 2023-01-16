@@ -7,21 +7,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: 'var(--color-background)',
-        primary: 'var(--color-primary)',
+        background: 'hsl(var(--color-background) / <alpha-value>)',
+        primary: 'hsl(var(--color-primary) / <alpha-value>)',
         timer: {
-          text: 'var(--color-timer-text)',
-          'prog-fill': 'var(--color-timer-prog-fill)',
-          'prog-track': 'var(--color-timer-prog-track)',
-          'fluid-fill': 'var(--color-timer-fluid-fill)',
+          text: 'hsl(var(--color-timer-text) / <alpha-value>)',
+          'prog-fill': 'hsl(var(--color-timer-prog-fill) / <alpha-value>)',
+          'prog-track': 'hsl(var(--color-timer-prog-track) / <alpha-value>)',
+          'fluid-fill': 'hsl(var(--color-timer-fluid-fill) / <alpha-value>)',
         },
         button: {
-          fill: 'var(--color-button-fill)',
-          text: 'var(--color-button-text)',
+          fill: 'hsl(var(--color-button-fill) / <alpha-value>)',
+          text: 'hsl(var(--color-button-text) / <alpha-value>)',
         },
         text: {
-          base: 'var(--color-text-base)',
-          subtitle: 'var(--color-text-subtitle)',
+          base: 'hsl(var(--color-text-base) / <alpha-value>)',
+          subtitle: 'hsl(var(--color-text-subtitle) / <alpha-value>)',
         },
       },
       opacity: {

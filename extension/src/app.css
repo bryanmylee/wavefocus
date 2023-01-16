@@ -3,63 +3,63 @@
 @tailwind utilities;
 
 body:where(.focus) * {
-	--color-background: hsl(170, 100%, 94%);
-	--color-primary: hsl(170, 89%, 24%);
-	--color-timer-text: hsl(170, 89%, 24%);
-	--color-timer-prog-fill: hsl(170, 89%, 24%);
-	--color-timer-prog-track: hsl(170, 55%, 83%);
+	--color-background: 170deg 100% 94%;
+	--color-primary: 170deg 89% 24%;
+	--color-timer-text: 170deg 89% 24%;
+	--color-timer-prog-fill: 170deg 89% 24%;
+	--color-timer-prog-track: 170deg 55% 83%;
 	--opacity-timer-prog-track: 0.5;
-	--color-timer-fluid-fill: hsl(170, 78%, 43%);
+	--color-timer-fluid-fill: 170deg 78% 43%;
 	--opacity-timer-fluid: 0.3;
-	--color-button-fill: hsl(170, 68%, 81%);
-	--color-button-text: hsl(170, 84%, 14%);
-	--color-text-base: hsl(170, 84%, 14%);
-	--color-text-subtitle: hsl(170, 21%, 49%);
+	--color-button-fill: 170deg 68% 81%;
+	--color-button-text: 170deg 84% 14%;
+	--color-text-base: 170deg 84% 14%;
+	--color-text-subtitle: 170deg 21% 49%;
 }
 
 body:where(.relax) * {
-	--color-background: hsl(190, 100%, 94%);
-	--color-primary: hsl(190, 89%, 24%);
-	--color-timer-text: hsl(190, 49%, 32%);
-	--color-timer-prog-fill: hsl(190, 49%, 32%);
-	--color-timer-prog-track: hsl(190, 38%, 27%);
+	--color-background: 190deg 100% 94%;
+	--color-primary: 190deg 89% 24%;
+	--color-timer-text: 190deg 49% 32%;
+	--color-timer-prog-fill: 190deg 49% 32%;
+	--color-timer-prog-track: 190deg 38% 27%;
 	--opacity-timer-prog-track: 0.12;
-	--color-timer-fluid-fill: hsl(190, 100%, 27%);
+	--color-timer-fluid-fill: 190deg 100% 27%;
 	--opacity-timer-fluid: 0.12;
-	--color-button-fill: hsl(190, 69%, 81%);
-	--color-button-text: hsl(190, 84%, 14%);
-	--color-text-base: hsl(190, 84%, 14%);
-	--color-text-subtitle: hsl(190, 21%, 49%);
+	--color-button-fill: 190deg 69% 81%;
+	--color-button-text: 190deg 84% 14%;
+	--color-text-base: 190deg 84% 14%;
+	--color-text-subtitle: 190deg 21% 49%;
 }
 
 @media (prefers-color-scheme: dark) {
 	body:where(.focus) * {
-		--color-background: hsl(170, 7%, 14%);
-		--color-primary: hsl(170, 98%, 75%);
-		--color-timer-text: hsl(170, 98%, 75%);
-		--color-timer-prog-fill: hsl(170, 98%, 75%);
-		--color-timer-prog-track: hsl(170, 50%, 19%);
+		--color-background: 170deg 7% 14%;
+		--color-primary: 170deg 98% 75%;
+		--color-timer-text: 170deg 98% 75%;
+		--color-timer-prog-fill: 170deg 98% 75%;
+		--color-timer-prog-track: 170deg 50% 19%;
 		--opacity-timer-prog-track: 1;
-		--color-timer-fluid-fill: hsl(170, 78%, 43%);
+		--color-timer-fluid-fill: 170deg 78% 43%;
 		--opacity-timer-fluid: 0.3;
-		--color-button-fill: hsl(170, 98%, 75%);
-		--color-button-text: hsl(170, 84%, 14%);
-		--color-text-base: hsl(170, 72%, 82%);
-		--color-text-subtitle: hsl(170, 21%, 60%);
+		--color-button-fill: 170deg 98% 75%;
+		--color-button-text: 170deg 84% 14%;
+		--color-text-base: 170deg 72% 82%;
+		--color-text-subtitle: 170deg 21% 60%;
 	}
 
 	body:where(.relax) * {
-		--color-background: hsl(190, 7%, 14%);
-		--color-primary: hsl(190, 98%, 75%);
-		--color-timer-text: hsl(190, 98%, 75%);
-		--color-timer-prog-fill: hsl(190, 98%, 75%);
-		--color-timer-prog-track: hsl(190, 50%, 19%);
+		--color-background: 190deg 7% 14%;
+		--color-primary: 190deg 98% 75%;
+		--color-timer-text: 190deg 98% 75%;
+		--color-timer-prog-fill: 190deg 98% 75%;
+		--color-timer-prog-track: 190deg 50% 19%;
 		--opacity-timer-prog-track: 0.5;
-		--color-timer-fluid-fill: hsl(190, 78%, 63%);
+		--color-timer-fluid-fill: 190deg 78% 63%;
 		--opacity-timer-fluid: 0.12;
-		--color-button-fill: hsl(190, 98%, 75%);
-		--color-button-text: hsl(190, 84%, 14%);
-		--color-text-base: hsl(190, 72%, 82%);
-		--color-text-subtitle: hsl(190, 21%, 60%);
+		--color-button-fill: 190deg 98% 75%;
+		--color-button-text: 190deg 84% 14%;
+		--color-text-base: 190deg 72% 82%;
+		--color-text-subtitle: 190deg 21% 60%;
 	}
 }
