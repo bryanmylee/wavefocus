@@ -1,13 +1,18 @@
 import {useCallback, useEffect} from 'react';
+import {faUndo, faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useUser} from '../auth/UserProvider';
+import Button from '../components/Button';
 import {useBestHoursMemory} from '../history/useBestHoursMemory';
 import {
 	getIntervalsFromHistory,
 	useHistoryMemory,
 } from '../history/useHistoryMemory';
 import Timer from './Timer';
+import TimerFluidAnimation from './TimerFluidAnimation';
 import {useTimerStage} from './TimerStageProvider';
 import {useTimerMemory} from './useTimerMemory';
+import {useTimerScreenDimensions} from './useTimerScreenDimensions';
 
 export interface TimerScreenProps {
 	onPlay?: () => void;
@@ -83,15 +88,42 @@ export default function TimerScreen({onPlay}: TimerScreenProps) {
 		updateBestHoursOnActiveChange,
 	]);
 
+	const {width, height} = useTimerScreenDimensions();
+
 	return (
-		<section className="p-4 flex justify-center items-center w-64 h-96">
-			<div className="relative w-48 h-48">
-				<button
-					onClick={handlePlayPause}
-					className="absolute inset-0 flex justify-center items-center hover:opacity-80 active:opacity-50">
-					<Timer seconds={secondsRemaining} />
-				</button>
-			</div>
-		</section>
+		<div className="relative" style={{width, height}}>
+			<section className="absolute inset-0 flex">
+				<TimerFluidAnimation
+					isActive={isActive}
+					isFocus={isFocus}
+					pause={false}
+				/>
+			</section>
+			<section className="absolute inset-0 p-4 flex flex-col">
+				<header className="flex justify-end items-center h-10">
+					<Button>Sign in</Button>
+				</header>
+				<main className="flex-1 flex justify-center items-center">
+					<div className="relative w-48 h-48">
+						<button
+							onClick={handlePlayPause}
+							className="absolute inset-0 flex justify-center items-center hover:opacity-75 active:opacity-50">
+							<Timer seconds={secondsRemaining} />
+						</button>
+					</div>
+				</main>
+				<footer className="flex justify-between items-center h-10 ">
+					<button className="p-2 hover:opacity-75 active:opacity-50">
+						<FontAwesomeIcon icon={faUndo} className="w-6 h-6 text-text-base" />
+					</button>
+					<button className="p-2 hover:opacity-75 active:opacity-50">
+						<FontAwesomeIcon
+							icon={faArrowRight}
+							className="w-6 h-6 text-text-base"
+						/>
+					</button>
+				</footer>
+			</section>
+		</div>
 	);
 }
