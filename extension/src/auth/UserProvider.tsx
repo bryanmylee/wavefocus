@@ -9,9 +9,8 @@ import {
 import {
 	Auth,
 	GoogleAuthProvider,
-	OAuthProvider,
 	signInAnonymously,
-	signInWithPopup,
+	signInWithCredential,
 	User,
 } from 'firebase/auth';
 import {useFirebase} from '../firebase/FirebaseProvider';
@@ -22,17 +21,26 @@ import {
 } from '../utils/useCreateSubscriber';
 import {useLastActive} from './useLastActive';
 
-const googleProvider = new GoogleAuthProvider();
-const appleProvider = new OAuthProvider('apple.com');
-appleProvider.addScope('email');
-appleProvider.addScope('name');
-
-async function signInGoogleAsync(auth: Auth) {
-	return await signInWithPopup(auth, googleProvider);
+async function signInAsync(auth: Auth) {
+	if (typeof chrome !== 'undefined') {
+		return await chrome_signIn(auth);
+	}
+	console.warn('Google sign in not supported in this browser');
 }
 
-async function signInAppleAsync(auth: Auth) {
-	return await signInWithPopup(auth, appleProvider);
+async function chrome_signIn(auth: Auth) {
+	const accessToken = await new Promise<string>((resolve) => {
+		chrome.identity.getAuthToken({interactive: true}, resolve);
+	});
+	if (accessToken == null) {
+		throw new Error('chrome_signIn: Unable to get user access token');
+	}
+	const credential = GoogleAuthProvider.credential(null, accessToken);
+	try {
+		return await signInWithCredential(auth, credential);
+	} catch (err) {
+		throw new Error('chrome_signIn: Failed to sign in with user credential');
+	}
 }
 
 interface SignInAnonEvent {
@@ -43,8 +51,7 @@ interface SignInAnonEvent {
 export interface UserContext {
 	user: User | null;
 	isLoading: boolean;
-	signInGoogle: () => void;
-	signInApple: () => void;
+	signIn: () => void;
 	signOut: () => void;
 	subscribeBeforeSignOutAnonymously: (
 		subscriber: Subscriber<User>,
@@ -57,8 +64,7 @@ export interface UserContext {
 const UserContext = createContext<UserContext>({
 	user: null,
 	isLoading: false,
-	signInGoogle: () => {},
-	signInApple: () => {},
+	signIn: () => {},
 	signOut: () => {},
 	subscribeBeforeSignOutAnonymously: () => () => {},
 	subscribeAfterSignInAnonymously: () => () => {},
@@ -135,21 +141,11 @@ export default function UserProvider({children}: PropsWithChildren) {
 		setIsLoading(false);
 	}, [signInAnonymous]);
 
-	const signInGoogle = useCallback(async () => {
+	const signIn = useCallback(async () => {
 		setIsLoading(true);
 		await signOutAnonymous();
-		await signInGoogleAsync(auth).catch(() => {
+		await signInAsync(auth).catch(() => {
 			console.warn('signInGoogle: Failed to sign in with Google');
-			return signInAnonymous({prevIsAnon: true});
-		});
-		setIsLoading(false);
-	}, [auth, signOutAnonymous, signInAnonymous]);
-
-	const signInApple = useCallback(async () => {
-		setIsLoading(true);
-		await signOutAnonymous();
-		await signInAppleAsync(auth).catch(() => {
-			console.warn('signInApple: Failed to sign in with Apple');
 			return signInAnonymous({prevIsAnon: true});
 		});
 		setIsLoading(false);
@@ -160,8 +156,7 @@ export default function UserProvider({children}: PropsWithChildren) {
 			value={{
 				user,
 				isLoading,
-				signInGoogle,
-				signInApple,
+				signIn,
 				signOut,
 				subscribeBeforeSignOutAnonymously,
 				subscribeAfterSignInAnonymously,
