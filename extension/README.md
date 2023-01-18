@@ -1,6 +1,10 @@
 ## Extension ID
 
-Generated from our private key.
+When developing locally, we have to manage the extension key manually to get a stable extension ID.
+
+Note that the `"key"` manifest field has to be removed before submitting to the Chrome Web Store as it will be automatically managed.
+
+The dev ID is generated from our dev private key.
 
 ```bash
 openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out key.pem
@@ -20,7 +24,11 @@ openssl rsa -in key.pem -pubout -outform DER | shasum -a 256 | head -c32 | tr 0-
 
 which produces `dfbebboepanjemmiopgfnkojgkgkholo`.
 
+## OAuth client ID
+
 The OAuth client ID can be retrieved from the [Google Cloud console](https://console.cloud.google.com/apis/credentials) and is stored in the extension manifest.
+
+Make sure to update `"oauth2.client_id"` to match the production OAuth ID before packaging and deployment.
 
 ## Building
 
