@@ -17,5 +17,13 @@
 	},
 	"icons": {
 		"128": "assets/icon-128.png"
+	},
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvIyIt+8gsBrWjQjeYmkEgGKZ4vqKq/mOaKYbGijwzO7Q/fpKUFQ3KGPcCly7FhQf14OxjKz860WnPUCglTL/anm6BD/M/ZTsZ+Hr9CPahuXPH1WikUexhIeuQBJ8Ph2/80E8ue7HlRK7+aezp9mGeoYYdvLXHFGJu7xHpXur8BAF0LMleeAyMYozx6gRUmBVjf5mRi8xC/eEo8gOv5XG6DWu9fRkNuMut7ITkS2N8HRhMHP//wFy7zGJMbQybUx7lskr9cKnDmQd05zCj5ssVwIp5XKLB6nAEc3j/STKGGZtne/WjEC9JdJ2zUHzxr4SqxaaO+31NwgbUgESvkHrwwIDAQAB",
+	"oauth2": {
+		"client_id": "843057937567-j1n4dqotpp8g47gqih6ijofq9vht1hr7.apps.googleusercontent.com",
+		"scopes": [
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile"
+		]
 	}
 }

@@ -1,3 +1,27 @@
+## Extension ID
+
+Generated from our private key.
+
+```bash
+openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out key.pem
+```
+
+The public key is stored in the `"key"` field of the extension manifest and is generated with:
+
+```bash
+openssl rsa -in key.pem -pubout -outform DER | openssl base64 -A
+```
+
+Next, the extension ID is derived with:
+
+```bash
+openssl rsa -in key.pem -pubout -outform DER | shasum -a 256 | head -c32 | tr 0-9a-f a-p
+```
+
+which produces `dfbebboepanjemmiopgfnkojgkgkholo`.
+
+The OAuth client ID can be retrieved from the [Google Cloud console](https://console.cloud.google.com/apis/credentials) and is stored in the extension manifest.
+
 ## Building
 
 ### Chrome
