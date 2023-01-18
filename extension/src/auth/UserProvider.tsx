@@ -112,23 +112,30 @@ export default function UserProvider({children}: PropsWithChildren) {
 		[notifyAfterSignInAnon],
 	);
 
-	useEffect(function anonymousIfNoUserOnLoad() {
-		if (user == null) {
-			setIsLoading(true);
-			signInAnonymous({
-				prevIsAnon: true,
-			})
-				.catch(() => {
-					console.warn(
-						'anonymousIfNoUserOnLoad: Failed to sign in anonymously',
-					);
+	useEffect(
+		function anonymousIfNoUserOnLoad() {
+			// Wait a few seconds for any persisted user to load.
+			const timeout = setTimeout(() => {
+				if (user != null) return;
+				setIsLoading(true);
+				signInAnonymous({
+					prevIsAnon: true,
 				})
-				.finally(() => {
-					setIsLoading(false);
-				});
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+					.catch(() => {
+						console.warn(
+							'anonymousIfNoUserOnLoad: Failed to sign in anonymously',
+						);
+					})
+					.finally(() => {
+						setIsLoading(false);
+					});
+			}, 2000);
+			return () => {
+				clearTimeout(timeout);
+			};
+		},
+		[user],
+	);
 
 	const signOut = useCallback(async () => {
 		setIsLoading(true);
@@ -155,7 +162,7 @@ export default function UserProvider({children}: PropsWithChildren) {
 		<UserContext.Provider
 			value={{
 				user,
-				isLoading,
+				isLoading: isLoading || user == null,
 				signIn,
 				signOut,
 				subscribeBeforeSignOutAnonymously,
