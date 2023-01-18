@@ -17,29 +17,6 @@ export const RELAX_END_NOTIFICATION: Notification = {
 	body: 'Get 25 minutes of uninterrupted work done.',
 };
 
-/**
- * Chrome-specific.
- */
-type GCMPrefixed<TData> = {
-	[TKey in keyof TData as `gcm.notification.${TKey extends string
-		? TKey
-		: never}`]: TData[TKey];
-};
-
-interface GCMMessage<TData = Record<string, string>> {
-	collapseKey: string;
-	data: GCMPrefixed<TData>;
-}
-
-declare let chrome: {
-	gcm: {
-		register(senderIds: string[], onRegister: (token: string) => void): void;
-		onMessage: {
-			addListener(onMessage: (message: GCMMessage) => void): void;
-		};
-	};
-};
-
 export function initializeNotifications(app: FirebaseApp) {
 	if (typeof chrome !== 'undefined') {
 		chrome_registerGcm();
@@ -59,9 +36,15 @@ async function onTokenRegistered(token: string) {
 	await browser.storage.local.set({fcm_token: token});
 }
 
+type ChromeGCMPrefixed<TData> = {
+	[TKey in keyof TData as `gcm.notification.${TKey extends string
+		? TKey
+		: never}`]: TData[TKey];
+};
+
 function chrome_addMessageListener() {
 	chrome.gcm.onMessage.addListener((message) => {
-		const data = message.data as GCMPrefixed<Notification>;
+		const data = message.data as ChromeGCMPrefixed<Notification>;
 		onNotification({
 			title: data['gcm.notification.title'],
 			body: data['gcm.notification.body'],
